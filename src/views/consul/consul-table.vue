@@ -2,7 +2,7 @@
   <div class="app-container">
 
     <!-- 筛选栏 -->
-    <div class="filter-container">
+    <div class="filter-container" ref="filterhight">
      <el-form :inline="true" @submit.native.prevent>
         <el-form-item label="名称：">
           <el-input v-model="filterConditions['name'].value" placeholder="请输入名称"></el-input>
@@ -20,20 +20,32 @@
                 :value="item.value"
               ></el-option>
             </el-select>
-          </el-form-item>
+        </el-form-item>
+        <el-form-item v-if="filterStatus == 0" label="创建时间：">
+          <el-date-picker v-model="filterConditions['beginCreateTime'].value" type="datetime" placeholder="开始日期" />
+        </el-form-item>
+        <el-form-item v-if="filterStatus == 0">-</el-form-item>
+        <el-form-item v-if="filterStatus == 0">
+          <el-date-picker v-model="filterConditions['endCreateTime'].value" type="datetime" placeholder="结束日期" />
+        </el-form-item>
         <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
-        <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">添加</el-button>
-        <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">导出</el-button>
+        <el-button v-waves class="filter-item" type="info" icon="el-icon-refresh" @click="handleReset">重置</el-button>
+        <el-button v-waves class="filter-item" type="primary" :icon="filterStatus===0?'el-icon-zoom-out':'el-icon-zoom-in'" @click="handleShow">高级</el-button>
+        <div>
+          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">添加</el-button>
+          <el-button size="small" v-waves class="filter-item" type="info" icon="el-icon-download" @click="handleDownloadTemplate">下载模板</el-button>
+          <el-button size="small" v-waves class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">导出</el-button>
+        </div>
       </el-form>
     </div>
 
     <!-- 表格 -->
     <el-table
-      v-if="tableHeight"
+      v-loading="listLoading"
       :height="tableHeight"
       :key="tableKey"
-      v-loading="listLoading"
       :data="list"
+      stripe
       border
       fit
       highlight-current-row
@@ -118,11 +130,12 @@
 </template>
 
 <script>
-import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/consul'
+import { fetchList, fetchPv, createArticle, updateArticle, deleteArticle, downloadTemplate } from '@/api/consul'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import ConditionOper from '@/utils/condition'
+import { getToken } from '@/utils/auth'
 
 export default {
   name: 'ConsulTable',
@@ -183,7 +196,8 @@ export default {
         { name: '启用', value: true },
         { name: '禁用', value: false },
       ],
-      downloadLoading: false,
+      //状态开关
+      filterStatus: 1,
       //筛选条件
       filterConditions : {
         'name': {
@@ -203,13 +217,24 @@ export default {
           value: null,
           dataType: ConditionOper.DataTypeEnum.Int,
           operator: ConditionOper.ConditionOperEnum.Equal
+        },
+        'beginCreateTime': {
+          columnName: 'CreateTime',
+          value: null,
+          dataType: ConditionOper.DataTypeEnum.DateTime,
+          operator: ConditionOper.ConditionOperEnum.GreaterThanEqual
+        },
+        'endCreateTime': {
+          columnName: 'CreateTime',
+          value: null,
+          dataType: ConditionOper.DataTypeEnum.DateTime,
+          operator: ConditionOper.ConditionOperEnum.LessThanEqual
         }
       }
     }
   },
   created() {
     this.getList()
-    this.getTableHeight()
   },
   // 挂载window.onresize事件
   mounted() {
@@ -233,8 +258,12 @@ export default {
   methods: {
      // 计算高度
     getTableHeight() {
-      const tableH = 230
-      const tableHeightDetil = window.innerHeight - tableH
+      const baseH = 135 // 基础的一个高度
+      let tableH = 280 // 默认的高度
+      if(this.$refs.filterhight != null) {
+        tableH = baseH + this.$refs.filterhight.offsetHeight + 30 // 动态的高度加上分页组件的高度
+      }
+      let tableHeightDetil = window.innerHeight - tableH
       if (tableHeightDetil <= 300) {
         this.tableHeight = 300
       } else {
@@ -266,17 +295,51 @@ export default {
       })
       this.getTableHeight()
     },
+    // 条件筛选
     handleFilter() {
       this.listQuery.pageIndex = 1
       this.getList()
     },
-    handleModifyStatus(row, status) {
-      this.$message({
-        message: '操作成功',
-        type: 'success'
-      })
-      row.status = status
+    // 重置筛选
+    handleReset() {
+      this.filterConditions = {
+        'name': {
+          columnName: 'Name',
+          value: '',
+          dataType: ConditionOper.DataTypeEnum.String,
+          operator: ConditionOper.ConditionOperEnum.AllLike
+        },
+        'appSecret': {
+          columnName: 'AppSecret',
+          value: '',
+          dataType: ConditionOper.DataTypeEnum.String,
+          operator: ConditionOper.ConditionOperEnum.AllLike
+        },
+        'disable': {
+          columnName: 'Disable',
+          value: null,
+          dataType: ConditionOper.DataTypeEnum.Int,
+          operator: ConditionOper.ConditionOperEnum.Equal
+        },
+        'beginCreateTime': {
+          columnName: 'CreateTime',
+          value: null,
+          dataType: ConditionOper.DataTypeEnum.DateTime,
+          operator: ConditionOper.ConditionOperEnum.GreaterThanEqual
+        },
+        'endCreateTime': {
+          columnName: 'CreateTime',
+          value: null,
+          dataType: ConditionOper.DataTypeEnum.DateTime,
+          operator: ConditionOper.ConditionOperEnum.LessThanEqual
+        }
+      }
     },
+    //高级
+    handleShow() {
+      this.filterStatus = this.filterStatus ? 0 : 1
+    },
+    //排序
     sortChange(data) {
       const { prop, order } = data
       if (prop === 'name') {
@@ -323,7 +386,7 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          createArticle(this.temp).then(() => {
+          createArticle(this.temp).then(response => {
             this.dialogFormVisible = false
             this.$notify({
               title: '成功',
@@ -331,7 +394,7 @@ export default {
               type: 'success',
               duration: 2000
             })
-            this.getList()
+            this.list.unshift(response.data)
           })
         }
       })
@@ -366,42 +429,86 @@ export default {
     
     // 删除
     handleDelete(row, index) {
-      this.$notify({
-        title: '成功',
-        message: '删除成功',
-        type: 'success',
-        duration: 2000
-      })
-      this.list.splice(index, 1)
+      console.log(row)
+      if(row != null) {
+        this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          let deleteIds = []
+          deleteIds.push(row.id)
+          deleteArticle(deleteIds).then(() => {
+            this.$notify({
+              title: '成功',
+              message: '删除成功',
+              type: 'success',
+              duration: 2000
+            })
+            this.list.splice(index, 1)
+          })
+        }).catch(() => {
+          this.$notify({
+            title: '取消',
+            message: '已取消删除',
+            type: 'info',
+            duration: 2000
+          })       
+        });
+      }
     },
+
     handleFetchPv(pv) {
       fetchPv(pv).then(response => {
         this.pvData = response.data.pvData
         this.dialogPvVisible = true
       })
     },
-    handleDownload() {
-      this.downloadLoading = true
-      import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['timestamp', 'title', 'type', 'importance', 'status']
-        const filterVal = ['timestamp', 'title', 'type', 'importance', 'status']
-        const data = this.formatJson(filterVal)
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename: 'table-list'
-        })
-        this.downloadLoading = false
-      })
+    
+    // 下载模板
+    handleDownloadTemplate() {
+      window.open(
+        `http://192.168.1.109:80/ocelot/Test/DownloadTemplate` +
+        `?Authorization=Bearer ${getToken()}&fileName=导出测试文件模板`, // 当前路由的名称
+        '_blank'
+      )
     },
-    formatJson(filterVal) {
-      return this.list.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
-          return parseTime(v[j])
-        } else {
-          return v[j]
+
+    //导出全部
+    handleDownload(items) {
+      try {
+        let obj = {
+          url:`http://192.168.1.109/ocelot/Test/Export`,
+          fileName: '导出测试文件',
+          conditions: Object.keys(this.filterConditions).map(key => this.filterConditions[key]).filter(item => item.value !== ''),
+          sorts: this.listQuery.sorts
         }
-      }))
+        let ExportPath = obj.url;
+        ExportPath += `?Authorization=Bearer ${getToken()}`;
+        if (obj.fileName != '') {
+          ExportPath += `&fileName=${obj.fileName}`
+        }
+        if (obj.conditions.length) {
+          obj.conditions.forEach((item, index) => {
+            if (item['value'] != null) {
+              ExportPath += `&conditions[${index}].columnName=${item['columnName']}`
+              if (item.hasOwnProperty('operator')) {
+                ExportPath += `&conditions[${index}].operator=${item['operator']}`
+              }
+              ExportPath += `&conditions[${index}].value=${item['value']}`
+            }
+          });
+        }
+        if(obj.sorts.length){
+          obj.sorts.forEach((item, index) => {
+            ExportPath += `&sorts[${index}].columnName=${item['columnName']}`
+            ExportPath += `&sorts[${index}].direction=${item['direction']}`
+          });
+        }
+        window.open(ExportPath.toString(), '_blank');
+      } catch (e) {
+        console.log(e);
+      }
     }
   }
 }

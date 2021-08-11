@@ -1,7 +1,6 @@
 import request from '@/utils/request'
 
 export function fetchList(data) {
-  console.log(data)
   return request({
     url: 'http://192.168.1.109:80/ocelot/Test/GetPageData',
     method: 'post',
@@ -37,6 +36,22 @@ export function updateArticle(data) {
   return request({
     url: 'http://192.168.1.109:80/ocelot/Test/Edit',
     method: 'post',
+    data
+  })
+}
+
+export function deleteArticle(data) {
+  return request({
+    url: 'http://192.168.1.109:80/ocelot/Test/Delete',
+    method: 'post',
+    data
+  })
+}
+
+export function downloadTemplate(data) {
+  return request({
+    url: 'http://192.168.1.109:80/ocelot/Test/DownloadTemplate',
+    method: 'get',
     data
   })
 }
