@@ -33,6 +33,7 @@
         <el-button v-waves class="filter-item" type="primary" :icon="filterStatus===0?'el-icon-zoom-out':'el-icon-zoom-in'" @click="handleShow">高级</el-button>
         <div>
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">添加</el-button>
+          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleBachDelete">删除</el-button>
           <el-button size="small" v-waves class="filter-item" type="info" icon="el-icon-download" @click="handleDownloadTemplate">下载模板</el-button>
           <el-button size="small" v-waves class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">导出</el-button>
         </div>
@@ -51,7 +52,10 @@
       highlight-current-row
       style="width: 100%;"
       @sort-change="sortChange"
+      @selection-change="selectionChange"
     >
+      <el-table-column type="selection" width="55"></el-table-column>
+
       <el-table-column label="ID" prop="id" align="center" width="300px">
       </el-table-column>
 
@@ -79,7 +83,7 @@
       <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">修改</el-button>
-          <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">删除</el-button>
+          <el-button size="mini" type="danger" @click="handleDelete(row,$index)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -196,6 +200,8 @@ export default {
         { name: '启用', value: true },
         { name: '禁用', value: false },
       ],
+      //勾选
+      multipleSelection: [],
       //状态开关
       filterStatus: 1,
       //筛选条件
@@ -236,7 +242,7 @@ export default {
   created() {
     this.getList()
   },
-  // 挂载window.onresize事件
+  //挂载window.onresize事件
   mounted() {
     const _this = this
     window.onresize = () => {
@@ -249,19 +255,19 @@ export default {
       }, 100)
     }
   },
-  // 注销window.onresize事件
+  //注销window.onresize事件
   beforeRouteLeave(to, from, next) {
     // 离开组件的时候触发
     window.onresize = null
     next()
   },
   methods: {
-     // 计算高度
+     //计算高度
     getTableHeight() {
-      const baseH = 135 // 基础的一个高度
-      let tableH = 280 // 默认的高度
+      const baseH = 135 //基础的一个高度
+      let tableH = 280 //默认的高度
       if(this.$refs.filterhight != null) {
-        tableH = baseH + this.$refs.filterhight.offsetHeight + 30 // 动态的高度加上分页组件的高度
+        tableH = baseH + this.$refs.filterhight.offsetHeight + 30 //动态的高度加上分页组件的高度
       }
       let tableHeightDetil = window.innerHeight - tableH
       if (tableHeightDetil <= 300) {
@@ -270,6 +276,7 @@ export default {
         this.tableHeight = window.innerHeight - tableH
       }
     },
+    //查询
     getList() {
       this.listLoading = true
       let conditions = []
@@ -287,7 +294,6 @@ export default {
       fetchList(this.listQuery).then(response => {
         this.list = response.data.datas
         this.total = response.data.total
-
         // Just to simulate the time of the request
         setTimeout(() => {
           this.listLoading = false
@@ -295,12 +301,12 @@ export default {
       })
       this.getTableHeight()
     },
-    // 条件筛选
+    //条件筛选
     handleFilter() {
       this.listQuery.pageIndex = 1
       this.getList()
     },
-    // 重置筛选
+    //重置筛选
     handleReset() {
       this.filterConditions = {
         'name': {
@@ -334,6 +340,10 @@ export default {
           operator: ConditionOper.ConditionOperEnum.LessThanEqual
         }
       }
+    },
+    //勾选事件
+    selectionChange(selection) {
+      this.multipleSelection = selection
     },
     //高级
     handleShow() {
@@ -382,7 +392,8 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    // 添加
+    
+    //添加
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
@@ -399,6 +410,7 @@ export default {
         }
       })
     },
+
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
       this.dialogStatus = 'update'
@@ -407,7 +419,8 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    // 修改
+
+    //修改
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
@@ -427,9 +440,8 @@ export default {
       })
     },
     
-    // 删除
+    //删除
     handleDelete(row, index) {
-      console.log(row)
       if(row != null) {
         this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
           confirmButtonText: '确定',
@@ -458,6 +470,40 @@ export default {
       }
     },
 
+    //批量删除
+    handleBachDelete() {
+        if(this.multipleSelection.length) {
+          this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            let deleteIds = this.multipleSelection.map(item => item.id)
+            deleteArticle(deleteIds).then(() => {
+              this.$notify({
+                title: '成功',
+                message: '删除成功',
+                type: 'success',
+                duration: 2000
+              })
+              this.getList()
+            })
+          }).catch(() => {
+            this.$notify({
+              title: '取消',
+              message: '已取消删除',
+              type: 'info',
+              duration: 2000
+            })       
+          });
+        } else {
+          this.$message({
+            message: '请勾选需要删除的数据',
+            type: 'warning'
+          });
+        }
+    },
+
     handleFetchPv(pv) {
       fetchPv(pv).then(response => {
         this.pvData = response.data.pvData
@@ -465,7 +511,7 @@ export default {
       })
     },
     
-    // 下载模板
+    //下载模板
     handleDownloadTemplate() {
       window.open(
         `http://192.168.1.109:80/ocelot/Test/DownloadTemplate` +
