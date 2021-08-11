@@ -1,8 +1,9 @@
 import request from '@/utils/request'
+import requestBase from '@/api/request-base'
 
 export function fetchList(data) {
   return request({
-    url: 'http://192.168.1.109:80/ocelot/Test/GetPageData',
+    url: requestBase + '/Test/GetPageData',
     method: 'post',
     data
   })
@@ -10,7 +11,7 @@ export function fetchList(data) {
 
 export function createArticle(data) {
   return request({
-    url: 'http://192.168.1.109:80/ocelot/Test/Edit',
+    url: requestBase + '/Test/Edit',
     method: 'post',
     data
   })
@@ -18,7 +19,7 @@ export function createArticle(data) {
 
 export function updateArticle(data) {
   return request({
-    url: 'http://192.168.1.109:80/ocelot/Test/Edit',
+    url: requestBase + '/Test/Edit',
     method: 'post',
     data
   })
@@ -26,7 +27,7 @@ export function updateArticle(data) {
 
 export function deleteArticle(data) {
   return request({
-    url: 'http://192.168.1.109:80/ocelot/Test/Delete',
+    url: requestBase + '/Test/Delete',
     method: 'post',
     data
   })
@@ -34,7 +35,7 @@ export function deleteArticle(data) {
 
 export function uploadArticle(data) {
   return request({
-    url: 'http://192.168.1.109:80/ocelot/Test/Import',
+    url: requestBase + '/Test/Import',
     method: 'post',
     data
   })

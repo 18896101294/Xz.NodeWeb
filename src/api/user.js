@@ -1,8 +1,10 @@
 import request from '@/utils/request'
+import requestBase from '@/api/request-base'
 
 export function login(data) {
+  console.log(requestBase)
   return request({
-    url: 'http://192.168.1.109:80/ocelot/Login/Login',
+    url: requestBase + '/Login/Login',
     method: 'post',
     data
   })

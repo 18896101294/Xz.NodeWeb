@@ -2,24 +2,24 @@
   <div class="app-container">
 
     <!-- 筛选栏 -->
-    <div class="filter-container" ref="filterhight">
-     <el-form :inline="true" @submit.native.prevent>
+    <div ref="filterhight" class="filter-container">
+      <el-form :inline="true" @submit.native.prevent>
         <el-form-item label="名称：">
-          <el-input v-model="filterConditions['name'].value" placeholder="请输入名称"></el-input>
+          <el-input v-model="filterConditions['name'].value" placeholder="请输入名称" />
         </el-form-item>
         <el-form-item label="密钥：">
-          <el-input v-model="filterConditions['appSecret'].value" placeholder="请输入密钥"></el-input>
+          <el-input v-model="filterConditions['appSecret'].value" placeholder="请输入密钥" />
         </el-form-item>
         <el-form-item label="状态：">
-            <el-select v-model="filterConditions['disable'].value" placeholder="请选择状态">
-              <el-option :value="null" label="全部"></el-option>
-              <el-option
-                v-for="item in statusList"
-                :key="item.value"
-                :label="item.name"
-                :value="item.value"
-              ></el-option>
-            </el-select>
+          <el-select v-model="filterConditions['disable'].value" placeholder="请选择状态">
+            <el-option :value="null" label="全部" />
+            <el-option
+              v-for="item in statusList"
+              :key="item.value"
+              :label="item.name"
+              :value="item.value"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item v-if="filterStatus == 0" label="创建时间：">
           <el-date-picker v-model="filterConditions['beginCreateTime'].value" type="datetime" placeholder="开始日期" />
@@ -34,12 +34,15 @@
         <div>
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">添加</el-button>
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleBachDelete">删除</el-button>
-          <el-button size="small" v-waves class="filter-item" type="info" icon="el-icon-download" @click="handleDownloadTemplate">下载模板</el-button>
-          <el-button size="small" v-waves class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">导出</el-button>
-          <el-upload action="#" style="display: inline-block;vertical-align: middle;margin-bottom: 10px; margin-left: 10px;" 
-            :show-file-list="false" 
+          <el-button v-waves size="small" class="filter-item" type="info" icon="el-icon-download" @click="handleDownloadTemplate">下载模板</el-button>
+          <el-button v-waves size="small" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">导出</el-button>
+          <el-upload
+            action="#"
+            style="display: inline-block;vertical-align: middle;margin-bottom: 10px; margin-left: 10px;"
+            :show-file-list="false"
             :auto-upload="false"
-            :on-change="handleUpload">
+            :on-change="handleUpload"
+          >
             <el-button size="small" type="primary" icon="el-icon-upload2">导入</el-button>
           </el-upload>
         </div>
@@ -48,9 +51,9 @@
 
     <!-- 表格 -->
     <el-table
+      :key="tableKey"
       v-loading="listLoading"
       :height="tableHeight"
-      :key="tableKey"
       :data="list"
       stripe
       border
@@ -60,19 +63,15 @@
       @sort-change="sortChange"
       @selection-change="selectionChange"
     >
-      <el-table-column type="selection" align="center" width="55"></el-table-column>
+      <el-table-column type="selection" align="center" width="55" />
 
-      <el-table-column label="ID" prop="id" align="center" width="300px">
-      </el-table-column>
+      <el-table-column label="ID" prop="id" align="center" width="300px" />
 
-      <el-table-column label='名称' prop="name"  sortable="custom" align="center" min-width="100px">
-      </el-table-column>
+      <el-table-column label="名称" prop="name" sortable="custom" align="center" min-width="100px" />
 
-      <el-table-column label="密钥" prop="appSecret" align="center" min-width="100px">
-      </el-table-column>
+      <el-table-column label="密钥" prop="appSecret" align="center" min-width="100px" />
 
-      <el-table-column label="图标" min-width="80px" prop="icon" align="center" >
-      </el-table-column>
+      <el-table-column label="图标" min-width="80px" prop="icon" align="center" />
 
       <el-table-column label="创建时间" width="150px" align="center">
         <template slot-scope="{row}">
@@ -82,7 +81,7 @@
 
       <el-table-column label="是否启用" class-name="status-col" align="center" width="100">
         <template slot-scope="{row}">
-            {{ row.disable | statusFilter }}
+          {{ row.disable | statusFilter }}
         </template>
       </el-table-column>
 
@@ -99,7 +98,7 @@
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
         <el-form-item label="名称" prop="name">
-          <el-input v-model="temp.name" placeholder="请输入名称"/>
+          <el-input v-model="temp.name" placeholder="请输入名称" />
         </el-form-item>
 
         <el-form-item label="密钥" prop="appSecret">
@@ -159,7 +158,7 @@ export default {
         sorts: [
           {
             columnName: 'Name',
-            direction: ConditionOper.SortEnum.DESC,
+            direction: ConditionOper.SortEnum.DESC
           }
         ],
         conditions: []
@@ -186,14 +185,14 @@ export default {
       },
       statusList: [
         { name: '启用', value: true },
-        { name: '禁用', value: false },
+        { name: '禁用', value: false }
       ],
-      //勾选
+      // 勾选
       multipleSelection: [],
-      //状态开关
+      // 状态开关
       filterStatus: 1,
-      //筛选条件
-      filterConditions : {
+      // 筛选条件
+      filterConditions: {
         'name': {
           columnName: 'Name',
           value: '',
@@ -230,7 +229,7 @@ export default {
   created() {
     this.getList()
   },
-  //挂载window.onresize事件
+  // 挂载window.onresize事件
   mounted() {
     const _this = this
     window.onresize = () => {
@@ -243,38 +242,38 @@ export default {
       }, 100)
     }
   },
-  //注销window.onresize事件
+  // 注销window.onresize事件
   beforeRouteLeave(to, from, next) {
     // 离开组件的时候触发
     window.onresize = null
     next()
   },
   methods: {
-     //计算高度
+    // 计算高度
     getTableHeight() {
-      const baseH = 135 //基础的一个高度
-      let tableH = 280 //默认的高度
-      if(this.$refs.filterhight != null) {
-        tableH = baseH + this.$refs.filterhight.offsetHeight + 30 //动态的高度加上分页组件的高度
+      const baseH = 135 // 基础的一个高度
+      let tableH = 280 // 默认的高度
+      if (this.$refs.filterhight != null) {
+        tableH = baseH + this.$refs.filterhight.offsetHeight + 30 // 动态的高度加上分页组件的高度
       }
-      let tableHeightDetil = window.innerHeight - tableH
+      const tableHeightDetil = window.innerHeight - tableH
       if (tableHeightDetil <= 300) {
         this.tableHeight = 300
       } else {
         this.tableHeight = window.innerHeight - tableH
       }
     },
-    //查询
+    // 查询
     getList() {
       this.listLoading = true
-      let conditions = []
-      for (let o in this.filterConditions) {
+      const conditions = []
+      for (const o in this.filterConditions) {
         if (this.filterConditions[o].value !== '' && this.filterConditions[o].value !== null) {
           // 时间查询条件格式化处理
           if (this.filterConditions[o].dataType === 'DateTime') {
-            this.filterConditions[o].value = dayjs(this.filterConditions[o].value).format('YYYY-MM-DD HH:mm:ss');
+            this.filterConditions[o].value = dayjs(this.filterConditions[o].value).format('YYYY-MM-DD HH:mm:ss')
           }
-          conditions.push(this.filterConditions[o]);
+          conditions.push(this.filterConditions[o])
         }
       }
       this.listQuery.conditions = conditions
@@ -289,12 +288,12 @@ export default {
       })
       this.getTableHeight()
     },
-    //条件筛选
+    // 条件筛选
     handleFilter() {
       this.listQuery.pageIndex = 1
       this.getList()
     },
-    //重置筛选
+    // 重置筛选
     handleReset() {
       this.filterConditions = {
         'name': {
@@ -329,15 +328,15 @@ export default {
         }
       }
     },
-    //勾选事件
+    // 勾选事件
     selectionChange(selection) {
       this.multipleSelection = selection
     },
-    //高级
+    // 高级
     handleShow() {
       this.filterStatus = this.filterStatus ? 0 : 1
     },
-    //排序
+    // 排序
     sortChange(data) {
       const { prop, order } = data
       if (prop === 'name') {
@@ -346,14 +345,14 @@ export default {
     },
     sortByID(prop, order) {
       if (order === 'ascending') {
-        for (let o in this.listQuery.sorts) {
+        for (const o in this.listQuery.sorts) {
           if (this.listQuery.sorts[o].columnName.toUpperCase() == prop.toUpperCase()) {
             this.listQuery.sorts[o].direction = ConditionOper.SortEnum.ASC
             break
           }
         }
       } else {
-        for (let o in this.listQuery.sorts) {
+        for (const o in this.listQuery.sorts) {
           if (this.listQuery.sorts[o].columnName.toUpperCase() == prop.toUpperCase()) {
             this.listQuery.sorts[o].direction = ConditionOper.SortEnum.DESC
             break
@@ -380,8 +379,8 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    
-    //添加
+
+    // 添加
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
@@ -405,12 +404,12 @@ export default {
       })
     },
 
-    //修改
+    // 修改
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
-          updateArticle(tempData).then(() => {
+          updateArticle(tempData).then(response => {
             const index = this.list.findIndex(v => v.id === this.temp.id)
             this.list.splice(index, 1, this.temp)
             this.dialogFormVisible = false
@@ -421,18 +420,18 @@ export default {
         }
       })
     },
-    
-    //删除
+
+    // 删除
     handleDelete(row, index) {
-      if(row != null) {
+      if (row != null) {
         this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          let deleteIds = []
+          const deleteIds = []
           deleteIds.push(row.id)
-          deleteArticle(deleteIds).then(() => {
+          deleteArticle(deleteIds).then(response => {
             this.$notify({
               message: response.message, type: 'success'
             })
@@ -440,52 +439,52 @@ export default {
           })
         }).catch(() => {
           this.$notify({
-            message: '已取消删除', type: 'info',
-          })       
-        });
+            message: '已取消删除', type: 'info'
+          })
+        })
       }
     },
 
-    //批量删除
+    // 批量删除
     handleBachDelete() {
-        if(this.multipleSelection.length) {
-          this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(() => {
-            let deleteIds = this.multipleSelection.map(item => item.id)
-            deleteArticle(deleteIds).then(() => {
-              this.$notify({
-                message: response.message, type: 'success'
-              })
-              this.getList()
-            })
-          }).catch(() => {
+      if (this.multipleSelection.length) {
+        this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          const deleteIds = this.multipleSelection.map(item => item.id)
+          deleteArticle(deleteIds).then(response => {
             this.$notify({
-              message: '已取消删除', type: 'info'
-            })       
-          });
-        } else {
-          this.$message({
-            message: '请勾选需要删除的数据', type: 'warning'
-          });
-        }
+              message: response.message, type: 'success'
+            })
+            this.getList()
+          })
+        }).catch(() => {
+          this.$notify({
+            message: '已取消删除', type: 'info'
+          })
+        })
+      } else {
+        this.$message({
+          message: '请勾选需要删除的数据', type: 'warning'
+        })
+      }
     },
 
-    //上传文件
+    // 上传文件
     handleUpload(file, fileList) {
       this.listLoading = true
-      var testmsg = file.name.substring(file.name.lastIndexOf('.')+1) //获取上传文件的类型
+      var testmsg = file.name.substring(file.name.lastIndexOf('.') + 1) // 获取上传文件的类型
       const extension = testmsg === 'xls'
       const extension2 = testmsg === 'xlsx'
-      const isLt2M = file.size / 1024 / 1024 < 2;
-      if(!extension && !extension2) {
-        this.$message.error('上传文件只能是xls或xlsx格式!');
-        return false;
+      const isLt2M = file.size / 1024 / 1024 < 2
+      if (!extension && !extension2) {
+        this.$message.error('上传文件只能是xls或xlsx格式!')
+        return false
       }
-      let formData = new window.FormData();
-      formData.append("formFile", file.raw);
+      const formData = new window.FormData()
+      formData.append('formFile', file.raw)
       uploadArticle(formData).then(response => {
         this.$notify({
           message: response.message, type: 'success'
@@ -493,8 +492,8 @@ export default {
         this.getList()
       })
     },
-    
-    //下载模板
+
+    // 下载模板
     handleDownloadTemplate() {
       window.open(
         `http://192.168.1.109:80/ocelot/Test/DownloadTemplate` +
@@ -503,17 +502,17 @@ export default {
       )
     },
 
-    //导出全部
+    // 导出全部
     handleDownload(items) {
       try {
-        let obj = {
-          url:`http://192.168.1.109/ocelot/Test/Export`,
+        const obj = {
+          url: `http://192.168.1.109/ocelot/Test/Export`,
           fileName: '导出测试文件',
           conditions: Object.keys(this.filterConditions).map(key => this.filterConditions[key]).filter(item => item.value !== ''),
           sorts: this.listQuery.sorts
         }
-        let ExportPath = obj.url;
-        ExportPath += `?Authorization=Bearer ${getToken()}`;
+        let ExportPath = obj.url
+        ExportPath += `?Authorization=Bearer ${getToken()}`
         if (obj.fileName != '') {
           ExportPath += `&fileName=${obj.fileName}`
         }
@@ -526,17 +525,17 @@ export default {
               }
               ExportPath += `&conditions[${index}].value=${item['value']}`
             }
-          });
+          })
         }
-        if(obj.sorts.length){
+        if (obj.sorts.length) {
           obj.sorts.forEach((item, index) => {
             ExportPath += `&sorts[${index}].columnName=${item['columnName']}`
             ExportPath += `&sorts[${index}].direction=${item['direction']}`
-          });
+          })
         }
-        window.open(ExportPath.toString(), '_blank');
+        window.open(ExportPath.toString(), '_blank')
       } catch (e) {
-        console.log(e);
+        console.log(e)
       }
     }
   }
