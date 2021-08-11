@@ -36,6 +36,12 @@
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleBachDelete">删除</el-button>
           <el-button size="small" v-waves class="filter-item" type="info" icon="el-icon-download" @click="handleDownloadTemplate">下载模板</el-button>
           <el-button size="small" v-waves class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">导出</el-button>
+          <el-upload action="#" style="display: inline-block;vertical-align: middle;margin-bottom: 10px; margin-left: 10px;" 
+            :show-file-list="false" 
+            :auto-upload="false"
+            :on-change="handleUpload">
+            <el-button size="small" type="primary" icon="el-icon-upload2">导入</el-button>
+          </el-upload>
         </div>
       </el-form>
     </div>
@@ -112,29 +118,16 @@
       </el-form>
 
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          {{ $t('table.cancel') }}
-        </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          {{ $t('table.confirm') }}
-        </el-button>
+        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">确定</el-button>
       </div>
     </el-dialog>
 
-    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel" />
-        <el-table-column prop="pv" label="Pv" />
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">{{ $t('table.confirm') }}</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 
 <script>
-import { fetchList, fetchPv, createArticle, updateArticle, deleteArticle, downloadTemplate } from '@/api/consul'
+import { fetchList, createArticle, updateArticle, deleteArticle, uploadArticle } from '@/api/consul'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -190,8 +183,6 @@ export default {
         update: '修改',
         create: '新增'
       },
-      dialogPvVisible: false,
-      pvData: [],
       rules: {
         name: [{ required: true, message: '名称必填', trigger: 'change' }],
         appSecret: [{ required: true, message: '密钥必填', trigger: 'change' }]
@@ -400,10 +391,7 @@ export default {
           createArticle(this.temp).then(response => {
             this.dialogFormVisible = false
             this.$notify({
-              title: '成功',
-              message: '创建成功',
-              type: 'success',
-              duration: 2000
+              message: response.message, type: 'success'
             })
             this.list.unshift(response.data)
           })
@@ -430,10 +418,7 @@ export default {
             this.list.splice(index, 1, this.temp)
             this.dialogFormVisible = false
             this.$notify({
-              title: '成功',
-              message: '更新成功',
-              type: 'success',
-              duration: 2000
+              message: response.message, type: 'success'
             })
           })
         }
@@ -452,19 +437,13 @@ export default {
           deleteIds.push(row.id)
           deleteArticle(deleteIds).then(() => {
             this.$notify({
-              title: '成功',
-              message: '删除成功',
-              type: 'success',
-              duration: 2000
+              message: response.message, type: 'success'
             })
             this.list.splice(index, 1)
           })
         }).catch(() => {
           this.$notify({
-            title: '取消',
-            message: '已取消删除',
-            type: 'info',
-            duration: 2000
+            message: '已取消删除', type: 'info',
           })       
         });
       }
@@ -481,33 +460,40 @@ export default {
             let deleteIds = this.multipleSelection.map(item => item.id)
             deleteArticle(deleteIds).then(() => {
               this.$notify({
-                title: '成功',
-                message: '删除成功',
-                type: 'success',
-                duration: 2000
+                message: response.message, type: 'success'
               })
               this.getList()
             })
           }).catch(() => {
             this.$notify({
-              title: '取消',
-              message: '已取消删除',
-              type: 'info',
-              duration: 2000
+              message: '已取消删除', type: 'info'
             })       
           });
         } else {
           this.$message({
-            message: '请勾选需要删除的数据',
-            type: 'warning'
+            message: '请勾选需要删除的数据', type: 'warning'
           });
         }
     },
 
-    handleFetchPv(pv) {
-      fetchPv(pv).then(response => {
-        this.pvData = response.data.pvData
-        this.dialogPvVisible = true
+    //上传文件
+    handleUpload(file, fileList) {
+      this.listLoading = true
+      var testmsg = file.name.substring(file.name.lastIndexOf('.')+1) //获取上传文件的类型
+      const extension = testmsg === 'xls'
+      const extension2 = testmsg === 'xlsx'
+      const isLt2M = file.size / 1024 / 1024 < 2;
+      if(!extension && !extension2) {
+        this.$message.error('上传文件只能是xls或xlsx格式!');
+        return false;
+      }
+      let formData = new window.FormData();
+      formData.append("formFile", file.raw);
+      uploadArticle(formData).then(response => {
+        this.$notify({
+          message: response.message, type: 'success'
+        })
+        this.getList()
       })
     },
     

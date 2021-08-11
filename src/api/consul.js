@@ -8,22 +8,6 @@ export function fetchList(data) {
   })
 }
 
-export function fetchArticle(id) {
-  return request({
-    url: '/vue-element-admin/article/detail',
-    method: 'get',
-    params: { id }
-  })
-}
-
-export function fetchPv(pv) {
-  return request({
-    url: '/vue-element-admin/article/pv',
-    method: 'get',
-    params: { pv }
-  })
-}
-
 export function createArticle(data) {
   return request({
     url: 'http://192.168.1.109:80/ocelot/Test/Edit',
@@ -48,10 +32,10 @@ export function deleteArticle(data) {
   })
 }
 
-export function downloadTemplate(data) {
+export function uploadArticle(data) {
   return request({
-    url: 'http://192.168.1.109:80/ocelot/Test/DownloadTemplate',
-    method: 'get',
+    url: 'http://192.168.1.109:80/ocelot/Test/Import',
+    method: 'post',
     data
   })
 }
