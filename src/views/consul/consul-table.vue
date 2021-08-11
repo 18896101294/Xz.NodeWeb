@@ -60,7 +60,7 @@
       @sort-change="sortChange"
       @selection-change="selectionChange"
     >
-      <el-table-column type="selection" width="55"></el-table-column>
+      <el-table-column type="selection" align="center" width="55"></el-table-column>
 
       <el-table-column label="ID" prop="id" align="center" width="300px">
       </el-table-column>
@@ -145,9 +145,6 @@ export default {
         true: '启用'
       }
       return statusMap[status]
-    },
-    typeFilter(type) {
-      return calendarTypeKeyValue[type]
     }
   },
   data() {
