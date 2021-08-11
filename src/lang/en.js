@@ -41,6 +41,7 @@ export default {
     dragTable: 'Drag Table',
     inlineEditTable: 'Inline Edit',
     complexTable: 'Complex Table',
+    ConsulTable: 'Consul 列表',
     tab: 'Tab',
     form: 'Form',
     createArticle: 'Create Article',

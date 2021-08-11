@@ -137,7 +137,7 @@ export const asyncRoutes = [
     name: 'consulManager',
     meta: {
       title: 'Consul 管理',
-      icon: 'lock',
+      icon: 'education',
       // keepAlive: false,
       roles: ['admin'] // you can set roles in root nav
     },
@@ -147,7 +147,7 @@ export const asyncRoutes = [
         component: () => import('@/views/consul/consul-table'),
         name: 'ConsulTable',
         meta: {
-          title: 'Consul 列表',
+          title: 'ConsulTable',
           roles: ['admin'] // or you can only set roles in sub nav
         }
       }

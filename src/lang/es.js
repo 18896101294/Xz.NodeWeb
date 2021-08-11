@@ -41,6 +41,7 @@ export default {
     dragTable: 'Arrastrar tabla',
     inlineEditTable: 'Editor',
     complexTable: 'Complex Table',
+    ConsulTable: 'Consul 列表',
     tab: 'Pestaña',
     form: 'Formulario',
     createArticle: 'Crear artículo',
