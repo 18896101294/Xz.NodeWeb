@@ -27,7 +27,7 @@ export function fetchPv(pv) {
 
 export function createArticle(data) {
   return request({
-    url: '/vue-element-admin/article/create',
+    url: 'http://192.168.1.109:80/ocelot/Test/Edit',
     method: 'post',
     data
   })
@@ -35,7 +35,7 @@ export function createArticle(data) {
 
 export function updateArticle(data) {
   return request({
-    url: '/vue-element-admin/article/update',
+    url: 'http://192.168.1.109:80/ocelot/Test/Edit',
     method: 'post',
     data
   })

@@ -1,5 +1,7 @@
 <template>
   <div class="app-container">
+
+    <!-- 筛选栏 -->
     <div class="filter-container">
      <el-form :inline="true" @submit.native.prevent>
         <el-form-item label="名称：">
@@ -25,6 +27,7 @@
       </el-form>
     </div>
 
+    <!-- 表格 -->
     <el-table
       v-if="tableHeight"
       :height="tableHeight"
@@ -122,7 +125,7 @@ import Pagination from '@/components/Pagination' // secondary package based on e
 import ConditionOper from '@/utils/condition'
 
 export default {
-  name: 'consulTable',
+  name: 'ConsulTable',
   components: { Pagination },
   directives: { waves },
   filters: {
@@ -243,6 +246,7 @@ export default {
       let conditions = []
       for (let o in this.filterConditions) {
         if (this.filterConditions[o].value !== '' && this.filterConditions[o].value !== null) {
+          // 时间查询条件格式化处理
           if (this.filterConditions[o].dataType === 'DateTime') {
             this.filterConditions[o].value = dayjs(this.filterConditions[o].value).format('YYYY-MM-DD HH:mm:ss');
           }
@@ -300,12 +304,11 @@ export default {
     resetTemp() {
       this.temp = {
         id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        status: 'published',
-        type: ''
+        name: '',
+        appSecret: '',
+        createTime: new Date(),
+        icon: '',
+        disable: true
       }
     },
     handleCreate() {
@@ -316,13 +319,11 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
+    // 添加
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.temp.author = 'vue-element-admin'
           createArticle(this.temp).then(() => {
-            this.list.unshift(this.temp)
             this.dialogFormVisible = false
             this.$notify({
               title: '成功',
@@ -330,24 +331,24 @@ export default {
               type: 'success',
               duration: 2000
             })
+            this.getList()
           })
         }
       })
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
-      this.temp.timestamp = new Date(this.temp.timestamp)
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
     },
+    // 修改
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
-          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
           updateArticle(tempData).then(() => {
             const index = this.list.findIndex(v => v.id === this.temp.id)
             this.list.splice(index, 1, this.temp)
@@ -362,6 +363,8 @@ export default {
         }
       })
     },
+    
+    // 删除
     handleDelete(row, index) {
       this.$notify({
         title: '成功',

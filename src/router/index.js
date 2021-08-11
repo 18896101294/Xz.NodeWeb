@@ -145,7 +145,7 @@ export const asyncRoutes = [
       {
         path: 'consul-table',
         component: () => import('@/views/consul/consul-table'),
-        name: 'consulTable',
+        name: 'ConsulTable',
         meta: {
           title: 'Consul 列表',
           roles: ['admin'] // or you can only set roles in sub nav
