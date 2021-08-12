@@ -126,7 +126,7 @@
 </template>
 
 <script>
-import { fetchList, createArticle, updateArticle, deleteArticle, uploadArticle } from '@/api/consul'
+import { fetchList, createArticle, updateArticle, deleteArticle, uploadArticle } from '@/api/system/test'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -134,7 +134,7 @@ import ConditionOper from '@/utils/condition'
 import { getToken } from '@/utils/auth'
 
 export default {
-  name: 'ConsulTable',
+  name: 'TestTable',
   components: { Pagination },
   directives: { waves },
   filters: {

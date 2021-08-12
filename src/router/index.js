@@ -130,21 +130,30 @@ export const constantRoutes = [
  */
 export const asyncRoutes = [
   {
-    path: '/consul',
+    path: '/system',
     component: Layout,
-    redirect: '/consul/consul-table',
+    redirect: '/system/system-page',
     alwaysShow: true, // will always show the root menu
-    name: 'consulManager',
+    name: 'systemManager',
     meta: {
-      title: 'Consul 管理',
+      title: '系统管理',
       icon: 'education',
       // keepAlive: false,
       roles: ['admin'] // you can set roles in root nav
     },
     children: [
       {
+        path: 'test-table',
+        component: () => import('@/views/system/test-table'),
+        name: 'TestTable',
+        meta: {
+          title: 'TestTable',
+          roles: ['admin'] // or you can only set roles in sub nav
+        }
+      },
+      {
         path: 'consul-table',
-        component: () => import('@/views/consul/consul-table'),
+        component: () => import('@/views/system/consul/consul-table'),
         name: 'ConsulTable',
         meta: {
           title: 'ConsulTable',
