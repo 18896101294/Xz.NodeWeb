@@ -5,7 +5,7 @@
     <el-tabs v-model="activeName" style="margin-top:15px;" type="border-card">
       <el-tab-pane v-for="item in tabMapOptions" :key="item.key" :label="item.label" :name="item.key">
         <keep-alive>
-          <tab-pane v-if="activeName==item.key" :type="item.key" @create="showCreatedTimes" />
+          <tab-pane v-if="activeName==item.key" :activeName="activeName" @create="showCreatedTimes" />
         </keep-alive>
       </el-tab-pane>
     </el-tabs>
@@ -21,13 +21,13 @@ export default {
   components: { TabPane },
   data() {
     return {
-      tabMapOptions: [
-        { label: 'China', key: 'CN' },
-        { label: 'USA', key: 'US' },
-        { label: 'Japan', key: 'JP' },
-        { label: 'Eurozone', key: 'EU' }
-      ],
-      activeName: 'CN',
+      tabMapOptions: [ ],
+      tabMapItem: 
+      { 
+        label: '',
+        key: '' 
+      },
+      activeName: '',
       createdTimes: 0
     }
   },
@@ -37,11 +37,7 @@ export default {
     }
   },
   created() {
-    // init the default selected tab
-    const tab = this.$route.query.tab
-    if (tab) {
-      this.activeName = tab
-    }
+    this.getList()
   },
   methods: {
     showCreatedTimes() {
@@ -50,15 +46,16 @@ export default {
     // 获取services列表
     getList() {
       this.listLoading = true
-
       consulServices().then(response => {
-        // this.list = response.data
+        this.activeName = response.data[0]
+        response.data.forEach((item, index) => {
+          this.tabMapOptions.push({label: item, key: item})
+        })
         // Just to simulate the time of the request
         setTimeout(() => {
           this.listLoading = false
         }, 1.5 * 1000)
       })
-      this.getTableHeight()
     }
   }
 }

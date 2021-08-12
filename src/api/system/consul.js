@@ -1,42 +1,16 @@
 import request from '@/utils/request'
 import requestBase from '@/api/request-base'
 
-export function consulServices(data) {
+export function consulServices() {
   return request({
     url: requestBase + '/Consul/ConsulServices',
-    method: 'post',
-    data
+    method: 'get'
   })
 }
 
-export function createArticle(data) {
+export function consulServiceItem(data) {
   return request({
-    url: requestBase + '/Test/Edit',
-    method: 'post',
-    data
-  })
-}
-
-export function updateArticle(data) {
-  return request({
-    url: requestBase + '/Test/Edit',
-    method: 'post',
-    data
-  })
-}
-
-export function deleteArticle(data) {
-  return request({
-    url: requestBase + '/Test/Delete',
-    method: 'post',
-    data
-  })
-}
-
-export function uploadArticle(data) {
-  return request({
-    url: requestBase + '/Test/Import',
-    method: 'post',
-    data
+    url: requestBase + '/Consul/ConsulServiceItem?serviceName=' + data,
+    method: 'get',
   })
 }
