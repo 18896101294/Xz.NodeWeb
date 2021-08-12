@@ -5,10 +5,10 @@
     <div ref="filterhight" class="filter-container">
       <el-form :inline="true" @submit.native.prevent>
         <el-form-item label="名称：">
-          <el-input v-model="filterConditions['name'].value" placeholder="请输入名称" />
+          <el-input clearable v-model="filterConditions['name'].value" placeholder="请输入名称" />
         </el-form-item>
         <el-form-item label="密钥：">
-          <el-input v-model="filterConditions['appSecret'].value" placeholder="请输入密钥" />
+          <el-input clearable v-model="filterConditions['appSecret'].value" placeholder="请输入密钥" />
         </el-form-item>
         <el-form-item label="状态：">
           <el-select v-model="filterConditions['disable'].value" placeholder="请选择状态">
