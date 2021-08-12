@@ -1,7 +1,7 @@
 export default {
   route: {
     dashboard: 'トップ',
-    documentation: 'ドキュメント',
+    adminInterface: 'ドキュメント',
     guide: 'ガイド',
     permission: '権限',
     rolePermission: '権限ロール',

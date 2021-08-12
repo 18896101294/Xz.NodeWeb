@@ -1,7 +1,7 @@
 export default {
   route: {
     dashboard: 'Dashboard',
-    documentation: 'Documentation',
+    adminInterface: 'adminInterface',
     guide: 'Guide',
     permission: 'Permission',
     pagePermission: 'Page Permission',

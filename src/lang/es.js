@@ -1,7 +1,7 @@
 export default {
   route: {
     dashboard: 'Panel de control',
-    documentation: 'Documentación',
+    adminInterface: 'adminInterface',
     guide: 'Guía',
     permission: 'Permisos',
     rolePermission: 'Permisos de rol',
