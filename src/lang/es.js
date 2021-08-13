@@ -44,6 +44,7 @@ export default {
     TestTable: '测试列表',
     ConsulTable: 'Consul列表',
     ConfigurationTable: '系统配置',
+    ModuleTable: '模块管理',
     tab: 'Pestaña',
     form: 'Formulario',
     createArticle: 'Crear artículo',

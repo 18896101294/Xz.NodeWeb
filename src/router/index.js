@@ -130,6 +130,30 @@ export const constantRoutes = [
  */
 export const asyncRoutes = [
   {
+    path: '/basics',
+    component: Layout,
+    redirect: '/basics/basics-page',
+    alwaysShow: true, // will always show the root menu
+    name: 'basicsManager',
+    meta: {
+      title: '基础配置',
+      icon: 'education',
+      // keepAlive: false,
+      roles: ['admin'] // you can set roles in root nav
+    },
+    children: [
+      {
+        path: 'module-table',
+        component: () => import('@/views/basics/module/module-table'),
+        name: 'ModuleTable',
+        meta: {
+          title: 'ModuleTable',
+          roles: ['admin'] // or you can only set roles in sub nav
+        }
+      }
+    ]
+  },
+  {
     path: '/system',
     component: Layout,
     redirect: '/system/system-page',

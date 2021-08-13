@@ -44,6 +44,7 @@ export default {
     TestTable: '测试列表',
     ConsulTable: 'Consul列表',
     ConfigurationTable: '系统配置',
+    ModuleTable: '模块管理',
     tab: 'Tab',
     form: '表单',
     createArticle: '创建文章',
