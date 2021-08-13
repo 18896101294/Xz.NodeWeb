@@ -43,6 +43,7 @@ export default {
     complexTable: 'Complex Table',
     TestTable: '测试列表',
     ConsulTable: 'Consul列表',
+    ConfigurationTable: '系统配置',
     tab: 'Tab',
     form: 'フォーム',
     createArticle: '投稿作成',

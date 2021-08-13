@@ -152,6 +152,15 @@ export const asyncRoutes = [
         }
       },
       {
+        path: 'configuration-table',
+        component: () => import('@/views/system/configuration/configuration-table'),
+        name: 'ConfigurationTable',
+        meta: {
+          title: 'ConfigurationTable',
+          roles: ['admin'] // or you can only set roles in sub nav
+        }
+      },
+      {
         path: 'consul-table',
         component: () => import('@/views/system/consul/consul-table'),
         name: 'ConsulTable',
