@@ -80,8 +80,8 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.pageIndex" :limit.sync="listQuery.pageSize" @pagination="getList" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" >
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="90px" style="width: 400px; margin-left:50px;">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="40%">
+      <el-form inline ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="90px" style="margin-left:50px;">
         <el-form-item label="顺序号：">
           <el-input v-model="temp.displayNo" min="0" type="number" placeholder="请输入顺序号" />
         </el-form-item>
@@ -98,12 +98,12 @@
           <el-input v-model="temp.value" placeholder="请输入值" />
         </el-form-item>
 
-        <el-form-item label="是否隐藏：">
+        <el-form-item label="是否隐藏：" style="display:block">
           <el-switch v-model="temp.isHide" active-color="#13ce66" inactive-color="#ff4949"></el-switch>  
         </el-form-item>
 
-        <el-form-item label="备注：">
-          <el-input v-model="temp.remark" placeholder="请输入备注" />
+        <el-form-item class="my-el-form" label="备注：">
+          <el-input v-model="temp.remark"  :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="请输入备注" />
         </el-form-item>
       </el-form>
 
@@ -475,3 +475,13 @@ export default {
   }
 }
 </script>
+
+<style>
+  .my-el-form {
+    width: 100%;
+  }
+  .my-el-form .el-form-item__content {
+    width: 70%;
+    /* display: block; */
+  }
+</style>
