@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { consulServiceItem } from '@/api/system/consul'
+import { consulServiceItem, consulServiceDeleteItem } from '@/api/system/consul'
 
 export default {
   props: {
@@ -58,7 +58,6 @@ export default {
       this.loading = true
       this.$emit('create') // for test
       consulServiceItem(this.activeName).then(response => {
-        console.log(response.data)
         this.list = response.data
         setTimeout(() => {
           this.loading = false

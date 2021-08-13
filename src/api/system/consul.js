@@ -15,6 +15,13 @@ export function consulServiceItem(data) {
   })
 }
 
+export function consulSelf() {
+  return request({
+    url: requestBase + '/Consul/ConsulSelf',
+    method: 'get',
+  })
+}
+
 export function consulServiceDeleteItem(data) {
   return request({
     url: requestBase + '/Consul/ConsulServiceDeleteItem?serviceId=' + data,

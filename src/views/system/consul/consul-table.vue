@@ -1,11 +1,14 @@
 <template>
   <div class="tab-container">
-    <el-tag>mounted times ：{{ createdTimes }}</el-tag>
-    <el-alert :closable="false" style="width:200px;display:inline-block;vertical-align: middle;margin-left:30px;" title="Tab with keep-alive" type="success" />
+    <div style="margin-bottom:20px; color:#909399;">Consul基础配置：</div>
+    <el-tag style="margin:0px 10px;">数据中心 ：【{{ config.datacenter }}】</el-tag>
+    <el-tag style="margin-right:10px;">主数据中心 ：【{{ config.primaryDatacenter }}】</el-tag>
+    <el-tag style="margin-right:10px;">节点 ：【{{ config.nodeName }}】</el-tag>
+    <el-tag style="margin-right:10px;">版本 ：【{{ config.version }}】</el-tag>
     <el-tabs v-model="activeName" style="margin-top:15px;" type="border-card">
       <el-tab-pane v-for="item in tabMapOptions" :key="item.key" :label="item.label" :name="item.key">
         <keep-alive>
-          <tab-pane v-if="activeName==item.key" :activeName="activeName" @create="showCreatedTimes" />
+          <tab-pane v-if="activeName==item.key" :activeName="activeName" />
         </keep-alive>
       </el-tab-pane>
     </el-tabs>
@@ -14,7 +17,7 @@
 
 <script>
 import TabPane from './components/TabPane'
-import { consulServices } from '@/api/system/consul'
+import { consulServices, consulSelf } from '@/api/system/consul'
 
 export default {
   name: 'ConsulTable',
@@ -22,10 +25,11 @@ export default {
   data() {
     return {
       tabMapOptions: [ ],
-      tabMapItem: 
-      { 
-        label: '',
-        key: '' 
+      config: {
+        datacenter: '',
+        primaryDatacenter: '',
+        nodeName: '',
+        version: ''
       },
       activeName: '',
       createdTimes: 0
@@ -37,12 +41,10 @@ export default {
     }
   },
   created() {
+    this.getConsulSelf()
     this.getList()
   },
   methods: {
-    showCreatedTimes() {
-      this.createdTimes = this.createdTimes + 1
-    },
     // 获取services列表
     getList() {
       this.listLoading = true
@@ -65,6 +67,12 @@ export default {
         setTimeout(() => {
           this.listLoading = false
         }, 1.5 * 1000)
+      })
+    },
+    // 获取Consul基础配置
+    getConsulSelf() {
+      consulSelf().then(response => {
+        this.config = response.data.config
       })
     }
   }
