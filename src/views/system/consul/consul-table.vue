@@ -49,7 +49,17 @@ export default {
       consulServices().then(response => {
         this.activeName = response.data[0]
         response.data.forEach((item, index) => {
-          this.tabMapOptions.push({label: item, key: item})
+          let servicesName = ''
+          if(item == 'AdminApi') {
+            servicesName = '后台服务' 
+          }
+          if(item == 'ApiGateway') {
+            servicesName = '网关服务' 
+          }
+          if(item == 'IdentityServer4') {
+            servicesName = '授权服务' 
+          }
+          this.tabMapOptions.push({label: servicesName, key: item})
         })
         // Just to simulate the time of the request
         setTimeout(() => {

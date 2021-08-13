@@ -14,3 +14,11 @@ export function consulServiceItem(data) {
     method: 'get',
   })
 }
+
+export function consulServiceDeleteItem(data) {
+  return request({
+    url: requestBase + '/Consul/ConsulServiceDeleteItem?serviceId=' + data,
+    method: 'put',
+  })
+}
+
