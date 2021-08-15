@@ -1,11 +1,18 @@
 import request from '@/utils/request'
 import requestBase from '@/api/request-base'
 
-export function getPageData(data) {
+export function getModules() {
   return request({
-    url: requestBase + '/SystemConfiguration/GetPageData',
-    method: 'post',
-    data
+    url: requestBase + '/User/GetModules',
+    method: 'get'
+  })
+}
+
+export function getModulesTree(data) {
+  return request({
+    url: requestBase + '/User/GetModulesTree',
+    method: 'get',
+    params: data
   })
 }
 
