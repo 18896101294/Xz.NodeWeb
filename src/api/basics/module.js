@@ -16,16 +16,16 @@ export function getModulesTree(data) {
   })
 }
 
-export function getAllCategory() {
-    return request({
-      url: requestBase + '/SystemConfiguration/GetAllCategory',
-      method: 'get'
-    })
-  }
-
-export function createArticle(data) {
+export function getModulesName() {
   return request({
-    url: requestBase + '/SystemConfiguration/Edit',
+    url: requestBase + '/User/GetModulesName',
+    method: 'get'
+  })
+}
+
+export function createModule(data) {
+  return request({
+    url: requestBase + '/Module/Add',
     method: 'post',
     data
   })

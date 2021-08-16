@@ -114,7 +114,6 @@
             <el-form-item label="排序：" prop="sortNo">
               <el-input v-model="temp.sortNo" clearable min="0" type="number" placeholder="请输入顺序号" />
             </el-form-item>
-           
           </el-col>
         </el-row>
         <el-row>
@@ -125,7 +124,17 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="上级：">
-              <el-input v-model="temp.parentName" clearable placeholder="请输入Url" />
+              <!-- <el-select v-model="temp.parentName" clearable placeholder="请选择">
+                <el-option v-for="item in allModule" :key="item.value" :label="item.label" :value="item.value"></el-option>
+              </el-select> -->
+              <selectTree
+               :props="props"
+               :options="options"
+               :value="temp.parentId || '0'"
+               :clearable="isClearable"
+               :accordion="isAccordion"
+               @getValue="selectTreeGetValue($event)"
+               />
             </el-form-item>
           </el-col>
         </el-row>
@@ -145,23 +154,24 @@
 
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">确定</el-button>
+        <el-button type="primary" @click="dialogStatus==='create'?createModule():updateData()">确定</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getModules, getModulesTree, createArticle, updateArticle, deleteArticle, uploadArticle } from '@/api/basics/module'
+import { getModules, getModulesTree, getModulesName, createModule, updateArticle, deleteArticle, uploadArticle } from '@/api/basics/module'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import SelectTree from '@/components/SelectTree'
 import ConditionOper from '@/utils/condition'
 import { getToken } from '@/utils/auth'
 
 export default {
   name: 'ModuleTable',
-  components: { Pagination },
+  components: { Pagination, SelectTree},
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -175,9 +185,22 @@ export default {
   data() {
     return {
       tableKey: 0,
-      list: null,
+      list: [],
       elements: [],
       total: 0,
+      //自定义主键配置
+      isClearable: true,      // 可清空（可选）
+      isAccordion: true,      // 可收起（可选）
+      valueId: '0',          // 初始ID（可选）
+      props:{                // 配置项（必选）
+        value: 'id',
+        label: 'name',
+        children: 'children',
+        // disabled:true
+      },
+      options:[],
+
+      selectParentId: '',
       listLoading: true,
       moduleQuery: {
         parentId: null
@@ -216,6 +239,7 @@ export default {
   },
   created() {
     this.getModulesTree()
+    this.getModulesName()
   },
   // 挂载window.onresize事件
   mounted() {
@@ -249,7 +273,6 @@ export default {
     },
     // 查询
     getModulesTree(isRefresh) {
-      console.log(isRefresh)
       if(isRefresh) {
         this.$refs.multipleTable.clearSelection()
         this.elements = null
@@ -264,6 +287,38 @@ export default {
       })
       this.getTableHeight()
     },
+
+    //获取节点下拉框
+    getModulesName(){
+       getModulesName().then(response => {
+        let fatherData = {
+          id: '0',
+          name: '根节点',
+          parentId: '',
+          children: []
+        }
+        fatherData.children = this.treeData(response.data, 'id', 'parentId', 'children')
+        this.options.push(fatherData)
+      })
+    },
+
+    treeData(source, id, parentId, children){  
+      let cloneData = JSON.parse(JSON.stringify(source))
+      return cloneData.filter(father=>{
+        let branchArr = cloneData.filter(child => father[id] == child[parentId]);
+        branchArr.length>0 ? father[children] = branchArr : ''
+        return father[parentId] == ''    // 如果第一层不是parentId=0，请自行修改
+      })
+    },
+    //获取树形下拉框选中的值
+    selectTreeGetValue(value) {
+      console.log(value)
+      this.selectParentId = value
+      if(value == '0') {
+        this.selectParentId = ''
+      }
+    },
+
     load(tree, treeNode, resolve) {
       this.moduleQuery.parentId = tree.id
         getModulesTree(this.moduleQuery).then(response => {
@@ -282,6 +337,7 @@ export default {
       this.$refs.dmoMultipleTable.clearSelection()
       this.$refs.dmoMultipleTable.toggleRowSelection(val)
     },
+
     resetTemp() {
       this.temp = {
         id: undefined,
@@ -289,7 +345,8 @@ export default {
         appSecret: '',
         createTime: new Date(),
         icon: '',
-        disable: true
+        disable: true,
+        parentId: ''
       }
     },
     handleCreate() {
@@ -302,10 +359,11 @@ export default {
     },
 
     // 添加
-    createData() {
+    createModule() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          createArticle(this.temp).then(response => {
+          this.temp.parentId = this.selectParentId
+          createModule(this.temp).then(response => {
             this.dialogFormVisible = false
             this.$notify({
               message: response.message, type: 'success'
@@ -335,6 +393,11 @@ export default {
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
+          this.temp.parentId = this.selectParentId
+          console.log(this.temp)
+          console.log(this.selectParentId)
+
+          return
           const tempData = Object.assign({}, this.temp)
           updateArticle(tempData).then(response => {
             const index = this.list.findIndex(v => v.id === this.temp.id)
