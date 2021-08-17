@@ -33,7 +33,7 @@ export function createModule(data) {
 
 export function updateArticle(data) {
   return request({
-    url: requestBase + '/SystemConfiguration/Edit',
+    url: requestBase + '/Module/Update',
     method: 'post',
     data
   })
@@ -41,7 +41,7 @@ export function updateArticle(data) {
 
 export function deleteArticle(data) {
   return request({
-    url: requestBase + '/SystemConfiguration/Delete',
+    url: requestBase + '/Module/Delete',
     method: 'post',
     data
   })

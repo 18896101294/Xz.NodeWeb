@@ -8,10 +8,10 @@
           <el-button v-waves class="filter-item" size="small" type="primary" icon="el-icon-search" @click="getModulesTree(true)">刷新</el-button>
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">添加</el-button>
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleUpdate">修改</el-button>
-          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleBachDelete">删除</el-button>
+          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleDelete">删除</el-button>
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">添加菜单</el-button>
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">修改菜单</el-button>
-          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleBachDelete">删除菜单</el-button>
+          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleDelete">删除菜单</el-button>
         </div>
       </el-form>
     </div>
@@ -91,15 +91,15 @@
     </el-row>
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="40%">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="90px" >
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="110px" >
         <el-row>
           <el-col :span="12">
-            <el-form-item label="名称：" prop="name">
+            <el-form-item label="模块名称：" prop="name">
               <el-input v-model="temp.name" clearable placeholder="请输入名称" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="标识：" prop="code">
+            <el-form-item label="模块标识：" prop="code">
               <el-input v-model="temp.code" clearable placeholder="请输入标识" />
             </el-form-item>
           </el-col>
@@ -124,9 +124,6 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="上级：">
-              <!-- <el-select v-model="temp.parentName" clearable placeholder="请选择">
-                <el-option v-for="item in allModule" :key="item.value" :label="item.label" :value="item.value"></el-option>
-              </el-select> -->
               <selectTree
                :props="props"
                :options="options"
@@ -161,13 +158,10 @@
 </template>
 
 <script>
-import { getModules, getModulesTree, getModulesName, createModule, updateArticle, deleteArticle, uploadArticle } from '@/api/basics/module'
+import { getModules, getModulesTree, getModulesName, createModule, updateArticle, deleteArticle } from '@/api/basics/module'
 import waves from '@/directive/waves' // waves directive
-import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import SelectTree from '@/components/SelectTree'
-import ConditionOper from '@/utils/condition'
-import { getToken } from '@/utils/auth'
 
 export default {
   name: 'ModuleTable',
@@ -239,7 +233,6 @@ export default {
   },
   created() {
     this.getModulesTree()
-    this.getModulesName()
   },
   // 挂载window.onresize事件
   mounted() {
@@ -277,6 +270,7 @@ export default {
         this.$refs.multipleTable.clearSelection()
         this.elements = null
         this.moduleQuery.parentId = null
+        this.tableKey = this.tableKey == 1 ? 0 : 1
       }
       this.listLoading = true
       getModulesTree(this.moduleQuery).then(response => {
@@ -290,6 +284,7 @@ export default {
 
     //获取节点下拉框
     getModulesName(){
+       this.options = []
        getModulesName().then(response => {
         let fatherData = {
           id: '0',
@@ -312,7 +307,6 @@ export default {
     },
     //获取树形下拉框选中的值
     selectTreeGetValue(value) {
-      console.log(value)
       this.selectParentId = value
       if(value == '0') {
         this.selectParentId = ''
@@ -350,6 +344,7 @@ export default {
       }
     },
     handleCreate() {
+      this.getModulesName()
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
@@ -368,13 +363,14 @@ export default {
             this.$notify({
               message: response.message, type: 'success'
             })
-            this.list.unshift(response.data)
+            this.getModulesTree(true)
           })
         }
       })
     },
 
     handleUpdate(row) {
+      this.getModulesName()
       if (this.multipleSelection != null) {
         this.temp = Object.assign({}, this.multipleSelection) // copy obj
         this.dialogStatus = 'update'
@@ -394,10 +390,6 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           this.temp.parentId = this.selectParentId
-          console.log(this.temp)
-          console.log(this.selectParentId)
-
-          return
           const tempData = Object.assign({}, this.temp)
           updateArticle(tempData).then(response => {
             const index = this.list.findIndex(v => v.id === this.temp.id)
@@ -406,24 +398,26 @@ export default {
             this.$notify({
               message: response.message, type: 'success'
             })
+            this.getModulesTree(true)
           })
         }
       })
     },
-    // 批量删除
-    handleBachDelete() {
+    // 删除
+    handleDelete() {
       if (this.multipleSelection) {
         this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          const deleteIds = this.multipleSelection.map(item => item.id)
-          deleteArticle(deleteIds).then(response => {
+          const deleteId = this.multipleSelection.id
+          deleteArticle({id: deleteId}).then(response => {
             this.$notify({
               message: response.message, type: 'success'
             })
-            this.getList()
+            this.tableKey = this.tableKey == 1 ? 0 : 1
+            this.getModulesTree(true)
           })
         }).catch(() => {
           this.$notify({
