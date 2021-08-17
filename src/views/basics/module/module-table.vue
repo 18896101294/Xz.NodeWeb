@@ -46,6 +46,9 @@
 
           <!-- <el-table-column label="ID" prop="row.item.id" align="center" width="300px" />  -->
           <el-table-column label="模块图标" align="center" prop="iconName" min-width="100px" >
+            <template slot-scope="{row}">
+              <i style="font-size:25px" :class="row.iconName" />
+            </template>
           </el-table-column>
 
         </el-table>
@@ -106,24 +109,26 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="Url：">
+            <el-form-item label="模块Url：">
               <el-input v-model="temp.url" clearable placeholder="请输入Url" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="排序：" prop="sortNo">
+            <el-form-item label="模块排序：" prop="sortNo">
               <el-input v-model="temp.sortNo" clearable min="0" type="number" placeholder="请输入顺序号" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="图标：">
-              <el-input v-model="temp.iconName" clearable placeholder="请输入图标" />
+            <el-form-item label="模块图标：">
+              <el-input placeholder="请选择图标" v-model="temp.iconName" >
+                <el-button slot="append" icon="el-icon-search" @click="changeIcon"></el-button>
+              </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="上级：">
+            <el-form-item label="模块上级：">
               <selectTree
                :props="props"
                :options="options"
@@ -154,6 +159,10 @@
         <el-button type="primary" @click="dialogStatus==='create'?createModule():updateData()">确定</el-button>
       </div>
     </el-dialog>
+
+    <el-dialog title="图标" :visible.sync="dialogIconFormVisible" class="abow_dialog">
+      <IconsView @getIcomText="getIcomText" />
+    </el-dialog>
   </div>
 </template>
 
@@ -162,10 +171,11 @@ import { getModules, getModulesTree, getModulesName, createModule, updateArticle
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import SelectTree from '@/components/SelectTree'
+import IconsView from '@/views/icons/index'
 
 export default {
   name: 'ModuleTable',
-  components: { Pagination, SelectTree},
+  components: { Pagination, SelectTree, IconsView},
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -214,6 +224,7 @@ export default {
         parentName: ''
       },
       dialogFormVisible: false,
+      dialogIconFormVisible: false,
       dialogStatus: '',
       textMap: {
         update: '修改',
@@ -332,6 +343,15 @@ export default {
       this.$refs.dmoMultipleTable.toggleRowSelection(val)
     },
 
+    //选择图标
+    changeIcon() {
+      this.dialogIconFormVisible = true
+    },
+    //获取图标值
+    getIcomText(text) {
+      this.dialogIconFormVisible = false
+      this.temp.iconName = text
+    },
     resetTemp() {
       this.temp = {
         id: undefined,
@@ -433,3 +453,28 @@ export default {
   }
 }
 </script>
+
+<style>
+  .abow_dialog {
+    display: flex;
+    justify-content: center;
+    align-items: Center;
+    overflow: hidden;
+  }
+  .abow_dialog .el-dialog {
+    margin: 0 auto !important;
+    height: 90%;
+    overflow: hidden;
+  }
+  .abow_dialog .el-dialog .el-dialog__body {
+    position: absolute;
+    left: 0;
+    top: 54px;
+    bottom: 0;
+    right: 0;
+    padding: 0;
+    z-index: 1;
+    overflow: hidden;
+    overflow-y: auto;
+  }
+</style>

@@ -1,13 +1,13 @@
 <template>
   <div class="icons-container">
-    <aside>
+    <!-- <aside>
       <a href="https://panjiachen.github.io/vue-element-admin-site/guide/advanced/icon.html" target="_blank">Add and use
       </a>
-    </aside>
+    </aside> -->
     <el-tabs type="border-card">
       <el-tab-pane label="Icons">
         <div class="grid">
-          <div v-for="item of svgIcons" :key="item" @click="handleClipboard(generateIconCode(item),$event)">
+          <div v-for="item of svgIcons" :key="item" @click="handleClipboard(item,$event)">
             <el-tooltip placement="top">
               <div slot="content">
                 {{ generateIconCode(item) }}
@@ -22,7 +22,7 @@
       </el-tab-pane>
       <el-tab-pane label="Element-UI Icons">
         <div class="grid">
-          <div v-for="item of elementIcons" :key="item" @click="handleClipboard(generateElementIconCode(item),$event)">
+          <div v-for="item of elementIcons" :key="item" @click="handleClipboard(item,$event)">
             <el-tooltip placement="top">
               <div slot="content">
                 {{ generateElementIconCode(item) }}
@@ -60,7 +60,8 @@ export default {
       return `<i class="el-icon-${symbol}" />`
     },
     handleClipboard(text, event) {
-      clipboard(text, event)
+      this.$emit('getIcomText','el-icon-'+text)
+      // clipboard(text, event)
     }
   }
 }
