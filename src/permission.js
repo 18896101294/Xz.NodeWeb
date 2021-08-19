@@ -15,12 +15,11 @@ router.beforeEach(async(to, from, next) => {
   NProgress.start()
 
   // set page title
-  console.log(to.meta.title)
-  console.log(getPageTitle(to.meta.title))
 
   document.title = getPageTitle(to.meta.title)
 
-  // determine whether the user has logged in
+  console.log(router.options.routes)
+
   const hasToken = getToken()
 
   if (hasToken) {
@@ -31,20 +30,21 @@ router.beforeEach(async(to, from, next) => {
     } else {
       // determine whether the user has obtained his permission roles through getInfo
       const hasRoles = store.getters.roles && store.getters.roles.length > 0
+      console.log(hasRoles)
       if (hasRoles) {
-        next()
+        if (to.matched.length === 0) {
+          next('/404') // 判断此跳转路由的来源路由是否存在，存在的情况跳转到来源路由，否则跳转到404页面
+        }
+        next() // 如果匹配到正确跳转
       } else {
         try {
           // get user info
           // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
           const { roles } = await store.dispatch('user/getInfo')
-
           // generate accessible routes map based on roles
           const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
-
           // dynamically add accessible routes
           router.addRoutes(accessRoutes)
-
           // hack method to ensure that addRoutes is complete
           // set the replace: true, so the navigation will not leave a history record
           next({ ...to, replace: true })

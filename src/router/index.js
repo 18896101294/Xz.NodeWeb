@@ -486,7 +486,6 @@ export function filterAsyncRouter(asyncRouterMap) {
   let routerDatas = constantRoutes
   asyncRouterMap.filter(route => {
     let routeItem = route.item;
-    
     if (route.children && route.children.length > 0) {
       let routerData = {
         path: routeItem.url,
@@ -495,12 +494,13 @@ export function filterAsyncRouter(asyncRouterMap) {
         name: routeItem.code,
         meta: {
           title: routeItem.name,
-          icon: routeItem.iconName
+          icon: routeItem.iconName,
+          roles: routeItem.roles
         },
         children: []
       }
       route.children.forEach((routeChildren, index) => {
-        let routeChildrenItem = routeChildren.item;
+        let routeChildrenItem = routeChildren.item
         let addChildren = {
           path: routeChildrenItem.url,
           // component: () => import('@/views' + routeChildrenItem.url.replace('/:id','')),
@@ -510,7 +510,8 @@ export function filterAsyncRouter(asyncRouterMap) {
           name: routeChildrenItem.code,
           meta: {
             title: routeChildrenItem.name,
-            icon: routeChildrenItem.iconName
+            icon: routeChildrenItem.iconName,
+            roles: routeChildrenItem.roles
           }
         }
         routerData.children.push(addChildren)
