@@ -53,7 +53,7 @@
       </el-button>
 
       <div style="position:relative">
-        <div class="tips">
+        <!-- <div class="tips">
           <span>{{ $t('login.username') }} : admin</span>
           <span>{{ $t('login.password') }} : {{ $t('login.any') }}</span>
         </div>
@@ -62,11 +62,11 @@
             {{ $t('login.username') }} : editor
           </span>
           <span>{{ $t('login.password') }} : {{ $t('login.any') }}</span>
-        </div>
+        </div> -->
 
-        <el-button class="thirdparty-button" type="primary" @click="showDialog=true">
+        <!-- <el-button class="thirdparty-button" type="primary" @click="showDialog=true">
           {{ $t('login.thirdparty') }}
-        </el-button>
+        </el-button> -->
       </div>
     </el-form>
 
@@ -84,6 +84,9 @@
 import { validUsername } from '@/utils/validate'
 import LangSelect from '@/components/LangSelect'
 import SocialSign from './components/SocialSignin'
+import { getUserModulesTree } from '@/api/user';
+import router from "@/router";
+import {  resetRouter, filterAsyncRouter } from "@/router/index";
 
 export default {
   name: 'Login',
@@ -166,8 +169,11 @@ export default {
           this.loading = true
           this.$store.dispatch('user/login', this.loginForm)
             .then(() => {
-              this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
-              this.loading = false
+              this.GetNavigationBar()
+              setTimeout(() => {
+                this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
+                this.loading = false
+              }, 1000);
             })
             .catch(() => {
               this.loading = false
@@ -185,7 +191,31 @@ export default {
         }
         return acc
       }, {})
-    }
+    },
+    // 获取路由树
+    GetNavigationBar() {
+      getUserModulesTree().then((res) => {
+        let getRouter = res.data //后台拿到路由
+        getRouter = filterAsyncRouter(getRouter) //过滤路由
+        router.addRoutes(getRouter) //动态添加路由
+        this.$router.replace(
+          this.$route.query.redirect ? this.$route.query.redirect : "/"
+        )
+        // if (this.checked) {
+        //   let data = {
+        //     account: _this.ruleForm2.account,
+        //     checkPass: _this.ruleForm2.checkPass,
+        //     checked: _this.checked,
+        //   }
+        //   localStorage.setItem(
+        //     "remember",
+        //     Base64.encode(JSON.stringify(data))
+        //   )
+        // } else {
+        //   localStorage.removeItem("remember")
+        // }
+      })
+    },
     // afterQRScan() {
     //   if (e.key === 'x-admin-oauth-code') {
     //     const code = getQueryObject(e.newValue)

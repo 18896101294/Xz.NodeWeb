@@ -84,18 +84,6 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/adminInterface',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/admin-interface/index'),
-        name: 'AdminInterface',
-        meta: { title: 'adminInterface', icon: 'documentation', affix: true }
-      }
-    ]
-  },
-  {
     path: '/guide',
     component: Layout,
     redirect: '/guide/index',
@@ -128,7 +116,21 @@ export const constantRoutes = [
  * asyncRoutes
  * the routes that need to be dynamically loaded based on user roles
  */
-export const asyncRoutes = [
+ export const asyncRoutes = []
+
+export const asyncRoutes1 = [
+  {
+    path: '/adminInterface',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/admin-interface/index'),
+        name: 'AdminInterface',
+        meta: { title: 'adminInterface', icon: 'documentation'}
+      }
+    ]
+  },
   {
     path: '/basics',
     component: Layout,
@@ -478,6 +480,60 @@ const router = createRouter()
 export function resetRouter() {
   const newRouter = createRouter()
   router.matcher = newRouter.matcher // reset router
+}
+
+export function filterAsyncRouter(asyncRouterMap) {
+  let routerDatas = constantRoutes
+  asyncRouterMap.filter(route => {
+    let routeItem = route.item;
+    
+    if (route.children && route.children.length > 0) {
+      let routerData = {
+        path: routeItem.url,
+        component: Layout,
+        alwaysShow: true, // 总是显示根菜单
+        name: routeItem.code,
+        meta: {
+          title: routeItem.name,
+          icon: routeItem.iconName
+        },
+        children: []
+      }
+      route.children.forEach((routeChildren, index) => {
+        let routeChildrenItem = routeChildren.item;
+        let addChildren = {
+          path: routeChildrenItem.url,
+          // component: () => import('@/views' + routeChildrenItem.url.replace('/:id','')),
+          component: function component(resolve) {
+            require(["@/views" + routeChildrenItem.url], resolve);
+          },
+          name: routeChildrenItem.code,
+          meta: {
+            title: routeChildrenItem.name,
+            icon: routeChildrenItem.iconName
+          }
+        }
+        routerData.children.push(addChildren)
+      })
+      routerDatas.push(routerData)
+    } else {
+      routerDatas.push({
+        path: routeItem.url,
+        component: Layout,
+        children: [{
+          path: routeItem.url,
+          component: function component(resolve) {
+            require(["@/views" + routeItem.url], resolve);
+          },
+          name: routeItem.code,
+          meta: { title: routeItem.name, icon: routeItem.iconName}
+        }]
+      })
+    }
+  })
+  // routerDatas = routerDatas.concat(constantRoutes)
+  window.localStorage.router = JSON.stringify(routerDatas)
+  return routerDatas
 }
 
 export default router
