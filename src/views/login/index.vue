@@ -51,7 +51,6 @@
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">
         {{ $t('login.logIn') }}
       </el-button>
-
       <div style="position:relative">
         <!-- <div class="tips">
           <span>{{ $t('login.username') }} : admin</span>
@@ -80,6 +79,7 @@
   </div>
 </template>
 
+<script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
 <script>
 import { validUsername } from '@/utils/validate'
 import LangSelect from '@/components/LangSelect'

@@ -41,11 +41,14 @@
           <el-table-column label="模块标识" align="center" prop="code" min-width="100px">
           </el-table-column>
 
-          <el-table-column label="Url" min-width="80px" prop="url" align="center">
+          <el-table-column label="排序" min-width="40px" prop="sortNo" align="center">
+          </el-table-column>
+
+          <el-table-column label="Url" min-width="100px" prop="url" align="center">
           </el-table-column>
 
           <!-- <el-table-column label="ID" prop="row.item.id" align="center" width="300px" />  -->
-          <el-table-column label="模块图标" align="center" prop="iconName" min-width="100px" >
+          <el-table-column label="模块图标" align="center" prop="iconName" min-width="70px" >
             <template slot-scope="{row}">
               <i style="font-size:25px" :class="row.iconName" />
             </template>
@@ -97,12 +100,12 @@
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="110px" >
         <el-row>
           <el-col :span="12">
-            <el-form-item label="模块名称：" prop="name">
+            <el-form-item label="模块名称：">
               <el-input v-model="temp.name" clearable placeholder="请输入名称" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="模块标识：" prop="code">
+            <el-form-item label="模块标识：">
               <el-input v-model="temp.code" clearable placeholder="请输入标识" />
             </el-form-item>
           </el-col>
@@ -114,7 +117,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="模块排序：" prop="sortNo">
+            <el-form-item label="模块排序：">
               <el-input v-model="temp.sortNo" clearable min="0" type="number" placeholder="请输入顺序号" />
             </el-form-item>
           </el-col>
@@ -142,8 +145,8 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="层级：" prop="cascadeId">
-              <el-link :underline="false" type="primary" >{{ temp.cascadeId }}</el-link>
+            <el-form-item label="层级：">
+              <el-tag size="small">{{ temp.cascadeId }}</el-tag>
             </el-form-item>
           </el-col>
           <el-col :span="12">

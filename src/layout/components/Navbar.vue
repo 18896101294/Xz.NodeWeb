@@ -36,7 +36,7 @@
               {{ $t('navbar.dashboard') }}
             </el-dropdown-item>
           </router-link>
-          <a target="_blank" href="https://github.com/PanJiaChen/vue-element-admin/">
+          <a target="_blank" href="http://xznode.club:52788/swagger/index.html">
             <el-dropdown-item>
               {{ $t('navbar.github') }}
             </el-dropdown-item>
@@ -62,6 +62,7 @@ import Screenfull from '@/components/Screenfull'
 import SizeSelect from '@/components/SizeSelect'
 import LangSelect from '@/components/LangSelect'
 import Search from '@/components/HeaderSearch'
+import { resetRouter } from "@/router/index";
 
 export default {
   components: {
@@ -85,6 +86,7 @@ export default {
       this.$store.dispatch('app/toggleSideBar')
     },
     async logout() {
+      resetRouter()
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     }

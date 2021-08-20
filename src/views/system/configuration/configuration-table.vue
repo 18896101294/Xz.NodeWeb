@@ -81,30 +81,49 @@
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.pageIndex" :limit.sync="listQuery.pageSize" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="40%">
-      <el-form inline ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="90px" style="margin-left:50px;">
-        <el-form-item label="顺序号：">
-          <el-input v-model="temp.displayNo" min="0" type="number" placeholder="请输入顺序号" />
-        </el-form-item>
-
-        <el-form-item label="分类：" prop="category">
-          <el-input v-model="temp.category" placeholder="请输入分类" />
-        </el-form-item>
-
-        <el-form-item label="显示值：" prop="text">
-          <el-input v-model="temp.text" placeholder="请输入显示值" />
-        </el-form-item>
-
-        <el-form-item label="值：" prop="value">
-          <el-input v-model="temp.value" placeholder="请输入值" />
-        </el-form-item>
-
-        <el-form-item label="是否隐藏：" style="display:block">
-          <el-switch v-model="temp.isHide" active-color="#13ce66" inactive-color="#ff4949"></el-switch>  
-        </el-form-item>
-
-        <el-form-item class="my-el-form" label="备注：">
+      <el-form inline ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="90px">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="顺序号：">
+              <el-input v-model="temp.displayNo" min="0" type="number" clearable placeholder="请输入顺序号" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="分类：">
+              <el-input v-model="temp.category" clearable placeholder="请输入分类" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="显示值：">
+              <el-input v-model="temp.text" clearable placeholder="请输入显示值" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="值：">
+              <el-input v-model="temp.value" clearable placeholder="请输入值" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="是否隐藏：">
+              <el-switch v-model="temp.isHide" active-color="#13ce66" inactive-color="#ff4949"></el-switch>  
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="备注：" class="my-el-form">
+              <el-input v-model="temp.remark" type="textarea" placeholder="请输入备注" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        
+        <!-- <el-form-item class="my-el-form" label="备注：">
           <el-input v-model="temp.remark"  :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="请输入备注" />
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
 
       <div slot="footer" class="dialog-footer">
@@ -481,7 +500,7 @@ export default {
     width: 100%;
   }
   .my-el-form .el-form-item__content {
-    width: 70%;
+    width: 75%;
     /* display: block; */
   }
 </style>

@@ -61,6 +61,11 @@ export default {
     let accessRoutesData = JSON.parse(window.localStorage.router || '')
     let getRouter = filterAsyncRouter(accessRoutesData, true) //过滤路由
     this.my_permission_routes =  getRouter
+  },
+  beforeDestroy(){
+    console.log(this.my_permission_routes)
+    this.my_permission_routes = []
+    console.log(this.my_permission_routes)
   }
 }
 </script>

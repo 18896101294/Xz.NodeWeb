@@ -11,7 +11,7 @@ NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
 const whiteList = ['/login', '/auth-redirect'] // no redirect whitelist
 
-let accessRoutesData
+let accessRoutesData = null
 
 router.beforeEach(async(to, from, next) => {
   // start progress bar
@@ -39,12 +39,11 @@ router.beforeEach(async(to, from, next) => {
           const { roles } = await store.dispatch('user/getInfo')
           // generate accessible routes map based on roles
           // const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
-          console.log(accessRoutesData)
           if(accessRoutesData == null)
           {
             accessRoutesData = JSON.parse(window.localStorage.router || '')
             let getRouter = filterAsyncRouter(accessRoutesData, false) //过滤路由
-            // router.options.routes = getRouter
+            //router.options.routes = getRouter
             router.addRoutes(getRouter) //动态添加路由
           }
           // router.addRoutes(store.getters.routeDatas)
