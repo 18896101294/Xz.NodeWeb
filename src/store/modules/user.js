@@ -7,7 +7,8 @@ const state = {
   name: '',
   avatar: '',
   introduction: '',
-  roles: []
+  roles: [],
+  routeDatas: []
 }
 
 const mutations = {
@@ -25,6 +26,9 @@ const mutations = {
   },
   SET_ROLES: (state, roles) => {
     state.roles = roles
+  },
+  SET_ROUTERS: (state, routeDatas) => {
+    state.routeDatas = routeDatas
   }
 }
 
@@ -114,13 +118,17 @@ const actions = {
     resetRouter()
 
     // generate accessible routes map based on roles
-    const accessRoutes = await dispatch('permission/generateRoutes', roles, { root: true })
+    // const accessRoutes = await dispatch('permission/generateRoutes', roles, { root: true })
     // dynamically add accessible routes
-    router.addRoutes(accessRoutes)
-
+    // router.addRoutes(accessRoutes)
     // reset visited views and cached views
     dispatch('tagsView/delAllViews', null, { root: true })
-  }
+  },
+
+  setRouters({ commit }) {
+    commit('SET_ROUTERS')
+  },
+
 }
 
 export default {

@@ -5,23 +5,20 @@ import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
 import { getToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
+import {  resetRouter, filterAsyncRouter } from "@/router/index";
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
 const whiteList = ['/login', '/auth-redirect'] // no redirect whitelist
 
+let accessRoutesData
+
 router.beforeEach(async(to, from, next) => {
   // start progress bar
   NProgress.start()
-
   // set page title
-
   document.title = getPageTitle(to.meta.title)
-
-  console.log(router.options.routes)
-
   const hasToken = getToken()
-
   if (hasToken) {
     if (to.path === '/login') {
       // if is logged in, redirect to the home page
@@ -29,9 +26,8 @@ router.beforeEach(async(to, from, next) => {
       NProgress.done() // hack: https://github.com/PanJiaChen/vue-element-admin/pull/2939
     } else {
       // determine whether the user has obtained his permission roles through getInfo
-      const hasRoles = store.getters.roles && store.getters.roles.length > 0
-      console.log(hasRoles)
-      if (hasRoles) {
+      //router.beforeEach
+      if (store.getters.roles.length > 0) {
         if (to.matched.length === 0) {
           next('/404') // 判断此跳转路由的来源路由是否存在，存在的情况跳转到来源路由，否则跳转到404页面
         }
@@ -42,9 +38,16 @@ router.beforeEach(async(to, from, next) => {
           // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
           const { roles } = await store.dispatch('user/getInfo')
           // generate accessible routes map based on roles
-          const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
-          // dynamically add accessible routes
-          router.addRoutes(accessRoutes)
+          // const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
+          console.log(accessRoutesData)
+          if(accessRoutesData == null)
+          {
+            accessRoutesData = JSON.parse(window.localStorage.router || '')
+            let getRouter = filterAsyncRouter(accessRoutesData, false) //过滤路由
+            // router.options.routes = getRouter
+            router.addRoutes(getRouter) //动态添加路由
+          }
+          // router.addRoutes(store.getters.routeDatas)
           // hack method to ensure that addRoutes is complete
           // set the replace: true, so the navigation will not leave a history record
           next({ ...to, replace: true })
@@ -59,7 +62,6 @@ router.beforeEach(async(to, from, next) => {
     }
   } else {
     /* has no token*/
-
     if (whiteList.indexOf(to.path) !== -1) {
       // in the free login whitelist, go directly
       next()

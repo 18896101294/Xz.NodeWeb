@@ -24,6 +24,7 @@ import { mapGetters } from 'vuex'
 import Logo from './Logo'
 import SidebarItem from './SidebarItem'
 import variables from '@/styles/variables.scss'
+import { filterAsyncRouter } from "@/router/index";
 
 export default {
   components: { SidebarItem, Logo },
@@ -57,7 +58,9 @@ export default {
     }
   },
   created(){
-    this.my_permission_routes =  JSON.parse(window.localStorage.router || '')
+    let accessRoutesData = JSON.parse(window.localStorage.router || '')
+    let getRouter = filterAsyncRouter(accessRoutesData, true) //过滤路由
+    this.my_permission_routes =  getRouter
   }
 }
 </script>

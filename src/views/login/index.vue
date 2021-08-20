@@ -196,7 +196,8 @@ export default {
     GetNavigationBar() {
       getUserModulesTree().then((res) => {
         let getRouter = res.data //后台拿到路由
-        getRouter = filterAsyncRouter(getRouter) //过滤路由
+        window.localStorage.router = JSON.stringify(getRouter)
+        getRouter = filterAsyncRouter(getRouter, true) //过滤路由
         router.addRoutes(getRouter) //动态添加路由
         this.$router.replace(
           this.$route.query.redirect ? this.$route.query.redirect : "/"

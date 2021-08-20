@@ -482,8 +482,11 @@ export function resetRouter() {
   router.matcher = newRouter.matcher // reset router
 }
 
-export function filterAsyncRouter(asyncRouterMap) {
-  let routerDatas = constantRoutes
+export function filterAsyncRouter(asyncRouterMap, isFirst) {
+  let routerDatas = []
+  if(isFirst){
+    routerDatas = constantRoutes
+  }
   asyncRouterMap.filter(route => {
     let routeItem = route.item;
     if (route.children && route.children.length > 0) {
@@ -504,9 +507,10 @@ export function filterAsyncRouter(asyncRouterMap) {
         let addChildren = {
           path: routeChildrenItem.url,
           // component: () => import('@/views' + routeChildrenItem.url.replace('/:id','')),
-          component: function component(resolve) {
-            require(["@/views" + routeChildrenItem.url], resolve);
-          },
+          component: (resolve) => require(['@/views'+ routeChildrenItem.url + '.vue'], resolve),
+          // component: function component(resolve) {
+          //   require(["@/views" + routeChildrenItem.url], resolve);
+          // },
           name: routeChildrenItem.code,
           meta: {
             title: routeChildrenItem.name,
@@ -516,24 +520,31 @@ export function filterAsyncRouter(asyncRouterMap) {
         }
         routerData.children.push(addChildren)
       })
-      routerDatas.push(routerData)
+      if(routerDatas.findIndex(item => item.path === routeItem.url) < 0) {
+        routerDatas.push(routerData)
+      }
     } else {
-      routerDatas.push({
-        path: routeItem.url,
-        component: Layout,
-        children: [{
+      if(routerDatas.findIndex(item => item.path === routeItem.url) < 0) {
+        routerDatas.push({
           path: routeItem.url,
-          component: function component(resolve) {
-            require(["@/views" + routeItem.url], resolve);
-          },
-          name: routeItem.code,
-          meta: { title: routeItem.name, icon: routeItem.iconName}
-        }]
-      })
+          component: Layout,
+          children: [{
+            path: routeItem.url,
+            // component: () => import('@/views' + routeItem.url.replace('/:id','')),
+            component: (resolve) => require(['@/views'+ routeItem.url + '.vue'], resolve),
+            // component: function component(resolve) {
+            //   require(["@/views" + routeItem.url], resolve);
+            // },
+            name: routeItem.code,
+            meta: { title: routeItem.name, icon: routeItem.iconName}
+          }]
+        })
+      }
     }
   })
   // routerDatas = routerDatas.concat(constantRoutes)
-  window.localStorage.router = JSON.stringify(routerDatas)
+  // window.localStorage.router = JSON.stringify(routerDatas)
+  // this.$store.dispatch('setRouters')
   return routerDatas
 }
 
