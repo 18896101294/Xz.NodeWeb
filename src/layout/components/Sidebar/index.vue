@@ -24,13 +24,13 @@ import { mapGetters } from 'vuex'
 import Logo from './Logo'
 import SidebarItem from './SidebarItem'
 import variables from '@/styles/variables.scss'
-import { filterAsyncRouter } from "@/router/index";
+import { filterAsyncRouter, constantRoutes } from "@/router/index";
 
 export default {
   components: { SidebarItem, Logo },
   computed: {
     ...mapGetters([
-      'permission_routes',
+      // 'permission_routes',
       'sidebar'
     ]),
     activeMenu() {
@@ -59,13 +59,12 @@ export default {
   },
   created(){
     let accessRoutesData = JSON.parse(window.localStorage.router || '')
-    let getRouter = filterAsyncRouter(accessRoutesData, true) //过滤路由
-    this.my_permission_routes =  getRouter
-  },
-  beforeDestroy(){
-    console.log(this.my_permission_routes)
-    this.my_permission_routes = []
-    console.log(this.my_permission_routes)
+    let setRouter = constantRoutes
+    let changeRouter = filterAsyncRouter(accessRoutesData) //过滤路由
+    setRouter = setRouter.concat(changeRouter)
+    this.my_permission_routes = setRouter
+    // let getRouter = filterAsyncRouter(accessRoutesData) //过滤路由
+    // this.my_permission_routes = getRouter
   }
 }
 </script>

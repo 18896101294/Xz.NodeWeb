@@ -86,7 +86,7 @@ import LangSelect from '@/components/LangSelect'
 import SocialSign from './components/SocialSignin'
 import { getUserModulesTree } from '@/api/user';
 import router from "@/router";
-import {  resetRouter, filterAsyncRouter } from "@/router/index";
+import {  resetRouter, filterAsyncRouter, constantRoutes } from "@/router/index";
 
 export default {
   name: 'Login',
@@ -197,8 +197,11 @@ export default {
       getUserModulesTree().then((res) => {
         let getRouter = res.data //后台拿到路由
         window.localStorage.router = JSON.stringify(getRouter)
-        getRouter = filterAsyncRouter(getRouter, true) //过滤路由
-        router.addRoutes(getRouter) //动态添加路由
+        router.options.routes = []
+        let setRouter = constantRoutes
+        let changeRouter = filterAsyncRouter(getRouter) //过滤路由
+        setRouter = setRouter.concat(changeRouter)
+        router.addRoutes(setRouter) //动态添加路由
         this.$router.replace(
           this.$route.query.redirect ? this.$route.query.redirect : "/"
         )

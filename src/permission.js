@@ -5,7 +5,7 @@ import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
 import { getToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
-import {  resetRouter, filterAsyncRouter } from "@/router/index";
+import {  resetRouter, filterAsyncRouter, constantRoutes } from "@/router/index";
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
@@ -42,9 +42,14 @@ router.beforeEach(async(to, from, next) => {
           if(accessRoutesData == null)
           {
             accessRoutesData = JSON.parse(window.localStorage.router || '')
-            let getRouter = filterAsyncRouter(accessRoutesData, false) //过滤路由
-            //router.options.routes = getRouter
-            router.addRoutes(getRouter) //动态添加路由
+            let setRouter = constantRoutes
+            let changeRouter = filterAsyncRouter(accessRoutesData) //过滤路由
+            setRouter = setRouter.concat(changeRouter)
+            router.options.routes = []
+            router.addRoutes(setRouter) //动态添加路由
+            // let getRouter = filterAsyncRouter(accessRoutesData) //过滤路由
+            // //router.options.routes = getRouter
+            // router.addRoutes(getRouter) //动态添加路由
           }
           // router.addRoutes(store.getters.routeDatas)
           // hack method to ensure that addRoutes is complete

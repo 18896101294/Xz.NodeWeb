@@ -482,11 +482,8 @@ export function resetRouter() {
   router.matcher = newRouter.matcher // reset router
 }
 
-export function filterAsyncRouter(asyncRouterMap, isFirst) {
+export function filterAsyncRouter(asyncRouterMap) {
   let routerDatas = []
-  if(isFirst){
-    routerDatas = constantRoutes
-  }
   asyncRouterMap.filter(route => {
     let routeItem = route.item;
     if (route.children && route.children.length > 0) {
