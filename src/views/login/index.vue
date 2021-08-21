@@ -1,7 +1,7 @@
 <template>
   <div class="login-container">
+    <vue-canvas-nest :config="{ color: '0,0,255', opacity: 1, zIndex: -1, count: 150, }" ></vue-canvas-nest>
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on" label-position="left">
-
       <div class="title-container">
         <h3 class="title">
           {{ $t('login.title') }}
@@ -87,21 +87,23 @@ import SocialSign from './components/SocialSignin'
 import { getUserModulesTree } from '@/api/user';
 import router from "@/router";
 import {  resetRouter, filterAsyncRouter, constantRoutes } from "@/router/index";
+import axios from 'axios/index'
+import vueCanvasNest from 'vue-canvas-nest'
 
 export default {
   name: 'Login',
-  components: { LangSelect, SocialSign },
+  components: { LangSelect, SocialSign, vueCanvasNest },
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
+        callback(new Error('请输入正确的用户名'))
       } else {
         callback()
       }
     }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
+        callback(new Error('密码不能少于6位'))
       } else {
         callback()
       }
@@ -246,9 +248,9 @@ export default {
 /* 修复input 背景不协调 和光标变色 */
 /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 
-$bg:#283443;
-$light_gray:#fff;
-$cursor: #fff;
+$bg:#E3E3E3;
+$light_gray:rgb(0, 0, 0);
+$cursor: rgb(0, 0, 0);
 
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
   .login-container .el-input input {
@@ -278,11 +280,20 @@ $cursor: #fff;
         -webkit-text-fill-color: $cursor !important;
       }
     }
+    input::-webkit-input-placeholder {
+      color: rgb(255, 255, 255);
+    }
+    input::-moz-input-placeholder {
+      color: rgb(255, 255, 255);
+    }
+    input::-ms-input-placeholder {
+      color: rgb(255, 255, 255);
+    }
   }
 
   .el-form-item {
     border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.1);
+    background: #E3E3E3;
     border-radius: 5px;
     color: #454545;
   }
@@ -291,13 +302,13 @@ $cursor: #fff;
 
 <style lang="scss" scoped>
 $bg:#2d3a4b;
-$dark_gray:#889aa4;
-$light_gray:#eee;
+$dark_gray:#2d3a4b;
+$light_gray:#E3E3E3;
 
 .login-container {
   min-height: 100%;
   width: 100%;
-  background-color: $bg;
+  // background-color: $bg;
   overflow: hidden;
 
   .login-form {
@@ -338,10 +349,11 @@ $light_gray:#eee;
       margin: 0px auto 40px auto;
       text-align: center;
       font-weight: bold;
+      color: rgb(0, 0, 0);
     }
 
     .set-language {
-      color: #fff;
+      color: rgb(190, 190, 190);
       position: absolute;
       top: 3px;
       font-size: 18px;
