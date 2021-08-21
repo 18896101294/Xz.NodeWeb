@@ -52,23 +52,19 @@ const actions = {
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
       getInfo(state.token).then(response => {
-        const { data } = response
-
+        const  data = response.data
         if (!data) {
           reject('Verification failed, please Login again.')
         }
-
-        const { roles, name, avatar, introduction } = data
-
         // roles must be a non-empty array
-        if (!roles || roles.length <= 0) {
+        if (!data.roles || data.roles.length <= 0) {
           reject('getInfo: roles must be a non-null array!')
         }
 
-        commit('SET_ROLES', ['admin'])
-        commit('SET_NAME', name)
-        commit('SET_AVATAR', 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif')
-        commit('SET_INTRODUCTION', 'I am a super administrator')
+        commit('SET_ROLES', data.roles)
+        commit('SET_NAME', data.name)
+        commit('SET_AVATAR', data.avatar)
+        commit('SET_INTRODUCTION', 'I am a ' + data.name)
         resolve(data)
       }).catch(error => {
         reject(error)
