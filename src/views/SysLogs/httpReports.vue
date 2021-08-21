@@ -4,14 +4,14 @@
 
 <script>
 import iframeMixin from '@/utils/iframes/iframes-mixin'
-// 接口文档
+// 接口报表
 export default {
-  name: 'adminInterface',
+  name: 'HttpReports',
   // 1. 混入指定操作文件
   mixins: [iframeMixin],
   data() {
     // 2. 指定当前页面对应的 iframes id
-    return { PAGE_ID: 'admin_interface' }
+    return { PAGE_ID: 'httpReports' }
   }
 }
 </script>

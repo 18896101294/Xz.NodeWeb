@@ -5,12 +5,23 @@
         <router-view :key="key" />
       </keep-alive>
     </transition>
+    <Iframes v-if="iframesEnable" />
   </section>
 </template>
 
 <script>
+import { IFRAMES_ENABLE } from '@/utils/iframes/iframes-config'
+
 export default {
   name: 'AppMain',
+  components: {
+    Iframes: () => import('./Iframes')
+  },
+  data() {
+    return {
+      iframesEnable: IFRAMES_ENABLE
+    }
+  },
   computed: {
     cachedViews() {
       return this.$store.state.tagsView.cachedViews

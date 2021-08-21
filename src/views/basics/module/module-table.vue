@@ -207,7 +207,7 @@ export default {
       },
       options:[],
 
-      selectParentId: '',
+      selectParentId: '0',
       listLoading: true,
       moduleQuery: {
         parentId: null
@@ -412,7 +412,10 @@ export default {
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.temp.parentId = this.selectParentId
+          if(this.selectParentId != '0'){
+            this.temp.parentId = this.selectParentId
+            console.log(1)
+          }
           const tempData = Object.assign({}, this.temp)
           updateArticle(tempData).then(response => {
             const index = this.list.findIndex(v => v.id === this.temp.id)
@@ -439,7 +442,6 @@ export default {
             this.$notify({
               message: response.message, type: 'success'
             })
-            this.tableKey = this.tableKey == 1 ? 0 : 1
             this.getModulesTree(true)
           })
         }).catch(() => {
