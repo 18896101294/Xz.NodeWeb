@@ -1,7 +1,7 @@
 export default {
   route: {
     dashboard: 'トップ',
-    adminInterface: 'ドキュメント',
+    AdminInterface: 'ドキュメント',
     guide: 'ガイド',
     permission: '権限',
     rolePermission: '権限ロール',
@@ -45,6 +45,11 @@ export default {
     ConsulTable: 'Consul列表',
     ConfigurationTable: '系统配置',
     ModuleTable: '模块管理',
+    BasicsManager: '基础配置',
+    SystemManager: '系统管理',
+    Logs: 'Logs',
+    HttpReports: 'HttpReports',
+    SysLog: '系统日志',
     tab: 'Tab',
     form: 'フォーム',
     createArticle: '投稿作成',

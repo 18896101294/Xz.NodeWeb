@@ -493,7 +493,7 @@ export function filterAsyncRouter(asyncRouterMap) {
         alwaysShow: true, // 总是显示根菜单
         name: routeItem.code,
         meta: {
-          title: routeItem.name,
+          title: routeItem.code,
           icon: routeItem.iconName,
           roles: routeItem.roles
         },
@@ -510,7 +510,7 @@ export function filterAsyncRouter(asyncRouterMap) {
           // },
           name: routeChildrenItem.code,
           meta: {
-            title: routeChildrenItem.name,
+            title: routeChildrenItem.code,
             icon: routeChildrenItem.iconName,
             roles: routeChildrenItem.roles
           }
@@ -533,7 +533,7 @@ export function filterAsyncRouter(asyncRouterMap) {
             //   require(["@/views" + routeItem.url], resolve);
             // },
             name: routeItem.code,
-            meta: { title: routeItem.name, icon: routeItem.iconName}
+            meta: { title: routeItem.code, icon: routeItem.iconName}
           }]
         })
       }

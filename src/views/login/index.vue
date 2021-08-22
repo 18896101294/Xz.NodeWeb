@@ -203,6 +203,7 @@ export default {
         let setRouter = constantRoutes
         let changeRouter = filterAsyncRouter(getRouter) //过滤路由
         setRouter = setRouter.concat(changeRouter)
+        window.localStorage.setRouters = JSON.stringify(setRouter)
         router.addRoutes(setRouter) //动态添加路由
         this.$router.replace(
           this.$route.query.redirect ? this.$route.query.redirect : "/"

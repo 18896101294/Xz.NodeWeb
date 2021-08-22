@@ -37,6 +37,7 @@ export default {
   },
   computed: {
     routes() {
+      return JSON.parse(window.localStorage.setRouters || '')
       return this.$store.getters.permission_routes
     },
     lang() {
