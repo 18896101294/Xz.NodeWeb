@@ -6,7 +6,7 @@
 import iframeMixin from '@/utils/iframes/iframes-mixin'
 // 接口文档
 export default {
-  name: 'adminInterface',
+  name: 'AdminInterface',
   // 1. 混入指定操作文件
   mixins: [iframeMixin],
   data() {

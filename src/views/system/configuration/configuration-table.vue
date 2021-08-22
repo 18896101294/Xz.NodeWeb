@@ -241,6 +241,9 @@ export default {
     this.getList()
     this.getAllCategory()
   },
+  updated() {
+    this.getTableHeight()
+  },
   // 挂载window.onresize事件
   mounted() {
     const _this = this

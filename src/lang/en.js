@@ -43,6 +43,7 @@ export default {
     complexTable: 'Complex Table',
     TestTable: '测试列表',
     ConsulTable: 'Consul列表',
+    AdminInterface: '接口文档',
     ConfigurationTable: '系统配置',
     ModuleTable: '模块管理',
     tab: 'Tab',

@@ -229,6 +229,9 @@ export default {
   created() {
     this.getList()
   },
+  updated() {
+    this.getTableHeight()
+  },
   // 挂载window.onresize事件
   mounted() {
     const _this = this
@@ -271,7 +274,7 @@ export default {
         if (this.filterConditions[o].value !== '' && this.filterConditions[o].value !== null) {
           // 时间查询条件格式化处理
           if (this.filterConditions[o].dataType === 'DateTime') {
-            this.filterConditions[o].value = dayjs(this.filterConditions[o].value).format('YYYY-MM-DD HH:mm:ss')
+            this.filterConditions[o].value = parseTime(this.filterConditions[o].value)
           }
           conditions.push(this.filterConditions[o])
         }
