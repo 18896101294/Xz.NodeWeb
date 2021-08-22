@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import errGif from '@/assets/500_images/500.png'
+import errGif from '@/assets/500_images/500_1.png'
 import vueCanvasNest from 'vue-canvas-nest'
 
 export default {

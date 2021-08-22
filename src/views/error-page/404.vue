@@ -1,6 +1,6 @@
 <template>
   <div class="wscn-http404-container">
-    <vue-canvas-nest :config="{ color: '255,0,255', opacity: 1, zIndex: -1, count: 150, }" ></vue-canvas-nest>
+    <!-- <vue-canvas-nest :config="{ color: '255,0,255', opacity: 1, zIndex: -1, count: 150, }" ></vue-canvas-nest> -->
     <div class="wscn-http404">
       <div class="pic-404">
         <img class="pic-404__parent" src="@/assets/404_images/404.png" alt="404">
