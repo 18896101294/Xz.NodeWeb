@@ -58,6 +58,7 @@ export default {
     errorPages: 'Páginas de error',
     page401: '401',
     page404: '404',
+    page500: '500',
     errorLog: 'Registro de errores',
     excel: 'Excel',
     exportExcel: 'Exportar a Excel',

@@ -24,7 +24,7 @@ export default {
   },
   data() {
     return {
-      title: 'XzNode Admin',
+      title: 'XzNode System',
       logo: require ('@/assets/images/logo.png')
     }
   }

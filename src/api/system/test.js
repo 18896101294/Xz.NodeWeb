@@ -40,3 +40,10 @@ export function uploadArticle(data) {
     data
   })
 }
+
+export function getMyErrorTest() {
+  return request({
+    url: requestBase + '/Test/GetMyErrorTest',
+    method: 'get'
+  })
+}

@@ -1,16 +1,15 @@
 <template>
   <div class="errPage-container">
-    <!-- <vue-canvas-nest :config="{ color: '0,0,255', opacity: 1, zIndex: -1, count: 150, }" ></vue-canvas-nest> -->
+    <!-- <vue-canvas-nest :config="{ color: '255,0,0', opacity: 1, zIndex: -1, count: 150, }" ></vue-canvas-nest> -->
     <el-button icon="el-icon-arrow-left" class="pan-back-btn" @click="back">
       返回
     </el-button>
     <el-row>
       <el-col :span="12">
         <h1 class="text-jumbo text-ginormous">
-          Oops!
+          error!
         </h1>
-        <!-- gif来源<a href="https://zh.airbnb.com/" target="_blank">airbnb</a> 页面 -->
-        <h2>你没有权限去该页面</h2>
+        <h2>系统异常！请稍后再试！</h2>
         <h6>如有不满请联系你领导</h6>
         <ul class="list-unstyled">
           <li>或者你可以去:</li>
@@ -22,7 +21,6 @@
           <li class="link-type">
             <a href="https://github.com/18896101294">随便看看</a>
           </li>
-          <!-- <li><a href="#" @click.prevent="dialogVisible=true">点我看图</a></li> -->
         </ul>
       </el-col>
       <el-col :span="12">
@@ -36,11 +34,11 @@
 </template>
 
 <script>
-import errGif from '@/assets/401_images/401.gif'
+import errGif from '@/assets/500_images/500.png'
 import vueCanvasNest from 'vue-canvas-nest'
 
 export default {
-  name: 'page401',
+  name: 'page500',
   components: { vueCanvasNest },
   data() {
     return {
@@ -67,7 +65,7 @@ export default {
     max-width: 100%;
     margin: 100px auto;
     .pan-back-btn {
-      background: #008489;
+      background: #8f0303;
       color: #fff;
       border: none!important;
     }
@@ -83,7 +81,7 @@ export default {
     .text-jumbo {
       font-size: 60px;
       font-weight: 700;
-      color: #484848;
+      color: #ff0000;
     }
     .list-unstyled {
       font-size: 14px;

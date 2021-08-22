@@ -53,6 +53,16 @@ service.interceptors.response.use(
         type: 'error',
         duration: 5 * 1000
       })
+      if(res.code === 401) {
+        router.push({ name: 'page401' })
+      }
+      if(res.code === 404) {
+        router.push({ name: 'page404' })
+      }
+      if(res.code === 500) {
+        router.push({ name: 'page500' })
+      }
+
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
       if (res.code === 401) {
         // to re-login

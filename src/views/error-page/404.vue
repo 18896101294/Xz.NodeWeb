@@ -1,5 +1,6 @@
 <template>
   <div class="wscn-http404-container">
+    <vue-canvas-nest :config="{ color: '255,0,255', opacity: 1, zIndex: -1, count: 150, }" ></vue-canvas-nest>
     <div class="wscn-http404">
       <div class="pic-404">
         <img class="pic-404__parent" src="@/assets/404_images/404.png" alt="404">
@@ -9,24 +10,26 @@
       </div>
       <div class="bullshit">
         <div class="bullshit__oops">OOPS!</div>
-        <div class="bullshit__info">All rights reserved
-          <a style="color:#20a0ff" href="https://wallstreetcn.com" target="_blank">wallstreetcn</a>
+        <div class="bullshit__info">版权所有
+          <a style="color:#20a0ff" href="https://github.com/18896101294" target="_blank">XzNode</a>
         </div>
         <div class="bullshit__headline">{{ message }}</div>
-        <div class="bullshit__info">Please check that the URL you entered is correct, or click the button below to return to the homepage.</div>
-        <a href="" class="bullshit__return-home">Back to home</a>
+        <div class="bullshit__info">请检查您输入的URL是否正确，或单击下面的按钮返回主页。</div>
+        <a href="" class="bullshit__return-home">返回首页</a>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import vueCanvasNest from 'vue-canvas-nest'
 
 export default {
   name: 'Page404',
+  components: { vueCanvasNest },
   computed: {
     message() {
-      return 'The webmaster said that you can not enter this page...'
+      return '站长说你不能进入这个页面。。。'
     }
   }
 }

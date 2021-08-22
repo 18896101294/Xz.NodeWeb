@@ -60,15 +60,54 @@ export const constantRoutes = [
     component: () => import('@/views/login/auth-redirect'),
     hidden: true
   },
+  // {
+  //   path: '/404',
+  //   component: () => import('@/views/error-page/404'),
+  //   hidden: true
+  // },
+  // {
+  //   path: '/401',
+  //   component: () => import('@/views/error-page/401'),
+  //   hidden: true
+  // },
   {
     path: '/404',
-    component: () => import('@/views/error-page/404'),
-    hidden: true
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '/404',
+        component: () => import('@/views/error-page/404'),
+        name: 'page404',
+        meta: { title: 'page404', noCache: true }
+      }
+    ]
   },
   {
     path: '/401',
-    component: () => import('@/views/error-page/401'),
-    hidden: true
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '/401',
+        component: () => import('@/views/error-page/401'),
+        name: 'page401',
+        meta: { title: 'page401', noCache: true }
+      }
+    ]
+  },
+  {
+    path: '/500',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '/500',
+        component: () => import('@/views/error-page/500'),
+        name: 'page500',
+        meta: { title: 'page500', noCache: true }
+      }
+    ]
   },
   {
     path: '/',

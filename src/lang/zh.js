@@ -58,6 +58,7 @@ export default {
     errorPages: '错误页面',
     page401: '401',
     page404: '404',
+    page500: '500',
     errorLog: '错误日志',
     excel: 'Excel',
     exportExcel: '导出 Excel',

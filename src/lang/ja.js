@@ -58,6 +58,7 @@ export default {
     errorPages: 'エラーページ',
     page401: '401',
     page404: '404',
+    page500: '500',
     errorLog: 'エラーログ',
     excel: 'Excel',
     exportExcel: '一括エクスポート',

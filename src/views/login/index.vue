@@ -86,7 +86,7 @@ import LangSelect from '@/components/LangSelect'
 import SocialSign from './components/SocialSignin'
 import { getUserModulesTree } from '@/api/user';
 import router from "@/router";
-import {  resetRouter, filterAsyncRouter, constantRoutes } from "@/router/index";
+import { resetRouter, filterAsyncRouter, constantRoutes } from "@/router/index";
 import axios from 'axios/index'
 import vueCanvasNest from 'vue-canvas-nest'
 

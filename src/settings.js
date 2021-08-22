@@ -1,5 +1,5 @@
 module.exports = {
-  title: 'XzNode Admin',
+  title: 'XzNode System',
 
   /**
    * @type {boolean} true | false

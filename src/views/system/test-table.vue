@@ -38,13 +38,14 @@
           <el-button v-waves size="small" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">导出</el-button>
           <el-upload
             action="#"
-            style="display: inline-block;vertical-align: middle;margin-bottom: 10px; margin-left: 10px;"
+            style="display: inline-block;vertical-align: middle;margin-bottom: 10px; margin-left: 10px; margin-right: 10px;"
             :show-file-list="false"
             :auto-upload="false"
             :on-change="handleUpload"
           >
             <el-button size="small" type="primary" icon="el-icon-upload2">导入</el-button>
           </el-upload>
+          <el-button v-waves size="small" class="filter-item" type="danger" icon="el-icon-download" @click="getMyErrorTest">模拟异常</el-button>
         </div>
       </el-form>
     </div>
@@ -126,7 +127,7 @@
 </template>
 
 <script>
-import { fetchList, createArticle, updateArticle, deleteArticle, uploadArticle } from '@/api/system/test'
+import { fetchList, createArticle, updateArticle, deleteArticle, uploadArticle, getMyErrorTest } from '@/api/system/test'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -540,6 +541,14 @@ export default {
       } catch (e) {
         console.log(e)
       }
+    },
+    // 模拟异常
+    getMyErrorTest() {
+      getMyErrorTest().then(response => {
+        this.$notify({
+          message: response.message, type: 'success'
+        })
+      })
     }
   }
 }
