@@ -56,11 +56,11 @@
 
       <el-table-column label="顺序号" prop="displayNo" sortable="custom" min-width="80px" align="center" />
 
-      <el-table-column label="分类" prop="category" min-width="100px" align="center" />
-
       <el-table-column label="显示值" prop="text" align="center" min-width="100px" />
 
       <el-table-column label="值" prop="value" align="center" min-width="100px" />
+
+      <el-table-column label="分类" prop="category" min-width="100px" align="center" />
 
       <el-table-column label="备注" prop="remark" align="center" min-width="100px" />
 
@@ -80,50 +80,47 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.pageIndex" :limit.sync="listQuery.pageSize" @pagination="getList" />
 
+    <!-- 添加菜单 -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="40%">
-      <el-form inline ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="90px">
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="110px" >
         <el-row>
           <el-col :span="12">
-            <el-form-item label="顺序号：">
-              <el-input v-model="temp.displayNo" min="0" type="number" clearable placeholder="请输入顺序号" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="分类：">
-              <el-input v-model="temp.category" clearable placeholder="请输入分类" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="显示值：">
+            <el-form-item label="显示值：" prop="text">
               <el-input v-model="temp.text" clearable placeholder="请输入显示值" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="值：">
+            <el-form-item label="值：" prop="value">
               <el-input v-model="temp.value" clearable placeholder="请输入值" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="是否隐藏：">
-              <el-switch v-model="temp.isHide" active-color="#13ce66" inactive-color="#ff4949"></el-switch>  
+            <el-form-item label="分类：" prop="category">
+              <el-input v-model="temp.category" clearable placeholder="请输入分类" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="排序：" prop="displayNo">
+              <el-input-number v-model="temp.displayNo" :min="1" label="请输入顺序号"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="备注：" class="my-el-form">
+            <el-form-item label="是否隐藏：" prop="isHide">
+              <el-switch v-model="temp.isHide" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="备注：" prop="remark">
               <el-input v-model="temp.remark" type="textarea" placeholder="请输入备注" />
             </el-form-item>
           </el-col>
         </el-row>
-        
-        <!-- <el-form-item class="my-el-form" label="备注：">
-          <el-input v-model="temp.remark"  :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="请输入备注" />
-        </el-form-item> -->
       </el-form>
 
       <div slot="footer" class="dialog-footer">
@@ -140,6 +137,7 @@ import { getPageData, createArticle, updateArticle, deleteArticle, getAllCategor
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import ConditionOper from '@/utils/condition'
+import { parseTime } from '@/utils'
 
 export default {
   name: 'ConfigurationTable',
@@ -187,7 +185,7 @@ export default {
       dialogStatus: '',
       textMap: {
         update: '修改',
-        create: '新增'
+        create: '添加'
       },
       rules: {
         category: [{ required: true, message: '分类必填', trigger: 'change' }],
@@ -286,7 +284,7 @@ export default {
         if (this.filterConditions[o].value !== '' && this.filterConditions[o].value !== null) {
           // 时间查询条件格式化处理
           if (this.filterConditions[o].dataType === 'DateTime') {
-            this.filterConditions[o].value = dayjs(this.filterConditions[o].value).format('YYYY-MM-DD HH:mm:ss')
+            this.filterConditions[o].value = parseTime(this.filterConditions[o].value)
           }
           conditions.push(this.filterConditions[o])
         }
@@ -389,7 +387,7 @@ export default {
         value: '',
         text: '',
         category: '',
-        displayNo: 0,
+        displayNo: 1,
         remark: '',
         isHide: false
       }
@@ -497,13 +495,3 @@ export default {
   }
 }
 </script>
-
-<style>
-  .my-el-form {
-    width: 100%;
-  }
-  .my-el-form .el-form-item__content {
-    width: 75%;
-    /* display: block; */
-  }
-</style>

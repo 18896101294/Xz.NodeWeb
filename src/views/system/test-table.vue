@@ -351,14 +351,14 @@ export default {
     sortByID(prop, order) {
       if (order === 'ascending') {
         for (const o in this.listQuery.sorts) {
-          if (this.listQuery.sorts[o].columnName.toUpperCase() == prop.toUpperCase()) {
+          if (this.listQuery.sorts[o].columnName.toUpperCase() === prop.toUpperCase()) {
             this.listQuery.sorts[o].direction = ConditionOper.SortEnum.ASC
             break
           }
         }
       } else {
         for (const o in this.listQuery.sorts) {
-          if (this.listQuery.sorts[o].columnName.toUpperCase() == prop.toUpperCase()) {
+          if (this.listQuery.sorts[o].columnName.toUpperCase() === prop.toUpperCase()) {
             this.listQuery.sorts[o].direction = ConditionOper.SortEnum.DESC
             break
           }
@@ -483,7 +483,7 @@ export default {
       var testmsg = file.name.substring(file.name.lastIndexOf('.') + 1) // 获取上传文件的类型
       const extension = testmsg === 'xls'
       const extension2 = testmsg === 'xlsx'
-      const isLt2M = file.size / 1024 / 1024 < 2
+      // const isLt2M = file.size / 1024 / 1024 < 2
       if (!extension && !extension2) {
         this.$message.error('上传文件只能是xls或xlsx格式!')
         return false
@@ -518,7 +518,7 @@ export default {
         }
         let ExportPath = obj.url
         ExportPath += `?Authorization=Bearer ${getToken()}`
-        if (obj.fileName != '') {
+        if (obj.fileName !== '') {
           ExportPath += `&fileName=${obj.fileName}`
         }
         if (obj.conditions.length) {

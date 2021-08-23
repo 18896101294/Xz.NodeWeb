@@ -47,10 +47,10 @@
       </el-table-column>
 
       <el-table-column label="分类" prop="typeName" min-width="80px" align="center">
-        <template scope="scope">
-          <el-tag effect="plain" type="success" v-if="scope.row.typeName =='登录日志'">{{ scope.row.typeName }}</el-tag>
-          <el-tag effect="plain" v-if="scope.row.typeName =='访问日志'">{{ scope.row.typeName }}</el-tag>
-          <el-tag effect="plain" type="danger" v-if="scope.row.typeName =='定时任务'">{{ scope.row.typeName }}</el-tag>
+        <template slot-scope="{row}">
+          <el-tag effect="plain" type="success" v-if="row.typeName =='登录日志'">{{ row.typeName }}</el-tag>
+          <el-tag effect="plain" v-if="row.typeName =='访问日志'">{{ row.typeName }}</el-tag>
+          <el-tag effect="plain" type="danger" v-if="row.typeName =='定时任务'">{{ row.typeName }}</el-tag>
         </template>
       </el-table-column>
 

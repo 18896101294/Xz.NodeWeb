@@ -53,3 +53,19 @@ export function addElement(data) {
     data
   })
 }
+
+export function updateElement(data) {
+  return request({
+    url: '/Module/UpdateMenu',
+    method: 'post',
+    data
+  })
+}
+
+export function deleteElement(data) {
+  return request({
+    url: '/Module/DelMenu',
+    method: 'post',
+    data
+  })
+}
