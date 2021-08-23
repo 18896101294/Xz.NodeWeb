@@ -49,7 +49,7 @@ export default {
     SystemManager: 'System Manager',
     Logs: 'Logs',
     HttpReports: 'HttpReports',
-    SysLog: 'SysLog',
+    SystemLog: 'SystemLog',
     tab: 'Pestaña',
     form: 'Formulario',
     createArticle: 'Crear artículo',

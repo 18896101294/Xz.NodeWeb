@@ -50,7 +50,7 @@ export default {
     SystemManager: 'System Manager',
     Logs: 'Logs',
     HttpReports: 'HttpReports',
-    SysLog: 'SysLog',
+    SystemLog: 'SystemLog',
     tab: 'Tab',
     form: 'Form',
     createArticle: 'Create Article',

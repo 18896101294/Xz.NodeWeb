@@ -49,7 +49,7 @@ export default {
     SystemManager: '系统管理',
     Logs: 'Logs',
     HttpReports: 'HttpReports',
-    SysLog: '系统日志',
+    SystemLog: '系统日志',
     tab: 'Tab',
     form: 'フォーム',
     createArticle: '投稿作成',

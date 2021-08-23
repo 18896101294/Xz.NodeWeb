@@ -75,13 +75,13 @@
 </template>
 
 <script>
-import { getPageData } from '@/api/sysLogs/sysLog'
+import { getPageData } from '@/api/systemLogs/sysLog'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { parseTime } from '@/utils'
 
 export default {
-  name: 'SysLog',
+  name: 'SystemLog',
   components: { Pagination },
   directives: { waves },
   filters: {
