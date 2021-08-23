@@ -1,16 +1,15 @@
 import request from '@/utils/request'
-import requestBase from '@/api/request-base'
 
 export function getModules() {
   return request({
-    url: requestBase + '/User/GetModules',
+    url: '/User/GetModules',
     method: 'get'
   })
 }
 
 export function getModulesTree(data) {
   return request({
-    url: requestBase + '/User/GetModulesTree',
+    url: '/User/GetModulesTree',
     method: 'get',
     params: data
   })
@@ -18,14 +17,14 @@ export function getModulesTree(data) {
 
 export function getModulesName() {
   return request({
-    url: requestBase + '/User/GetModulesName',
+    url: '/User/GetModulesName',
     method: 'get'
   })
 }
 
 export function createModule(data) {
   return request({
-    url: requestBase + '/Module/Add',
+    url: '/Module/Add',
     method: 'post',
     data
   })
@@ -33,7 +32,7 @@ export function createModule(data) {
 
 export function updateArticle(data) {
   return request({
-    url: requestBase + '/Module/Update',
+    url: '/Module/Update',
     method: 'post',
     data
   })
@@ -41,7 +40,7 @@ export function updateArticle(data) {
 
 export function deleteArticle(data) {
   return request({
-    url: requestBase + '/Module/Delete',
+    url: '/Module/Delete',
     method: 'post',
     data
   })

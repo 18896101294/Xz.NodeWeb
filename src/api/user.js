@@ -1,9 +1,8 @@
 import request from '@/utils/request'
-import requestBase from '@/api/request-base'
 
 export function login(data) {
   return request({
-    url: requestBase + '/Login/Login',
+    url: '/Login/Login',
     method: 'post',
     data
   })
@@ -11,7 +10,7 @@ export function login(data) {
 
 export function getInfo(token) {
   return request({
-    url: requestBase + '/User/GetUserProfile',
+    url: '/User/GetUserProfile',
     method: 'get',
     params: { token }
   })
@@ -19,14 +18,14 @@ export function getInfo(token) {
 
 export function logout() {
   return request({
-    url: requestBase + '/Login/logout',
+    url: '/Login/logout',
     method: 'post'
   })
 }
 
 export function getUserModulesTree() {
   return request({
-    url: requestBase + '/User/GetUserModulesTree',
+    url: '/User/GetUserModulesTree',
     method: 'get',
   })
 }

@@ -41,7 +41,8 @@
     >
       <el-table-column label="内容" prop="content" min-width="200px" align="center">
         <template slot-scope="{row}">
-          <el-link type="success">{{ row.content }}</el-link>
+          <el-link type="success" v-if="row.result == 0">{{ row.content }}</el-link>
+          <el-link type="danger" v-if="row.result == 1">{{ row.content }}</el-link>
         </template>
       </el-table-column>
 

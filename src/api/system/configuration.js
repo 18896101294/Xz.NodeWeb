@@ -3,7 +3,7 @@ import requestBase from '@/api/request-base'
 
 export function getPageData(data) {
   return request({
-    url: requestBase + '/SystemConfiguration/GetPageData',
+    url: '/SystemConfiguration/GetPageData',
     method: 'post',
     data
   })
@@ -11,14 +11,14 @@ export function getPageData(data) {
 
 export function getAllCategory() {
     return request({
-      url: requestBase + '/SystemConfiguration/GetAllCategory',
+      url: '/SystemConfiguration/GetAllCategory',
       method: 'get'
     })
   }
 
 export function createArticle(data) {
   return request({
-    url: requestBase + '/SystemConfiguration/Edit',
+    url: '/SystemConfiguration/Edit',
     method: 'post',
     data
   })
@@ -26,7 +26,7 @@ export function createArticle(data) {
 
 export function updateArticle(data) {
   return request({
-    url: requestBase + '/SystemConfiguration/Edit',
+    url: '/SystemConfiguration/Edit',
     method: 'post',
     data
   })
@@ -34,7 +34,7 @@ export function updateArticle(data) {
 
 export function deleteArticle(data) {
   return request({
-    url: requestBase + '/SystemConfiguration/Delete',
+    url: '/SystemConfiguration/Delete',
     method: 'post',
     data
   })

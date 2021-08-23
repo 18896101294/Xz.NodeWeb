@@ -1,9 +1,8 @@
 import request from '@/utils/request'
-import requestBase from '@/api/request-base'
 
 export function fetchList(data) {
   return request({
-    url: requestBase + '/Test/GetPageData',
+    url: '/Test/GetPageData',
     method: 'post',
     data
   })
@@ -11,7 +10,7 @@ export function fetchList(data) {
 
 export function createArticle(data) {
   return request({
-    url: requestBase + '/Test/Edit',
+    url: '/Test/Edit',
     method: 'post',
     data
   })
@@ -19,7 +18,7 @@ export function createArticle(data) {
 
 export function updateArticle(data) {
   return request({
-    url: requestBase + '/Test/Edit',
+    url: '/Test/Edit',
     method: 'post',
     data
   })
@@ -27,7 +26,7 @@ export function updateArticle(data) {
 
 export function deleteArticle(data) {
   return request({
-    url: requestBase + '/Test/Delete',
+    url: '/Test/Delete',
     method: 'post',
     data
   })
@@ -35,7 +34,7 @@ export function deleteArticle(data) {
 
 export function uploadArticle(data) {
   return request({
-    url: requestBase + '/Test/Import',
+    url: '/Test/Import',
     method: 'post',
     data
   })
@@ -43,7 +42,7 @@ export function uploadArticle(data) {
 
 export function getMyErrorTest() {
   return request({
-    url: requestBase + '/Test/GetMyErrorTest',
+    url: '/Test/GetMyErrorTest',
     method: 'get'
   })
 }
