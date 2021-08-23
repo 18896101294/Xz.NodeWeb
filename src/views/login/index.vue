@@ -95,7 +95,8 @@ export default {
   components: { LangSelect, SocialSign, vueCanvasNest },
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
+      // if (!validUsername(value)) {
+      if (value.length == 0) {
         callback(new Error('请输入正确的用户名'))
       } else {
         callback()
@@ -110,8 +111,8 @@ export default {
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: '123456'
+        username: '',
+        password: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],

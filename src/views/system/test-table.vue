@@ -133,6 +133,7 @@ import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import ConditionOper from '@/utils/condition'
 import { getToken } from '@/utils/auth'
+import requestBase from '@/api/request-base'
 
 export default {
   name: 'TestTable',
@@ -500,7 +501,7 @@ export default {
     // 下载模板
     handleDownloadTemplate() {
       window.open(
-        `http://192.168.1.109:80/ocelot/Test/DownloadTemplate` +
+        requestBase + `/Test/DownloadTemplate` +
         `?Authorization=Bearer ${getToken()}&fileName=导出测试文件模板`, // 当前路由的名称
         '_blank'
       )
@@ -510,7 +511,7 @@ export default {
     handleDownload(items) {
       try {
         const obj = {
-          url: `http://192.168.1.109/ocelot/Test/Export`,
+          url: requestBase + `/Test/Export`,
           fileName: '导出测试文件',
           conditions: Object.keys(this.filterConditions).map(key => this.filterConditions[key]).filter(item => item.value !== ''),
           sorts: this.listQuery.sorts

@@ -6,12 +6,12 @@
       <el-form :inline="true" @submit.native.prevent>
         <div>
           <el-button v-waves class="filter-item" size="small" type="primary" icon="el-icon-search" @click="getModulesTree(true)">刷新</el-button>
-          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">添加</el-button>
-          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleUpdate">修改</el-button>
-          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleDelete">删除</el-button>
-          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">添加菜单</el-button>
-          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">修改菜单</el-button>
-          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleDelete">删除菜单</el-button>
+          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">添加模块</el-button>
+          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleUpdate">修改模块</el-button>
+          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleDelete">删除模块</el-button>
+          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreateElement">添加元素</el-button>
+          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">修改元素</el-button>
+          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleDelete">删除元素</el-button>
         </div>
       </el-form>
     </div>
@@ -35,10 +35,10 @@
           style="width: 100%;"
           @current-change="currentChange"
         >
-          <el-table-column label="模块名称" min-width="80px" prop="name" align="center" >
+          <el-table-column label="名称" min-width="80px" prop="name" align="center" >
           </el-table-column>
 
-          <el-table-column label="模块标识" align="center" prop="code" min-width="100px">
+          <el-table-column label="标识" align="center" prop="code" min-width="100px">
           </el-table-column>
 
           <el-table-column label="排序" min-width="40px" prop="sortNo" align="center">
@@ -48,7 +48,7 @@
           </el-table-column>
 
           <!-- <el-table-column label="ID" prop="row.item.id" align="center" width="300px" />  -->
-          <el-table-column label="模块图标" align="center" prop="iconName" min-width="70px" >
+          <el-table-column label="图标" align="center" prop="iconName" min-width="70px" >
             <template slot-scope="{row}">
               <i style="font-size:25px" :class="row.iconName" />
             </template>
@@ -75,7 +75,7 @@
 
           <el-table-column type="selection" align="center" width="55" />
 
-          <el-table-column label="DOM ID" min-width="80px" prop="domId" align="center" >
+          <el-table-column label="代码" min-width="80px" prop="domId" align="center" >
             <template slot-scope="{row}">
               <span class="link-type" @click="handleUpdate(row)">{{ row.domId }}</span>
             </template>
@@ -95,43 +95,43 @@
         </el-table>
       </el-col>
     </el-row>
-
+    <!-- 添加模块 -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="40%">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="110px" >
         <el-row>
           <el-col :span="12">
-            <el-form-item label="模块名称：">
+            <el-form-item label="名称：">
               <el-input v-model="temp.name" clearable placeholder="请输入名称" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="模块标识：">
+            <el-form-item label="标识：">
               <el-input v-model="temp.code" clearable placeholder="请输入标识" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="模块Url：">
+            <el-form-item label="Url：">
               <el-input v-model="temp.url" clearable placeholder="请输入Url" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="模块排序：">
+            <el-form-item label="排序：">
               <el-input v-model="temp.sortNo" clearable min="0" type="number" placeholder="请输入顺序号" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="模块图标：">
+            <el-form-item label="图标：">
               <el-input placeholder="请选择图标" v-model="temp.iconName" >
                 <el-button slot="append" icon="el-icon-search" @click="changeIcon"></el-button>
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="模块上级：">
+            <el-form-item label="上级：">
               <selectTree
                :props="props"
                :options="options"
@@ -162,7 +162,80 @@
         <el-button type="primary" @click="dialogStatus==='create'?createModule():updateData()">确定</el-button>
       </div>
     </el-dialog>
+    <!-- 添加菜单 -->
+    <el-dialog :title="textMapElement[dialogElementStatus]" :visible.sync="dialogFormVisibleElement" width="40%">
+      <el-form ref="dataFormElement" :rules="rulesElement" :model="tempElement" label-position="right" label-width="110px" >
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="名称：">
+              <el-input v-model="tempElement.name" clearable placeholder="请输入名称" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="代码：">
+              <el-input v-model="tempElement.domId" clearable placeholder="请输入代码" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="图标：">
+              <el-input placeholder="请选择图标" v-model="tempElement.icon" >
+                <el-button slot="append" icon="el-icon-search" @click="changeIcon"></el-button>
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="排序：">
+              <el-input v-model="tempElement.sort" clearable min="0" type="number" placeholder="请输入顺序号" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="样式：">
+              <!-- <el-input placeholder="请选择样式" v-model="tempElement.class" >
+                <el-button slot="append" icon="el-icon-search" @click="changeIcon"></el-button>
+              </el-input> -->
+              <el-select v-model="tempElement.class" placeholder="请选择样式">
+                <el-option
+                  v-for="item in calssFilters"
+                  :key="item.value"
+                  :label="item.name"
+                  :value="item.value"
+                  v-html="'<span style=color:'+item.color+'>'+item.name+'</span>'"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="所属模块：">
+              <selectTree
+               :props="props"
+               :options="options"
+               :value="tempElement.moduleId || '0'"
+               :clearable="isClearable"
+               :accordion="isAccordion"
+               @getValue="selectTreeGetValueElement($event)"
+               />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="备注：" class="my-el-form">
+              <el-input v-model="tempElement.remark" type="textarea" placeholder="请输入备注" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
 
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisibleElement = false">取消</el-button>
+        <el-button type="primary" @click="dialogElementStatus==='create'?createModule():updateData()">确定</el-button>
+      </div>
+    </el-dialog>
+    <!-- 选择图标 -->
     <el-dialog title="图标" :visible.sync="dialogIconFormVisible" class="abow_dialog">
       <IconsView @getIcomText="getIcomText" />
     </el-dialog>
@@ -170,7 +243,7 @@
 </template>
 
 <script>
-import { getModules, getModulesTree, getModulesName, createModule, updateArticle, deleteArticle } from '@/api/basics/module'
+import { getModules, getModulesTree, getModulesName, createModule, updateModule, deleteModule, addElement } from '@/api/basics/module'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import SelectTree from '@/components/SelectTree'
@@ -205,9 +278,17 @@ export default {
         children: 'children',
         // disabled:true
       },
+      calssFilters: [
+        { name: '默认按钮', value: '', color: '#333333' },
+        { name: '主要按钮', value: 'primary', color: '#409EFF' },
+        { name: '成功按钮', value: 'success', color: '#67C23A' },
+        { name: '信息按钮', value: 'info', color: '#909399' },
+        { name: '警告按钮', value: 'warning', color: '#E6A23C' },
+        { name: '危险按钮', value: 'danger', color: '#F56C6C' }
+      ],
       options:[],
-
       selectParentId: '0',
+      selectModuleId: '0',
       listLoading: true,
       moduleQuery: {
         parentId: null
@@ -226,16 +307,37 @@ export default {
         url: '',
         parentName: ''
       },
+      tempElement: {
+        id: '',
+        moduleId: '',
+        domId: '',
+        name: '',
+        sort: 0,
+        icon: '',
+        class: 'primary',
+        remark: ''
+      },
       dialogFormVisible: false,
+      dialogFormVisibleElement: false,
       dialogIconFormVisible: false,
       dialogStatus: '',
+      dialogElementStatus: '',
       textMap: {
-        update: '修改',
-        create: '新增'
+        update: '修改模块',
+        create: '新增模块'
+      },
+      textMapElement: {
+        update: '修改菜单',
+        create: '新增菜单'
       },
       rules: {
         code: [{ required: true, message: '模块标识必填', trigger: 'change' }],
         name: [{ required: true, message: '模块名称必填', trigger: 'change' }]
+      },
+      rulesElement: {
+        domId: [{ required: true, message: 'DomId必填', trigger: 'change' }],
+        name: [{ required: true, message: '菜单名称必填', trigger: 'change' }],
+        class: [{ required: true, message: '菜单样式必填', trigger: 'change' }]
       },
       statusList: [
         { name: '启用', value: true },
@@ -326,6 +428,12 @@ export default {
         this.selectParentId = ''
       }
     },
+    selectTreeGetValueElement(value) {
+      this.selectModuleId = value
+      if(value == '0') {
+        this.selectModuleId = ''
+      }
+    },
 
     load(tree, treeNode, resolve) {
       this.moduleQuery.parentId = tree.id
@@ -339,6 +447,7 @@ export default {
       this.$refs.multipleTable.clearSelection()
       this.$refs.multipleTable.toggleRowSelection(val)
       this.multipleSelection = val
+      this.selectModuleId = val.id
       this.elements = val.elements
     },
     domCurrentChange(val) {
@@ -366,6 +475,20 @@ export default {
         parentId: ''
       }
     },
+    resetTempElement() {
+      this.tempElement = {
+        id: undefined,
+        id: '',
+        moduleId: this.selectModuleId,
+        domId: '',
+        name: '',
+        sort: 0,
+        icon: '',
+        class: 'primary',
+        remark: ''
+      }
+    },
+
     handleCreate() {
       this.getModulesName()
       this.resetTemp()
@@ -387,6 +510,32 @@ export default {
               message: response.message, type: 'success'
             })
             this.getModulesTree(true)
+          })
+        }
+      })
+    },
+
+    handleCreateElement() {
+      this.getModulesName()
+      this.resetTempElement()
+      this.dialogElementStatus = 'create'
+      this.dialogFormVisibleElement = true
+      this.$nextTick(() => {
+        this.$refs['dataFormElement'].clearValidate()
+      })
+    },
+
+    // 添加
+    createModuleElement() {
+      this.$refs['dataFormElement'].validate((valid) => {
+        if (valid) {
+          this.tempElement.moduleId = this.selectModuleId
+          addElement(this.tempElement).then(response => {
+            this.dialogFormVisibleElement = false
+            this.$notify({
+              message: response.message, type: 'success'
+            })
+            this.elements.unshift(response.data)
           })
         }
       })
@@ -417,7 +566,7 @@ export default {
             console.log(1)
           }
           const tempData = Object.assign({}, this.temp)
-          updateArticle(tempData).then(response => {
+          updateModule(tempData).then(response => {
             const index = this.list.findIndex(v => v.id === this.temp.id)
             this.list.splice(index, 1, this.temp)
             this.dialogFormVisible = false
@@ -438,7 +587,7 @@ export default {
           type: 'warning'
         }).then(() => {
           const deleteId = this.multipleSelection.id
-          deleteArticle({id: deleteId}).then(response => {
+          deleteModule({id: deleteId}).then(response => {
             this.$notify({
               message: response.message, type: 'success'
             })

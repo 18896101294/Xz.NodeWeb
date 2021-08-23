@@ -30,7 +30,7 @@ export function createModule(data) {
   })
 }
 
-export function updateArticle(data) {
+export function updateModule(data) {
   return request({
     url: '/Module/Update',
     method: 'post',
@@ -38,9 +38,17 @@ export function updateArticle(data) {
   })
 }
 
-export function deleteArticle(data) {
+export function deleteModule(data) {
   return request({
     url: '/Module/Delete',
+    method: 'post',
+    data
+  })
+}
+
+export function addElement(data) {
+  return request({
+    url: '/Module/AddMenu',
     method: 'post',
     data
   })
