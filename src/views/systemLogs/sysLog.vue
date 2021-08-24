@@ -24,6 +24,9 @@
         <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
         <el-button v-waves class="filter-item" type="info" icon="el-icon-refresh" @click="handleReset">重置</el-button>
         <el-button v-waves class="filter-item" type="primary" :icon="filterStatus===0?'el-icon-zoom-out':'el-icon-zoom-in'" @click="handleShow">高级</el-button>
+        <div>
+          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleClear">清理</el-button>
+        </div>
       </el-form>
     </div>
 
@@ -76,7 +79,7 @@
 </template>
 
 <script>
-import { getPageData } from '@/api/systemLogs/sysLog'
+import { getPageData, clearData } from '@/api/systemLogs/sysLog'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { parseTime } from '@/utils'
@@ -205,6 +208,25 @@ export default {
     handleShow() {
       this.filterStatus = this.filterStatus ? 0 : 1
       this.getTableHeight()
+    },
+
+    handleClear() {
+      this.$confirm('此操作将清理10天前的日志数据, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        clearData().then(response => {
+          this.$notify({
+            message: response.message, type: 'success'
+          })
+          this.getList()
+        })
+      }).catch(() => {
+        this.$notify({
+          message: '已取消清理', type: 'info'
+        })
+      })
     }
   }
 }

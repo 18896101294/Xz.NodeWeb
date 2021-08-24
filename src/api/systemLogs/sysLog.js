@@ -9,3 +9,11 @@ export function getPageData(data) {
 }
 
 
+export function clearData() {
+  return request({
+    url: '/SysLog/ClearData',
+    method: 'post',
+  })
+}
+
+
