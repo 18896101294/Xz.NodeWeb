@@ -4,22 +4,27 @@
     <div ref="filterhight" class="filter-container">
       <el-form :inline="true" @submit.native.prevent>
         <el-form-item label="分类：">
-          <el-select v-model="listQuery.typeName" clearable placeholder="请选择">
+          <el-select v-model="filterConditions['typeName'].value" clearable placeholder="请选择">
             <el-option  v-for="item in allCategory" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="操作人：">
-          <el-input clearable v-model="listQuery.createName" placeholder="请输入操作人" />
+          <el-input clearable v-model="filterConditions['createName'].value" placeholder="请输入操作人" />
+        </el-form-item>
+        <el-form-item label="结果：">
+          <el-select v-model="filterConditions['result'].value" clearable placeholder="请选择">
+            <el-option  v-for="item in resultType" :key="item.value" :label="item.label" :value="item.value"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="请求Ip：">
-          <el-input clearable v-model="listQuery.Ip" placeholder="请输入Ip" />
+          <el-input clearable v-model="filterConditions['ip'].value" placeholder="请输入Ip" />
         </el-form-item>
         <el-form-item v-if="filterStatus == 0" label="创建时间：">
-          <el-date-picker v-model="listQuery.beginCreateTime" type="datetime" placeholder="开始日期" />
+          <el-date-picker v-model="filterConditions['beginCreateTime'].value" type="datetime" placeholder="开始日期" />
         </el-form-item>
         <el-form-item v-if="filterStatus == 0">-</el-form-item>
         <el-form-item v-if="filterStatus == 0">
-          <el-date-picker v-model="listQuery.endCreateTime" type="datetime" placeholder="结束日期" />
+          <el-date-picker v-model="filterConditions['endCreateTime'].value" type="datetime" placeholder="结束日期" />
         </el-form-item>
         <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
         <el-button v-waves class="filter-item" type="info" icon="el-icon-refresh" @click="handleReset">重置</el-button>
@@ -83,6 +88,7 @@ import { getPageData, clearData } from '@/api/systemLogs/sysLog'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { parseTime } from '@/utils'
+import ConditionOper from '@/utils/condition'
 
 export default {
   name: 'SystemLog',
@@ -116,18 +122,73 @@ export default {
           value:'定时任务'
         }
       ],
+      resultType: [
+        {
+          label: '所有',
+          value: null
+        },
+        {
+          label: '成功（√）',
+          value: 0
+        },
+        {
+          label: '失败（×）',
+          value: 1
+        }
+      ],
       listLoading: true,
       listQuery: {
         pageIndex: 1,
         pageSize: 20,
-        typeName: '',
-        createName: '',
-        ip: '',
-        beginCreateTime: '',
-        endCreateTime: ''
+        sorts: [
+          {
+            columnName: 'CreateTime',
+            direction: ConditionOper.SortEnum.DESC
+          }
+        ],
+        conditions: []
       },
       // 状态开关
-      filterStatus: 1
+      filterStatus: 1,
+      // 筛选条件
+      filterConditions: {
+        'typeName': {
+          columnName: 'TypeName',
+          value: '',
+          dataType: ConditionOper.DataTypeEnum.String,
+          operator: ConditionOper.ConditionOperEnum.Equal
+        },
+        'createName': {
+          columnName: 'CreateName',
+          value: '',
+          dataType: ConditionOper.DataTypeEnum.String,
+          operator: ConditionOper.ConditionOperEnum.Equal
+        },
+        'ip': {
+          columnName: 'Ip',
+          value: '',
+          dataType: ConditionOper.DataTypeEnum.String,
+          operator: ConditionOper.ConditionOperEnum.Equal
+        },
+        'result': {
+          columnName: 'Result',
+          value: null,
+          dataType: ConditionOper.DataTypeEnum.Int,
+          operator: ConditionOper.ConditionOperEnum.Equal
+        },
+        'beginCreateTime': {
+          columnName: 'CreateTime',
+          value: null,
+          dataType: ConditionOper.DataTypeEnum.DateTime,
+          operator: ConditionOper.ConditionOperEnum.GreaterThanEqual
+        },
+        'endCreateTime': {
+          columnName: 'CreateTime',
+          value: null,
+          dataType: ConditionOper.DataTypeEnum.DateTime,
+          operator: ConditionOper.ConditionOperEnum.LessThanEqual
+        }
+      }
     }
   },
   created() {
@@ -173,13 +234,18 @@ export default {
     // 查询
     getList() {
       this.listLoading = true
-      // 时间查询条件格式化处理
-      if (this.listQuery.beginCreateTime != '') {
-        this.listQuery.beginCreateTime = parseTime(this.listQuery.beginCreateTime)
+      const conditions = []
+      for (const o in this.filterConditions) {
+        if (this.filterConditions[o].value !== '' && this.filterConditions[o].value !== null) {
+          // 时间查询条件格式化处理
+          if (this.filterConditions[o].dataType === 'DateTime') {
+            this.filterConditions[o].value = parseTime(this.filterConditions[o].value)
+          }
+          conditions.push(this.filterConditions[o])
+        }
       }
-      if (this.listQuery.endCreateTime != '') {
-        this.listQuery.endCreateTime = parseTime(this.listQuery.endCreateTime)
-      }
+      this.listQuery.conditions = conditions
+      
       getPageData(this.listQuery).then(response => {
         this.list = response.data.datas
         this.total = response.data.total
@@ -196,12 +262,43 @@ export default {
     },
     // 重置筛选
     handleReset() {
-      this.listQuery = {
-        typeName: '',
-        createName: '',
-        ip: '',
-        beginCreateTime: '',
-        endCreateTime: ''
+      this.filterConditions = {
+        'typeName': {
+          columnName: 'TypeName',
+          value: '',
+          dataType: ConditionOper.DataTypeEnum.String,
+          operator: ConditionOper.ConditionOperEnum.Equal
+        },
+        'createName': {
+          columnName: 'CreateName',
+          value: '',
+          dataType: ConditionOper.DataTypeEnum.String,
+          operator: ConditionOper.ConditionOperEnum.Equal
+        },
+        'ip': {
+          columnName: 'Ip',
+          value: '',
+          dataType: ConditionOper.DataTypeEnum.String,
+          operator: ConditionOper.ConditionOperEnum.Equal
+        },
+        'result': {
+          columnName: 'Result',
+          value: null,
+          dataType: ConditionOper.DataTypeEnum.Int,
+          operator: ConditionOper.ConditionOperEnum.Equal
+        },
+        'beginCreateTime': {
+          columnName: 'CreateTime',
+          value: null,
+          dataType: ConditionOper.DataTypeEnum.DateTime,
+          operator: ConditionOper.ConditionOperEnum.GreaterThanEqual
+        },
+        'endCreateTime': {
+          columnName: 'CreateTime',
+          value: null,
+          dataType: ConditionOper.DataTypeEnum.DateTime,
+          operator: ConditionOper.ConditionOperEnum.LessThanEqual
+        }
       }
     },
     // 高级

@@ -41,6 +41,11 @@
               {{ $t('navbar.github') }}
             </el-dropdown-item>
           </a>
+          <a target="_blank" href="http://xznode.club:8500">
+            <el-dropdown-item>
+              {{ $t('navbar.consulUrl') }}
+            </el-dropdown-item>
+          </a>
           <a target="_blank" href="https://github.com/18896101294/Xz.NodeWeb">
             <el-dropdown-item>Docs</el-dropdown-item>
           </a>

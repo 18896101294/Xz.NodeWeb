@@ -85,7 +85,7 @@
           <el-table-column label="排序" min-width="40px" prop="sort" align="center">
           </el-table-column>
 
-          <el-table-column label="展示" min-width="80px" prop="class" align="center">
+          <el-table-column label="预览" min-width="80px" prop="class" align="center">
             <template slot-scope="{row}">
               <el-button :type="row.class" size="mini" :icon="row.icon">{{row.name}}</el-button>
             </template>

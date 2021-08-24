@@ -78,6 +78,7 @@ export default {
   navbar: {
     dashboard: 'Dashboard',
     github: 'Github',
+    consulUrl: 'Consul',
     logOut: 'Log Out',
     profile: 'Profile',
     theme: 'Theme',

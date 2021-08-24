@@ -76,7 +76,8 @@ export default {
   },
   navbar: {
     dashboard: '首页',
-    github: '接口地址',
+    github: '接口',
+    consulUrl: 'Consul',
     logOut: '退出登录',
     profile: '个人中心',
     theme: '换肤',

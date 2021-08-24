@@ -78,6 +78,7 @@ export default {
     logOut: 'Salir',
     dashboard: 'Panel de control',
     github: 'Github',
+    consulUrl: 'Consul',
     theme: 'Tema',
     size: 'Tamaño global',
     profile: 'Profile'
