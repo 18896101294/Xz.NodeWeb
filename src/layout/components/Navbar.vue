@@ -41,7 +41,7 @@
               {{ $t('navbar.github') }}
             </el-dropdown-item>
           </a>
-          <a target="_blank" href="http://xznode.club:8500">
+          <a target="_blank" href="http://xznode.club:8600">
             <el-dropdown-item>
               {{ $t('navbar.consulUrl') }}
             </el-dropdown-item>
