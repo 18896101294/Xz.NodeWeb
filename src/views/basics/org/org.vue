@@ -6,251 +6,42 @@
       <el-form :inline="true" @submit.native.prevent>
         <div>
           <el-button v-waves class="filter-item" size="small" type="primary" icon="el-icon-search" @click="getModulesTree(true)">刷新</el-button>
-          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">添加模块</el-button>
-          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleUpdate">修改模块</el-button>
-          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleDelete">删除模块</el-button>
-          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreateElement">添加元素</el-button>
-          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleUpdateElement">修改元素</el-button>
-          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleDeleteElement">删除元素</el-button>
+          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">添加</el-button>
+          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleUpdate">修改</el-button>
+          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleDelete">删除</el-button>
+          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreateElement">分配用户</el-button>
         </div>
       </el-form>
     </div>
 
     <el-row>
       <el-col :span="12">
-        <!-- 表格 -->
-        <el-table
-          :key="tableKey"
-          row-key="cascadeId"
-          v-loading="listLoading"
-          :height="tableHeight"
-          :data="list"
-          border
-          fit
-          highlight-current-row
-          ref="multipleTable"
-          :tree-props="{hasChildren: 'hasChildren'}"
-          lazy
-          :load="load"
-          style="width: 100%;"
-          @current-change="currentChange"
-        >
-          <el-table-column label="名称" min-width="80px" prop="name" align="center" >
-          </el-table-column>
-
-          <el-table-column label="标识" align="center" prop="code" min-width="100px">
-          </el-table-column>
-
-          <el-table-column label="排序" min-width="40px" prop="sortNo" align="center">
-          </el-table-column>
-
-          <el-table-column label="Url" min-width="100px" prop="url" align="center">
-          </el-table-column>
-
-          <!-- <el-table-column label="ID" prop="row.item.id" align="center" width="300px" />  -->
-          <el-table-column label="图标" align="center" prop="iconName" min-width="70px" >
-            <template slot-scope="{row}">
-              <i style="font-size:25px" :class="row.iconName" />
-            </template>
-          </el-table-column>
-
-        </el-table>
+        <!-- 树形菜单 -->
+        <el-tree
+          :data="data"
+          show-checkbox
+          node-key="id"
+          :default-expanded-keys="[2, 3]"
+          :props="defaultProps">
+        </el-tree>
       </el-col>
 
       <el-col :span="12">
-        <!-- 表格 -->
-        <el-table
-          :key="tableKey"
-          v-loading="listElementLoading"
-          :height="tableHeight"
-          :data="elements"
-          stripe
-          border
-          fit
-          highlight-current-row
-          lazy
-          :load="load"
-          ref="multipleTableElement"
-          style="width: 100%;"
-          @current-change="currentChangeElement">
-
-          <el-table-column label="代码" min-width="80px" prop="domId" align="center" >
-            <template slot-scope="{row}">
-              <span class="link-type" @click="handleUpdateElement(row, true)">{{ row.domId }}</span>
-            </template>
-          </el-table-column>
-
-          <el-table-column label="名称" align="center" prop="name" min-width="100px">
-          </el-table-column>
-
-          <el-table-column label="排序" min-width="40px" prop="sort" align="center">
-          </el-table-column>
-
-          <el-table-column label="预览" min-width="80px" prop="class" align="center">
-            <template slot-scope="{row}">
-              <el-button :type="row.class" size="mini" :icon="row.icon">{{row.name}}</el-button>
-            </template>
-          </el-table-column>
-
-          <el-table-column label="备注" min-width="150px" prop="remark" align="center">
-          </el-table-column>
-        </el-table>
+        
       </el-col>
     </el-row>
-    <!-- 添加模块 -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="40%">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="110px" >
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="名称：" prop="name">
-              <el-input v-model="temp.name" clearable placeholder="请输入名称" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="标识：" prop="code">
-              <el-input v-model="temp.code" clearable placeholder="请输入标识" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="Url：" prop="url">
-              <el-input v-model="temp.url" clearable placeholder="请输入Url" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="排序：" prop="sortNo">
-              <el-input-number v-model="temp.sortNo" :min="1" label="请输入顺序号"></el-input-number>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="图标：" prop="iconName">
-              <el-input placeholder="请选择图标" v-model="temp.iconName" >
-                <el-button slot="append" icon="el-icon-search" @click="changeIcon"></el-button>
-              </el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="上级：" prop="parentId">
-              <selectTree
-               :props="props"
-               :options="options"
-               :value="temp.parentId || '0'"
-               :clearable="isClearable"
-               :accordion="isAccordion"
-               @getValue="selectTreeGetValue($event)"
-               />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="层级：" prop="cascadeId">
-              <el-tag size="small">{{ temp.cascadeId }}</el-tag>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="是否系统：" style="display:block" prop="isSys">
-              <el-switch v-model="temp.isSys" active-color="#13ce66" inactive-color="#ff4949"></el-switch>  
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createModule():updateModule()">确定</el-button>
-      </div>
-    </el-dialog>
-    <!-- 添加元素 -->
-    <el-dialog :title="textMapElement[dialogElementStatus]" :visible.sync="dialogFormVisibleElement" width="40%">
-      <el-form ref="dataForm" :rules="rulesElement" :model="tempElement" label-position="right" label-width="110px" >
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="名称：" prop="name">
-              <el-input v-model="tempElement.name" clearable placeholder="请输入名称" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="代码：" prop="domId">
-              <el-input v-model="tempElement.domId" clearable placeholder="请输入代码" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="图标：" prop="icon">
-              <el-input placeholder="请选择图标" v-model="tempElement.icon" >
-                <el-button slot="append" icon="el-icon-search" @click="changeIcon"></el-button>
-              </el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="排序：" prop="sort">
-              <el-input-number v-model="tempElement.sort" :min="1" label="请输入顺序号"></el-input-number>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="样式：" prop="class">
-              <el-select v-model="tempElement.class" placeholder="请选择样式">
-                <el-option
-                  v-for="item in calssSelect"
-                  :key="item.value"
-                  :label="item.name"
-                  :value="item.value"
-                  v-html="'<span style=color:'+item.color+'>'+item.name+'</span>'"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="所属模块：" prop="moduleId">
-              <selectTree
-               :props="props"
-               :options="options"
-               :value="tempElement.moduleId || '0'"
-               :clearable="isClearable"
-               :accordion="isAccordion"
-               @getValue="selectTreeGetValueElement($event)"
-               />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="备注：" prop="remark">
-              <el-input v-model="tempElement.remark" type="textarea" placeholder="请输入备注" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisibleElement = false">取消</el-button>
-        <el-button type="primary" @click="dialogElementStatus==='create'?createModuleElement():updateModuleElement()">确定</el-button>
-      </div>
-    </el-dialog>
-    <!-- 选择图标 -->
-    <el-dialog title="图标" :visible.sync="dialogIconFormVisible">
-      <IconsView @getIcomText="getIcomText" />
-    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getModules, getModulesTree, loadMenus, getModulesName, createModule, updateModule, deleteModule, addElement, updateElement, deleteElement } from '@/api/basics/module'
+import { getOrgs, getOrgsName, getChildOrgs, addOrg, updateOrg, deleteOrg } from '@/api/basics/org'
 import waves from '@/directive/waves' // waves directive
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import SelectTree from '@/components/SelectTree'
 import IconsView from '@/views/icons/index'
 
 export default {
   name: 'ModuleTable',
-  components: { Pagination, SelectTree, IconsView},
+  components: { SelectTree, IconsView},
   directives: { waves },
   data() {
     return {
@@ -268,14 +59,6 @@ export default {
         children: 'children',
         // disabled:true
       },
-      calssSelect: [
-        { name: '默认按钮', value: '', color: '#333333' },
-        { name: '主要按钮', value: 'primary', color: '#409EFF' },
-        { name: '成功按钮', value: 'success', color: '#67C23A' },
-        { name: '信息按钮', value: 'info', color: '#909399' },
-        { name: '警告按钮', value: 'warning', color: '#E6A23C' },
-        { name: '危险按钮', value: 'danger', color: '#F56C6C' }
-      ],
       options:[],
       selectParentId: '0',
       selectModuleId: '0',
@@ -339,7 +122,7 @@ export default {
     }
   },
   created() {
-    this.getModulesTree()
+    this.getOrgs()
   },
   // 挂载window.onresize事件
   mounted() {
@@ -372,7 +155,7 @@ export default {
       }
     },
     // 查询
-    getModulesTree(isRefresh) {
+    getOrgs(isRefresh) {
       if(isRefresh) {
         this.$refs.multipleTable.clearSelection()
         this.elements = null
@@ -381,7 +164,7 @@ export default {
       }
       this.listLoading = true
       this.selectModuleId = '0'
-      getModulesTree(this.moduleQuery).then(response => {
+      getOrgs(this.moduleQuery).then(response => {
         this.list = response.data
         setTimeout(() => {
           this.listLoading = false
@@ -391,9 +174,9 @@ export default {
     },
 
     //获取节点下拉框
-    getModulesName(){
+    getOrgsName(){
        this.options = []
-       getModulesName().then(response => {
+       getOrgsName().then(response => {
         let fatherData = {
           id: '0',
           name: '根节点',

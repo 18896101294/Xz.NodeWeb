@@ -15,6 +15,14 @@ export function getModulesTree(data) {
   })
 }
 
+export function loadMenus(data) {
+  return request({
+    url: '/Module/LoadMenus',
+    method: 'get',
+    params: data
+  })
+}
+
 export function getModulesName() {
   return request({
     url: '/User/GetModulesName',

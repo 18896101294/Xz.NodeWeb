@@ -36,19 +36,19 @@
               {{ $t('navbar.dashboard') }}
             </el-dropdown-item>
           </router-link>
-          <a target="_blank" href="http://xznode.club:52788/swagger/index.html">
+          <a target="_blank" href="https://github.com/18896101294">
             <el-dropdown-item>
               {{ $t('navbar.github') }}
             </el-dropdown-item>
           </a>
-          <a target="_blank" href="http://xznode.club:8600">
+          <a target="_blank" href="http://xznode.club:8700">
             <el-dropdown-item>
               {{ $t('navbar.consulUrl') }}
             </el-dropdown-item>
           </a>
-          <a target="_blank" href="https://github.com/18896101294/Xz.NodeWeb">
+          <!-- <a target="_blank" href="https://github.com/18896101294/Xz.NodeWeb">
             <el-dropdown-item>Docs</el-dropdown-item>
-          </a>
+          </a> -->
           <el-dropdown-item divided @click.native="logout">
             <span style="display:block;">{{ $t('navbar.logOut') }}</span>
           </el-dropdown-item>

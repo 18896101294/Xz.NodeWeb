@@ -189,3 +189,9 @@ aside {
 .multiselect--active {
   z-index: 1000 !important;
 }
+
+//修改table表格选中样式，变得更高亮
+.el-table--striped .el-table__body tr.el-table__row--striped.current-row td, .el-table__body tr.current-row>td {
+  color: #fff;
+  background-color: #1cbbb4!important;
+}
