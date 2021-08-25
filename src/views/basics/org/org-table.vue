@@ -18,7 +18,7 @@
       <el-col :span="12">
         <!-- 树形菜单 -->
         <el-tree
-          :data="data"
+          :data="list"
           show-checkbox
           node-key="id"
           :default-expanded-keys="[2, 3]"
@@ -40,20 +40,24 @@ import SelectTree from '@/components/SelectTree'
 import IconsView from '@/views/icons/index'
 
 export default {
-  name: 'ModuleTable',
+  name: 'OrgTable',
   components: { SelectTree, IconsView},
   directives: { waves },
   data() {
     return {
       tableKey: 0,
       list: [],
+      defaultProps: {
+        children: 'children',
+        label: 'name'
+      },
       elements: [],
       total: 0,
       //自定义主键配置
-      isClearable: true,      // 可清空（可选）
-      isAccordion: true,      // 可收起（可选）
-      valueId: '0',          // 初始ID（可选）
-      props:{                // 配置项（必选）
+      isClearable: true,
+      isAccordion: true,
+      valueId: '0',
+      props:{
         value: 'id',
         label: 'name',
         children: 'children',
@@ -165,7 +169,15 @@ export default {
       this.listLoading = true
       this.selectModuleId = '0'
       getOrgs(this.moduleQuery).then(response => {
-        this.list = response.data
+        let fatherData = {
+          id: '0',
+          name: '根节点',
+          parentId: '',
+          children: []
+        }
+        fatherData.children = this.treeData(response.data, 'id', 'parentId', 'children')
+        this.list = fatherData
+        console.log(this.list)
         setTimeout(() => {
           this.listLoading = false
         }, 1.5 * 1000)

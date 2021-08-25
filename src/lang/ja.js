@@ -45,6 +45,8 @@ export default {
     ConsulTable: 'Consul列表',
     ConfigurationTable: '系统配置',
     ModuleTable: '模块管理',
+    OrgTable: '部门管理',
+    OrgTable: '部门管理',
     BasicsManager: '基础配置',
     SystemManager: '系统管理',
     Logs: 'Logs',
