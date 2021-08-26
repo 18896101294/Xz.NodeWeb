@@ -39,7 +39,7 @@ export function updateOrg(data) {
 
 export function deleteOrg(data) {
   return request({
-    url: '/Module/DeleteOrg',
+    url: '/Org/DeleteOrg',
     method: 'post',
     data
   })

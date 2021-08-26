@@ -5,35 +5,37 @@
     <div ref="filterhight" class="filter-container">
       <el-form :inline="true" @submit.native.prevent>
         <div>
-          <el-button v-waves class="filter-item" size="small" type="primary" icon="el-icon-search" @click="getModulesTree(true)">刷新</el-button>
+          <el-button v-waves class="filter-item" size="small" type="primary" icon="el-icon-search" @click="getOrgs(true)">刷新</el-button>
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">添加</el-button>
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleUpdate">修改</el-button>
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleDelete">删除</el-button>
-          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreateElement">分配用户</el-button>
+          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleUpdate">分配用户</el-button>
         </div>
       </el-form>
     </div>
 
     <el-row :gutter="10">
-      <el-col :span="5" :style="'border: 1px solid #dfe6ec;height:' + tableHeight + 'px'">
-        <!-- 树形菜单 -->
-        <el-tree :data="list" default-expand-all node-key="id" :expand-on-click-node="false" :props="defaultProps" @node-click="elTreeClick"> 
-          <span class="custom-tree-node" slot-scope="{ node }">
-            <span :name="node.label">
-                <i v-if="node.childNodes.length>0"
-                :class="node.expanded ? 'el-icon-folder-opened' : 'el-icon-folder'"></i>
-                <i v-else class="el-icon-document-remove"></i>  {{ node.label }}
+      <el-col :span="5" style="border: 1px solid #dfe6ec">
+        <div class="tree-container" :style="'overflow: auto; height:' + tableHeight + 'px'">
+          <!-- 树形菜单 -->
+          <el-tree :data="list" v-loading="listLoading" default-expand-all node-key="id" :expand-on-click-node="false" :props="defaultProps" @node-click="elTreeClick"> 
+            <span class="custom-tree-node" slot-scope="{ node }">
+              <span :name="node.label">
+                  <i v-if="node.childNodes.length>0"
+                  :class="node.expanded ? 'el-icon-folder-opened' : 'el-icon-folder'"></i>
+                  <i v-else class="el-icon-document-remove"></i>  {{ node.label }}
+              </span>
             </span>
-          </span>
-        </el-tree>
+          </el-tree>
+        </div>
       </el-col>
 
       <el-col :span="19">
         <!-- 表格 -->
         <el-table
           :key="tableKey"
-          v-loading="listLoading"
-          :height="tableHeight"
+          v-loading="listElementLoading"
+          :height="tableHeight+1"
           :data="elements"
           stripe
           border
@@ -59,11 +61,76 @@
            <el-table-column label="排序" min-width="40px" prop="sortNo" align="center">
           </el-table-column>
 
-          <el-table-column label="状态" min-width="40px" prop="status" align="center">
+          <el-table-column label="状态" min-width="40px" class-name="status-col" align="center" prop="status">
+            <template slot-scope="{row}">
+              {{ row.status | statusFilter }}
+            </template>
+          </el-table-column>
+
+          <el-table-column label="操作" align="center" width="80" class-name="small-padding fixed-width">
+            <template slot-scope="{row}">
+              <el-button type="primary" size="mini" icon="el-icon-user" @click="showOrgUsers(row)">用户</el-button>
+            </template>
           </el-table-column>
         </el-table>
       </el-col>
     </el-row>
+
+    <!-- 添加 -->
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="40%">
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="110px" >
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="层级：" prop="cascadeId">
+              <el-tag size="small">{{ temp.cascadeId }}</el-tag>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="代码：" prop="customCode">
+              <el-input v-model="temp.customCode" clearable placeholder="请输入代码" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="名称：" prop="name">
+              <el-input v-model="temp.name" clearable placeholder="请输入名称" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="排序：" prop="sortNo">
+              <el-input-number v-model="temp.sortNo" :min="1" label="请输入顺序号"></el-input-number>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="状态：" prop="status">
+              <el-switch v-model="temp.status" active-color="#13ce66" inactive-color="#ff4949" :active-value=1 :inactive-value=0></el-switch>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="上级：" prop="parentId">
+              <selectTree
+               :props="props"
+               :options="options"
+               :value="temp.parentId || '0'"
+               :clearable="isClearable"
+               :accordion="isAccordion"
+               @getValue="selectTreeGetValue($event)"
+               />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="dialogStatus==='create'?addOrg():updateOrg()">确定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -77,10 +144,26 @@ export default {
   name: 'OrgTable',
   components: { SelectTree, IconsView},
   directives: { waves },
+  filters: {
+    statusFilter(status) {
+      const statusMap = {
+        0: '禁用',
+        1: '启用'
+      }
+      return statusMap[status]
+    }
+  },
   data() {
     return {
       tableKey: 0,
+      responseList: [],
       list: [],
+      fatherData: {
+          id: '0',
+          name: '根节点',
+          parentId: '',
+          children: []
+      },
       defaultProps: {
         children: 'children',
         label: 'name'
@@ -99,55 +182,36 @@ export default {
       },
       options:[],
       selectParentId: '0',
-      selectModuleId: '0',
       listLoading: true,
-      listElementLoading: false,
+      listElementLoading: true,
       moduleQuery: {
         parentId: null
       },
-      importanceOptions: [1, 2, 3],
-      showReviewer: false,
       temp: {
         id: '',
         cascadeId: '.0.',
         name: '',
         hotKey: '',
-        ParentName: '',
-        IsLeaf: false,
-        IsAutoExpand: false,
-        IconName: '',
-        Status: 0,
-        BizCode: '',
-        CustomCode: '',
-        CreateTime: new Date(),
-        CreateId: 0,
+        parentName: '',
+        isLeaf: false,
+        isAutoExpand: false,
+        iconName: '',
+        status: 0,
+        bizCode: '',
+        customCode: '',
+        createTime: new Date(),
+        createId: 0,
         sortNo: 0,
-        ParentId: '',
-        TypeName: '',
-        TypeId: '',
-      },
-      tempElement: {
-        id: '',
-        moduleId: '',
-        domId: '',
-        name: '',
-        sort: 0,
-        icon: '',
-        class: 'primary',
-        remark: ''
+        parentId: '',
+        typeName: '',
+        typeId: '',
       },
       dialogFormVisible: false,
-      dialogFormVisibleElement: false,
       dialogIconFormVisible: false,
       dialogStatus: '',
-      dialogElementStatus: '',
       textMap: {
-        update: '修改模块',
-        create: '添加模块'
-      },
-      textMapElement: {
-        update: '修改元素',
-        create: '添加元素'
+        update: '修改部门',
+        create: '添加部门'
       },
       rules: {
         code: [{ required: true, message: '标识必填', trigger: 'change' }],
@@ -163,7 +227,6 @@ export default {
       ],
       // 勾选
       multipleSelection: null,
-      multipleSelectionElement: null
     }
   },
   created() {
@@ -198,7 +261,6 @@ export default {
       } else {
         this.tableHeight = window.innerHeight - tableH + 100
       }
-      console.log(this.tableHeight)
     },
     // 查询
     getOrgs(isRefresh) {
@@ -208,22 +270,20 @@ export default {
         this.moduleQuery.parentId = null
         this.tableKey = this.tableKey == 1 ? 0 : 1
       }
-      this.listLoading = false
-      this.selectModuleId = '0'
+      this.list = []
+      this.listLoading = true
+      this.listElementLoading = true
       getOrgs(this.moduleQuery).then(response => {
-        let fatherData = {
-          id: '0',
-          name: '根节点',
-          parentId: '',
-          children: []
-        }
-        fatherData.children = this.treeData(response.data, 'id', 'parentId', 'children')
-        console.log(fatherData)
-        this.list.push(fatherData)
-        console.log(this.list)
+        this.responseList = response.data
+        this.fatherData.children = this.treeData(response.data, 'id', 'parentId', 'children')
+        this.list.push(this.fatherData)
+        getChildOrgs('0').then(response => {
+          this.elements = response.data
+        })
         setTimeout(() => {
           this.listLoading = false
-        }, 1.5 * 1000)
+          this.listElementLoading = false
+        }, 1 * 1000)
       })
       this.getTableHeight()
     },
@@ -261,73 +321,56 @@ export default {
 
     //节点点击回调
     elTreeClick(data, node, tree) {
-      this.listLoading = true
+      this.listElementLoading = true
       getChildOrgs(data.id).then(response => {
           this.elements = response.data
           setTimeout(() => {
-            this.listLoading = false
+            this.listElementLoading = false
           }, 1 * 1000)
       })
     },
     
     // 单选事件
     currentChange(val) {
-      this.listElementLoading = true
       this.$refs.multipleTable.clearSelection()
       this.$refs.multipleTable.toggleRowSelection(val)
       this.multipleSelection = val
-      this.selectModuleId = val.id
-      loadMenus({ moduleId : val.id }).then(response => {
-        this.elements = response.data
-        setTimeout(() => {
-          this.listElementLoading = false
-        }, 1 * 1000)
-      })
-    },
-    currentChangeElement(val ,index) {
-      this.$refs.multipleTableElement.clearSelection()
-      this.$refs.multipleTableElement.toggleRowSelection(val)
-      this.multipleSelectionElement = val
     },
 
-    //选择图标
-    changeIcon() {
-      this.dialogIconFormVisible = true
-    },
-    //获取图标值
-    getIcomText(text) {
-      this.dialogIconFormVisible = false
-      this.temp.iconName = text
-      this.tempElement.icon = text
-    },
-    resetTemp() {
-      this.temp = {
-        id: undefined,
-        name: '',
-        cascadeId: '.0.',
-        code: '',
-        sortNo: 1,
-        appSecret: '',
-        icon: '',
-        disable: true,
-        parentId: ''
+    //重置下拉框
+    resetFatherData() {
+      this.fatherData = {
+        id: '0',
+        name: '根节点',
+        parentId: '',
+        children: []
       }
     },
-    resetTempElement() {
-      this.tempElement = {
-        id: undefined,
-        moduleId: this.selectModuleId,
-        domId: '',
+
+    resetTemp() {
+      this.temp = {
+        id: '',
+        cascadeId: '.0.',
         name: '',
-        sort: 1,
-        icon: '',
-        class: 'primary',
-        remark: ''
+        hotKey: '',
+        parentName: '',
+        isLeaf: false,
+        isAutoExpand: false,
+        iconName: '',
+        status: 0,
+        bizCode: '',
+        customCode: '',
+        createTime: new Date(),
+        createId: 0,
+        sortNo: 0,
+        parentId: '',
+        typeName: '',
+        typeId: '',
       }
     },
 
     handleCreate() {
-      this.getModulesName()
+      this.getOrgsName()
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
@@ -337,121 +380,66 @@ export default {
     },
 
     // 添加
-    createModule() {
+    addOrg() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           this.temp.parentId = this.selectParentId
-          createModule(this.temp).then(response => {
+          addOrg(this.temp).then(response => {
             this.dialogFormVisible = false
             this.$notify({
               message: response.message, type: 'success'
             })
-            this.getModulesTree(true)
+
+            this.list = []
+            this.responseList.push(this.temp)
+            this.resetFatherData()
+            this.fatherData.children = this.treeData(this.responseList, 'id', 'parentId', 'children')
+            this.list.push(this.fatherData)
+
+            this.elements.push(this.temp)
           })
         }
       })
     },
 
-    handleCreateElement() {
-      this.getModulesName()
-      this.resetTempElement()
-      this.dialogElementStatus = 'create'
-      this.dialogFormVisibleElement = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
-    },
-
-    // 添加元素
-    createModuleElement() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          this.tempElement.moduleId = this.selectModuleId
-          if(this.tempElement.moduleId == '') {
-            this.$message({
-              message: '元素所属模块不能为根节点', type: 'warning'
-            })
-          } else {
-            addElement(this.tempElement).then(response => {
-              this.dialogFormVisibleElement = false
-              this.$notify({
-                message: response.message, type: 'success'
-              })
-              this.elements.push(response.data)
-            })
-          }
-        }
-      })
-    },
-
-    handleUpdate(row) {
-      if (this.multipleSelection != null) {
-        this.getModulesName()
-        this.temp = Object.assign({}, this.multipleSelection) // copy obj
-        this.dialogStatus = 'update'
-        this.dialogFormVisible = true
-        this.$nextTick(() => {
-          this.$refs['dataForm'].clearValidate()
-        })
-      } else {
+    handleUpdate(row, isClick = false) {
+      if (!isClick && this.multipleSelection == null) {
         this.$message({
           message: '请勾选需要修改的数据', type: 'warning'
         })
+        return
       }
+      this.getOrgsName()
+      this.dialogStatus = 'update'
+      this.dialogFormVisible = true
+      this.$nextTick(() => {
+        this.$refs['dataForm'].clearValidate()
+      })
+      this.temp = isClick? row: Object.assign({}, this.multipleSelection) 
     },
 
     // 修改
-    updateModule() {
+    updateOrg() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           if(this.selectParentId != '0'){
             this.temp.parentId = this.selectParentId
           }
           const tempData = Object.assign({}, this.temp)
-          updateModule(tempData).then(response => {
-            const index = this.list.findIndex(v => v.id === this.temp.id)
-            this.list.splice(index, 1, this.temp)
+          updateOrg(tempData).then(response => {
             this.dialogFormVisible = false
             this.$notify({
               message: response.message, type: 'success'
             })
-            this.getModulesTree(true)
-          })
-        }
-      })
-    },
+            this.list = []
+            const index = this.responseList.findIndex(v => v.id === this.temp.id)
+            this.responseList.splice(index, 1, this.temp)
+            this.resetFatherData()
+            this.fatherData.children = this.treeData(this.responseList, 'id', 'parentId', 'children')
+            this.list.push(this.fatherData)
 
-    handleUpdateElement(row, isClick = false) {
-      if (!isClick && this.multipleSelectionElement == null) {
-        this.$message({
-          message: '请勾选需要修改的数据', type: 'warning'
-        })
-        return
-      }
-      this.getModulesName()
-      this.dialogElementStatus = 'update'
-      this.dialogFormVisibleElement = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
-      this.tempElement = isClick? row: Object.assign({}, this.multipleSelectionElement) 
-    },
-
-    // 修改元素
-    updateModuleElement() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          if(this.selectModuleId != '0'){
-            this.tempElement.moduleId = this.selectModuleId
-          }
-          const tempData = Object.assign({}, this.tempElement)
-          updateElement(tempData).then(response => {
-            this.dialogFormVisibleElement = false
-            this.$notify({
-              message: response.message, type: 'success'
-            })
-            const index = this.elements.findIndex(v => v.id === this.tempElement.id)
-            this.elements.splice(index, 1, this.tempElement)
+            const elementIndex = this.elements.findIndex(v => v.id === this.temp.id)
+            this.elements.splice(elementIndex, 1, this.temp)
           })
         }
       })
@@ -466,39 +454,20 @@ export default {
           type: 'warning'
         }).then(() => {
           const deleteId = this.multipleSelection.id
-          deleteModule({id: deleteId}).then(response => {
+          deleteOrg({ids: [deleteId]}).then(response => {
             this.$notify({
               message: response.message, type: 'success'
             })
-            this.getModulesTree(true)
-          })
-        }).catch(() => {
-          this.$notify({
-            message: '已取消删除', type: 'info'
-          })
-        })
-      } else {
-        this.$message({
-          message: '请勾选需要删除的数据', type: 'warning'
-        })
-      }
-    },
 
-    // 删除元素
-    handleDeleteElement() {
-      if (this.multipleSelectionElement) {
-        this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          const deleteId = this.multipleSelectionElement.id
-          deleteElement({id: deleteId}).then(response => {
-            this.$notify({
-              message: response.message, type: 'success'
-            })
-            const index = this.elements.findIndex(v => v.id === deleteId)
-            this.elements.splice(index, 1)
+            this.list = []
+            const index = this.responseList.findIndex(v => v.id === deleteId)
+            this.responseList.splice(index, 1)
+            this.resetFatherData()
+            this.fatherData.children = this.treeData(this.responseList, 'id', 'parentId', 'children')
+            this.list.push(this.fatherData)
+
+            const elementsIndex = this.elements.findIndex(v => v.id === deleteId)
+            this.elements.splice(elementsIndex, 1)
           })
         }).catch(() => {
           this.$notify({
