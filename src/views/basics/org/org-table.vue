@@ -14,20 +14,54 @@
       </el-form>
     </div>
 
-    <el-row>
-      <el-col :span="12">
+    <el-row :gutter="10">
+      <el-col :span="5" :style="'border: 1px solid #dfe6ec;height:' + tableHeight + 'px'">
         <!-- 树形菜单 -->
-        <el-tree
-          :data="list"
-          show-checkbox
-          node-key="id"
-          :default-expanded-keys="[2, 3]"
-          :props="defaultProps">
+        <el-tree :data="list" default-expand-all node-key="id" :props="defaultProps" @node-click="elTreeClick"> 
+          <span class="custom-tree-node" slot-scope="{ node }">
+            <span :name="node.label">
+                <i v-if="node.childNodes.length>0"
+                :class="node.expanded ? 'el-icon-folder-opened' : 'el-icon-folder'"></i>
+                <i v-else class="el-icon-document-remove"></i>  {{ node.label }}
+            </span>
+          </span>
         </el-tree>
       </el-col>
 
-      <el-col :span="12">
-        
+      <el-col :span="19">
+        <!-- 表格 -->
+        <el-table
+          :key="tableKey"
+          v-loading="listLoading"
+          :height="tableHeight"
+          :data="elements"
+          stripe
+          border
+          fit
+          highlight-current-row
+          lazy
+          ref="multipleTable"
+          style="width: 100%;"
+          @current-change="currentChange">
+
+          <el-table-column label="层级" align="center" prop="cascadeId" min-width="80px">
+          </el-table-column>
+
+          <el-table-column label="代码" min-width="80px" prop="customCode" align="center" >
+            <template slot-scope="{row}">
+              <span class="link-type" @click="handleUpdate(row, true)">{{ row.customCode }}</span>
+            </template>
+          </el-table-column>
+
+          <el-table-column label="名称" align="center" prop="name" min-width="100px">
+          </el-table-column>
+
+           <el-table-column label="排序" min-width="40px" prop="sortNo" align="center">
+          </el-table-column>
+
+          <el-table-column label="状态" min-width="40px" prop="status" align="center">
+          </el-table-column>
+        </el-table>
       </el-col>
     </el-row>
   </div>
@@ -76,14 +110,21 @@ export default {
       temp: {
         id: '',
         cascadeId: '.0.',
-        code: '',
-        sortNo: 0,
-        isSys: false,
-        iconName: '',
         name: '',
-        icon: '',
-        url: '',
-        parentName: ''
+        hotKey: '',
+        ParentName: '',
+        IsLeaf: false,
+        IsAutoExpand: false,
+        IconName: '',
+        Status: 0,
+        BizCode: '',
+        CustomCode: '',
+        CreateTime: new Date(),
+        CreateId: 0,
+        sortNo: 0,
+        ParentId: '',
+        TypeName: '',
+        TypeId: '',
       },
       tempElement: {
         id: '',
@@ -157,6 +198,7 @@ export default {
       } else {
         this.tableHeight = window.innerHeight - tableH + 100
       }
+      console.log(this.tableHeight)
     },
     // 查询
     getOrgs(isRefresh) {
@@ -166,7 +208,7 @@ export default {
         this.moduleQuery.parentId = null
         this.tableKey = this.tableKey == 1 ? 0 : 1
       }
-      this.listLoading = true
+      this.listLoading = false
       this.selectModuleId = '0'
       getOrgs(this.moduleQuery).then(response => {
         let fatherData = {
@@ -176,7 +218,8 @@ export default {
           children: []
         }
         fatherData.children = this.treeData(response.data, 'id', 'parentId', 'children')
-        this.list = fatherData
+        console.log(fatherData)
+        this.list.push(fatherData)
         console.log(this.list)
         setTimeout(() => {
           this.listLoading = false
@@ -215,17 +258,15 @@ export default {
         this.selectParentId = ''
       }
     },
-    selectTreeGetValueElement(value) {
-      this.selectModuleId = value
-      if(value == '0') {
-        this.selectModuleId = ''
-      }
-    },
 
-    load(tree, treeNode, resolve) {
-      this.moduleQuery.parentId = tree.id
-        getModulesTree(this.moduleQuery).then(response => {
-          resolve(response.data)
+    //节点点击回调
+    elTreeClick(data, node, tree) {
+      this.listLoading = true
+      getChildOrgs(data.id).then(response => {
+          this.elements = response.data
+          setTimeout(() => {
+            this.listLoading = false
+          }, 1 * 1000)
       })
     },
     

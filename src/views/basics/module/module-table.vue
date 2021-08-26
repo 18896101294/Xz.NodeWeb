@@ -16,7 +16,7 @@
       </el-form>
     </div>
 
-    <el-row>
+    <el-row :gutter="10">
       <el-col :span="12">
         <!-- 表格 -->
         <el-table

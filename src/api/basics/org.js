@@ -9,7 +9,7 @@ export function getOrgs() {
 
 export function getChildOrgs(orgId) {
   return request({
-    url: '/User/GetChildOrgs?id=' + orgId,
+    url: '/User/GetChildOrgs?orgId=' + orgId,
     method: 'get'
   })
 }
