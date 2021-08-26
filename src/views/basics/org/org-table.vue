@@ -17,7 +17,7 @@
     <el-row :gutter="10">
       <el-col :span="5" :style="'border: 1px solid #dfe6ec;height:' + tableHeight + 'px'">
         <!-- 树形菜单 -->
-        <el-tree :data="list" default-expand-all node-key="id" :props="defaultProps" @node-click="elTreeClick"> 
+        <el-tree :data="list" default-expand-all node-key="id" :expand-on-click-node="false" :props="defaultProps" @node-click="elTreeClick"> 
           <span class="custom-tree-node" slot-scope="{ node }">
             <span :name="node.label">
                 <i v-if="node.childNodes.length>0"
