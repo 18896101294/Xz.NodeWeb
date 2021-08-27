@@ -14,6 +14,14 @@ export function getChildOrgs(orgId) {
   })
 }
 
+export function getOrgUsers(data) {
+  return request({
+    url: '/Org/GetOrgUsers',
+    method: 'get',
+    params: data
+  })
+}
+
 export function getOrgsName() {
   return request({
     url: '/User/GetOrgsName',
