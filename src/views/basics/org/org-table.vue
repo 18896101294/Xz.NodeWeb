@@ -382,12 +382,13 @@ export default {
     },
     // 查询部门下用户
     getOrgUsers() {
-      if (this.orgUserQuery.orgId == null || this.orgUserQuery.orgId == '') {
+      if (this.multipleSelection == null || this.multipleSelection.id == '') {
         this.$message({
           message: '请勾选部门', type: 'warning'
         })
         return
       }
+      this.orgUserQuery.orgId = this.multipleSelection.id
       this.dialogUserFormVisible = true
       this.userList = []
       this.listUserLoading = true
@@ -431,9 +432,9 @@ export default {
     },
 
     //节点点击回调
-    elTreeClick(data, node, tree) {
-      this.listElementLoading = true
-      getChildOrgs(data.id).then(response => {
+    elTreeClick(treeData, node, tree) {
+      const id = treeData.id
+      getChildOrgs(id).then(response => {
           this.elements = response.data
           setTimeout(() => {
             this.listElementLoading = false
@@ -446,7 +447,6 @@ export default {
       this.$refs.multipleTable.clearSelection()
       this.$refs.multipleTable.toggleRowSelection(val)
       this.multipleSelection = val
-      this.orgUserQuery.orgId = val.id
     },
 
     //重置下拉框
