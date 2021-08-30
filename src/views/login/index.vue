@@ -84,7 +84,7 @@
 import { validUsername } from '@/utils/validate'
 import LangSelect from '@/components/LangSelect'
 import SocialSign from './components/SocialSignin'
-import { getUserModulesTree } from '@/api/user';
+import { getUserModulesTree } from '@/api/login';
 import router from "@/router";
 import { resetRouter, filterAsyncRouter, constantRoutes } from "@/router/index";
 import axios from 'axios/index'

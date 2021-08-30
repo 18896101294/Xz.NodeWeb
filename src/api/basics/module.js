@@ -2,14 +2,14 @@ import request from '@/utils/request'
 
 export function getModules() {
   return request({
-    url: '/User/GetModules',
+    url: '/UserSession/GetModules',
     method: 'get'
   })
 }
 
 export function getModulesTree(data) {
   return request({
-    url: '/User/GetModulesTree',
+    url: '/UserSession/GetModulesTree',
     method: 'get',
     params: data
   })
@@ -25,7 +25,7 @@ export function loadMenus(data) {
 
 export function getModulesName() {
   return request({
-    url: '/User/GetModulesName',
+    url: '/UserSession/GetModulesName',
     method: 'get'
   })
 }

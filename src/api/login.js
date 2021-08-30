@@ -10,7 +10,7 @@ export function login(data) {
 
 export function getInfo(token) {
   return request({
-    url: '/User/GetUserProfile',
+    url: '/UserSession/GetUserProfile',
     method: 'get',
     params: { token }
   })
@@ -25,7 +25,7 @@ export function logout() {
 
 export function getUserModulesTree() {
   return request({
-    url: '/User/GetUserModulesTree',
+    url: '/UserSession/GetUserModulesTree',
     method: 'get',
   })
 }

@@ -9,7 +9,7 @@
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">添加</el-button>
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleUpdate">修改</el-button>
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleDelete">删除</el-button>
-          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="getOrgUsers">分配用户</el-button>
+          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="getOrgUsers">查看用户</el-button>
         </div>
       </el-form>
     </div>
@@ -143,10 +143,6 @@
           </el-form-item>
           <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="getOrgUsers">搜索</el-button>
           <el-button v-waves class="filter-item" type="info" icon="el-icon-refresh" @click="handleReset">重置</el-button>
-          <div>
-            <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" >添加</el-button>
-            <el-button size="small" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" >移除</el-button>
-          </div>
         </el-form>
       </div>
 
@@ -393,7 +389,7 @@ export default {
       this.userList = []
       this.listUserLoading = true
       getOrgUsers(this.orgUserQuery).then(response => {
-        this.userList = response.data
+        this.userList = response.data.datas
         setTimeout(() => {
           this.listUserLoading = false
         }, 1 * 1000)
