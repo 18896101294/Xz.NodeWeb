@@ -598,7 +598,7 @@ export default {
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
-      this.tempElement = isClick? row: Object.assign({}, this.multipleSelectionElement) 
+      this.tempElement = isClick? Object.assign({}, row): Object.assign({}, this.multipleSelectionElement) 
     },
 
     // 修改元素

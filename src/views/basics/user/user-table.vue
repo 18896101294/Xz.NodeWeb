@@ -4,12 +4,24 @@
     <!-- 筛选栏 -->
     <div ref="filterhight" class="filter-container">
       <el-form :inline="true" @submit.native.prevent>
+        <el-form-item label="账号：">
+          <el-input clearable v-model="orgUserQuery.name" placeholder="请输入角色名" />
+        </el-form-item>
+        <el-form-item label="用户名：">
+          <el-input clearable v-model="orgUserQuery.account" placeholder="请输入代码" />
+        </el-form-item>
+        <el-form-item label="状态：">
+          <el-select v-model="orgUserQuery.status" clearable placeholder="请选择">
+            <el-option  v-for="item in resultType" :key="item.value" :label="item.label" :value="item.value"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
+        <el-button v-waves class="filter-item" type="info" icon="el-icon-refresh" @click="handleReset">重置</el-button>
         <div>
           <el-button v-waves class="filter-item" size="small" type="primary" icon="el-icon-search" @click="getOrgs(true)">刷新</el-button>
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">添加</el-button>
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleUpdate">修改</el-button>
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleDelete">删除</el-button>
-          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="getOrgUsers">查看用户</el-button>
         </div>
       </el-form>
     </div>
@@ -44,27 +56,37 @@
           lazy
           ref="multipleTable"
           style="width: 100%;"
+          :header-cell-style="{'text-align':'center'}"
           @current-change="currentChange">
 
-          <el-table-column label="层级" align="center" prop="cascadeId" min-width="80px">
+          <el-table-column label="账号" align="center" prop="account" min-width="80px">
           </el-table-column>
 
-          <el-table-column label="代码" min-width="80px" prop="customCode" align="center" >
+          <el-table-column label="部门" min-width="300px" prop="userOrgs" align="center" >
             <template slot-scope="{row}">
-              <span class="link-type" @click="handleUpdate(row, true)">{{ row.customCode }}</span>
+              <el-tag effect="plain" v-for = "(data,index) in row.userOrgs" :key="index">{{ data }}</el-tag>
             </template>
           </el-table-column>
 
-          <el-table-column label="名称" align="center" prop="name" min-width="100px">
+          <el-table-column label="用户名" align="center" prop="name" min-width="80px">
           </el-table-column>
 
-           <el-table-column label="排序" min-width="40px" prop="sortNo" align="center">
+          <el-table-column label="代码" align="center" prop="bizCode" min-width="80px">
           </el-table-column>
 
-          <el-table-column label="状态" min-width="40px" class-name="status-col" align="center" prop="status">
+          <el-table-column label="状态" min-width="50px" class-name="status-col" align="center" prop="status">
             <template slot-scope="{row}">
               {{ row.status | statusFilter }}
             </template>
+          </el-table-column>
+
+          <el-table-column label="性别" align="center" prop="sex" min-width="50px">
+            <template slot-scope="{row}">
+              {{ row.sex | sexFilter }}
+            </template>
+          </el-table-column>
+        
+          <el-table-column label="创建时间" align="center" prop="createTime" min-width="80px">
           </el-table-column>
         </el-table>
       </el-col>
@@ -123,87 +145,19 @@
         <el-button type="primary" @click="dialogStatus==='create'?addOrg():updateOrg()">确定</el-button>
       </div>
     </el-dialog>
-
-    <el-dialog class="my_el-dialog__header" :visible.sync="dialogUserFormVisible" :close-on-click-modal="false" :close-on-press-escape="false" width="80%">
-      <!-- 筛选栏 -->
-      <div ref="filterhight" class="filter-container">
-        <el-form :inline="true" @submit.native.prevent>
-          <el-form-item label="账号：">
-            <el-input clearable v-model="orgUserQuery.account" placeholder="请输入账号" />
-          </el-form-item>
-          <el-form-item label="用户名：">
-            <el-input clearable v-model="orgUserQuery.name" placeholder="请输入用户名" />
-          </el-form-item>
-          <el-form-item label="状态：">
-            <el-select v-model="orgUserQuery.status" clearable placeholder="请选择">
-              <el-option  v-for="item in resultType" :key="item.value" :label="item.label" :value="item.value"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="getOrgUsers">搜索</el-button>
-          <el-button v-waves class="filter-item" type="info" icon="el-icon-refresh" @click="handleReset">重置</el-button>
-        </el-form>
-      </div>
-
-      <el-table
-        :key="tableKey"
-        v-loading="listUserLoading"
-        :data="userList"
-        stripe
-        border
-        fit
-        lazy
-        ref="multipleTableUser"
-        style="width: 100%;"
-        >
-
-        <el-table-column label="账号" align="center" prop="account" min-width="80px">
-        </el-table-column>
-
-        <!-- <el-table-column label="头像" align="center" prop="avatar" min-width="200px">
-        </el-table-column> -->
-
-        <el-table-column label="部门" prop="orgNames" min-width="300px" align="left">
-          <template slot-scope="{row}">
-            <el-tag effect="plain" v-for = "(data,index) in row.orgNames" :key="index">{{ data }}</el-tag>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="用户名" min-width="80px" prop="name" align="center" >
-        </el-table-column>
-
-        <el-table-column label="代码" align="center" prop="bizCode" min-width="80px">
-        </el-table-column>
-
-        <el-table-column label="状态" min-width="50px" class-name="status-col" align="center" prop="status">
-          <template slot-scope="{row}">
-            {{ row.status | statusFilter }}
-          </template>
-        </el-table-column>
-
-        <el-table-column label="性别" align="center" prop="sex" min-width="50px">
-          <template slot-scope="{row}">
-            {{ row.sex | sexFilter }}
-          </template>
-        </el-table-column>
-        
-        <el-table-column label="创建时间" align="center" prop="createTime" min-width="80px">
-        </el-table-column>
-      </el-table>
-
-      <pagination v-show="total>0" :total="total" :page.sync="orgUserQuery.pageIndex" :limit.sync="orgUserQuery.pageSize" @pagination="getOrgUsers" />
-    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getOrgs, getOrgsName, getChildOrgs, getOrgUsers, addOrg, updateOrg, deleteOrg } from '@/api/basics/org'
+import { getOrgs, getOrgsName, getChildOrgs, getOrgUsers } from '@/api/basics/org'
+import { SaveUser, changePassword, deleteUser } from '@/api/basics/user'
 import waves from '@/directive/waves' // waves directive
 import SelectTree from '@/components/SelectTree'
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import IconsView from '@/views/icons/index'
 
 export default {
-  name: 'OrgTable',
-  components: { SelectTree, Pagination },
+  name: 'UserTable',
+  components: { SelectTree, IconsView},
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -302,8 +256,8 @@ export default {
       dialogUserFormVisible: false,
       dialogStatus: '',
       textMap: {
-        update: '修改部门',
-        create: '添加部门'
+        update: '修改用户',
+        create: '添加用户'
       },
       rules: {
         customCode: [{ required: true, message: '代码必填', trigger: 'change' }],
@@ -361,7 +315,12 @@ export default {
         this.responseList = response.data
         this.fatherData.children = this.treeData(response.data, 'id', 'parentId', 'children')
         this.list.push(this.fatherData)
-        getChildOrgs('0').then(response => {
+        // 查询部门下用户
+        this.orgUserQuery.orgId = ''
+        this.orgUserQuery.name = ''
+        this.orgUserQuery.account = ''
+        this.orgUserQuery.status = null
+        getOrgUsers(this.orgUserQuery).then(response => {
           this.elements = response.data
         })
         setTimeout(() => {
@@ -377,26 +336,6 @@ export default {
       this.orgUserQuery.name = ''
       this.orgUserQuery.account = ''
       this.orgUserQuery.status = null
-    },
-    // 查询部门下用户
-    getOrgUsers() {
-      if (this.multipleSelection == null || this.multipleSelection.id == '') {
-        this.$message({
-          message: '请勾选部门', type: 'warning'
-        })
-        return
-      }
-      this.orgUserQuery.orgId = this.multipleSelection.id
-      this.dialogUserFormVisible = true
-      this.userList = []
-      this.listUserLoading = true
-      getOrgUsers(this.orgUserQuery).then(response => {
-        this.userList = response.data.datas
-        this.total = response.data.total
-        setTimeout(() => {
-          this.listUserLoading = false
-        }, 1 * 1000)
-      })
     },
 
     //获取节点下拉框
@@ -432,6 +371,7 @@ export default {
 
     //节点点击回调
     elTreeClick(treeData, node, tree) {
+      this.listElementLoading = true
       const id = treeData.id
       getChildOrgs(id).then(response => {
           this.elements = response.data

@@ -49,6 +49,8 @@ export default {
     BasicsManager: 'Basics Manager',
     SystemManager: 'System Manager',
     OrgTable: 'Org Manager',
+    RoleTable: 'Role Manager',
+    UserTable: 'User Manager',
     Logs: 'Logs',
     HttpReports: 'HttpReports',
     SystemLog: 'SystemLog',

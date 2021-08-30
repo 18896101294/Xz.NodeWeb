@@ -46,6 +46,8 @@ export default {
     ConfigurationTable: '系统配置',
     ModuleTable: '模块管理',
     OrgTable: '部门管理',
+    RoleTable: '角色管理',
+    UserTable: '用户管理',
     BasicsManager: '基础配置',
     OrgTable: '部门管理',
     SystemManager: '系统管理',

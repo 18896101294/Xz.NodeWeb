@@ -53,6 +53,8 @@ export default {
     HttpReports: 'HttpReports',
     SystemLog: 'SystemLog',
     OrgTable: 'Org Table',
+    RoleTable: 'Role Table',
+    UserTable: 'User Table',
     tab: 'Tab',
     form: 'Form',
     createArticle: 'Create Article',
