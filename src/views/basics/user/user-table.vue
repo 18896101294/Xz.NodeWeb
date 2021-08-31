@@ -27,7 +27,7 @@
     </div>
 
     <el-row :gutter="10">
-      <el-col :span="5" style="border: 1px solid #dfe6ec">
+      <el-col :span="4" style="border: 1px solid #dfe6ec">
         <div class="tree-container" :style="'overflow: auto; height:' + tableHeight + 'px'">
           <!-- 树形菜单 -->
           <el-tree :data="list" v-loading="listLoading" default-expand-all node-key="id" :expand-on-click-node="false" :props="defaultProps" 
@@ -43,7 +43,7 @@
         </div>
       </el-col>
 
-      <el-col :span="19">
+      <el-col :span="20">
         <!-- 表格 -->
         <el-table
           :key="tableKey"
@@ -87,7 +87,7 @@
             </template>
           </el-table-column>
         
-          <el-table-column label="创建时间" align="center" prop="createTime" min-width="80px">
+          <el-table-column label="创建时间" align="center" prop="createTime" min-width="100px">
           </el-table-column>
         </el-table>
 
@@ -100,25 +100,25 @@
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="110px" >
         <el-row>
           <el-col :span="12">
-            <el-form-item label="层级：" prop="cascadeId">
-              <el-tag size="small">{{ temp.cascadeId }}</el-tag>
+            <el-form-item label="账号：" prop="account">
+              <el-input v-model="temp.account" clearable placeholder="请输入账号" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="代码：" prop="customCode">
-              <el-input v-model="temp.customCode" clearable placeholder="请输入代码" />
+            <el-form-item label="用户名：" prop="name">
+              <el-input v-model="temp.name" clearable placeholder="请输入用户名" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="名称：" prop="name">
-              <el-input v-model="temp.name" clearable placeholder="请输入名称" />
+            <el-form-item label="代码：" prop="bizCode">
+              <el-input v-model="temp.bizCode" clearable placeholder="请输入代码" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="排序：" prop="sortNo">
-              <el-input-number v-model="temp.sortNo" :min="1" label="请输入顺序号"></el-input-number>
+            <el-form-item label="部门：" prop="orgNames">
+              <el-input clearable placeholder="请输入部门" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -129,15 +129,10 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="上级：" prop="parentId">
-              <selectTree
-               :props="props"
-               :options="options"
-               :value="temp.parentId || '0'"
-               :clearable="isClearable"
-               :accordion="isAccordion"
-               @getValue="selectTreeGetValue($event)"
-               />
+            <el-form-item label="性别：" prop="sex">
+              <el-select v-model="temp.sex" class="filter-item" placeholder="请选择">
+                <el-option v-for="item in sexList" :key="item.value" :label="item.name" :value="item.value" />
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -145,7 +140,7 @@
 
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?addOrg():updateOrg()">确定</el-button>
+        <el-button type="primary" @click="dialogStatus==='create'?addUser():updateUser()">确定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -153,7 +148,7 @@
 
 <script>
 import { getOrgs, getOrgsName } from '@/api/basics/org'
-import { loadUsersPage, SaveUser, changePassword, deleteUser } from '@/api/basics/user'
+import { loadUsersPage, saveUser, changePassword, deleteUser } from '@/api/basics/user'
 import waves from '@/directive/waves' // waves directive
 import SelectTree from '@/components/SelectTree'
 import IconsView from '@/views/icons/index'
@@ -237,24 +232,18 @@ export default {
           value: 1
         }
       ],
+      sexList: [
+        { name: '男', value: 0 },
+        { name: '女', value: 1 }
+      ],
       temp: {
         id: '',
-        cascadeId: '.0.',
+        account: '',
         name: '',
-        hotKey: '',
-        parentName: '',
-        isLeaf: false,
-        isAutoExpand: false,
-        iconName: '',
-        status: 0,
         bizCode: '',
-        customCode: '',
-        createTime: new Date(),
-        createId: 0,
-        sortNo: 0,
-        parentId: '',
-        typeName: '',
-        typeId: '',
+        sex: 0,
+        status: 0,
+        orgIds: ''
       },
       dialogFormVisible: false,
       dialogUserFormVisible: false,
@@ -264,8 +253,9 @@ export default {
         create: '添加用户'
       },
       rules: {
-        customCode: [{ required: true, message: '代码必填', trigger: 'change' }],
-        name: [{ required: true, message: '名称必填', trigger: 'change' }]
+        account: [{ required: true, message: '账号必填', trigger: 'change' }],
+        name: [{ required: true, message: '用户名必填', trigger: 'change' }],
+        bizCode: [{ required: true, message: '代码必填', trigger: 'change' }],
       },
       // 勾选
       multipleSelection: null,
@@ -427,27 +417,17 @@ export default {
     resetTemp() {
       this.temp = {
         id: '',
-        cascadeId: '.0.',
+        account: '',
         name: '',
-        hotKey: '',
-        parentName: '',
-        isLeaf: false,
-        isAutoExpand: false,
-        iconName: '',
-        status: 0,
         bizCode: '',
-        customCode: '',
-        createTime: new Date(),
-        createId: 0,
-        sortNo: 0,
-        parentId: '',
-        typeName: '',
-        typeId: '',
+        sex: 0,
+        status: 0,
+        orgIds: ''
       }
     },
 
     handleCreate() {
-      this.getOrgsName()
+      // this.getOrgsName()
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
@@ -457,64 +437,47 @@ export default {
     },
 
     // 添加
-    addOrg() {
+    addUser() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.temp.parentId = this.selectParentId
-          addOrg(this.temp).then(response => {
+          saveUser(this.temp).then(response => {
             this.dialogFormVisible = false
             this.$notify({
               message: response.message, type: 'success'
             })
-
-            this.list = []
-            this.responseList.push(this.temp)
-            this.resetFatherData()
-            this.fatherData.children = this.treeData(this.responseList, 'id', 'parentId', 'children')
-            this.list.push(this.fatherData)
-
-            this.elements.push(this.temp)
+            this.elements.unshift(response.data)
           })
         }
       })
     },
 
-    handleUpdate(row, isClick = false) {
-      if (!isClick && this.multipleSelection == null) {
+    handleUpdate(row) {
+      if (this.multipleSelection == null) {
         this.$message({
           message: '请勾选需要修改的数据', type: 'warning'
         })
         return
       }
-      this.getOrgsName()
+      // this.getOrgsName()
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
-      this.temp = isClick? row: Object.assign({}, this.multipleSelection) 
+      this.temp = Object.assign({}, this.multipleSelection) 
     },
 
     // 修改
-    updateOrg() {
+    updateUser() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          if(this.selectParentId != '0'){
-            this.temp.parentId = this.selectParentId
-          }
+          
           const tempData = Object.assign({}, this.temp)
-          updateOrg(tempData).then(response => {
+          saveUser(tempData).then(response => {
             this.dialogFormVisible = false
             this.$notify({
               message: response.message, type: 'success'
             })
-            this.list = []
-            const index = this.responseList.findIndex(v => v.id === this.temp.id)
-            this.responseList.splice(index, 1, this.temp)
-            this.resetFatherData()
-            this.fatherData.children = this.treeData(this.responseList, 'id', 'parentId', 'children')
-            this.list.push(this.fatherData)
-
             const elementIndex = this.elements.findIndex(v => v.id === this.temp.id)
             this.elements.splice(elementIndex, 1, this.temp)
           })
@@ -531,18 +494,10 @@ export default {
           type: 'warning'
         }).then(() => {
           const deleteId = this.multipleSelection.id
-          deleteOrg({ids: [deleteId]}).then(response => {
+          deleteUser({ids: [deleteId]}).then(response => {
             this.$notify({
               message: response.message, type: 'success'
             })
-
-            this.list = []
-            const index = this.responseList.findIndex(v => v.id === deleteId)
-            this.responseList.splice(index, 1)
-            this.resetFatherData()
-            this.fatherData.children = this.treeData(this.responseList, 'id', 'parentId', 'children')
-            this.list.push(this.fatherData)
-
             const elementsIndex = this.elements.findIndex(v => v.id === deleteId)
             this.elements.splice(elementsIndex, 1)
           })
