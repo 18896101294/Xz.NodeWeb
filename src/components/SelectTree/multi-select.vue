@@ -54,7 +54,9 @@ export default {
       valueId: null,
       valueTitle:'',
       defaultExpandedKey:[],
-      selectValues:[]
+      selectValues:[],
+      checkedNodes: [],
+      checkTrre: {}
     }
   },
   mounted(){
@@ -111,11 +113,21 @@ export default {
         }
       })
       this.selectValues = trreValues
-      console.log(this.selectValues)
+      this.checkedNodes.push(data)
+      this.checkTrre = trre
+      console.log(this.checkedNodes)
     },
 
     removeTag(tag) {
       console.log(tag)
+      const checkedNode = this.checkedNodes.find(v => v.name === tag)
+      console.log(this.checkTrre)
+      const removeIndex = this.checkTrre.checkedKeys.findIndex(v => v === checkedNode.id)
+      this.checkTrre.checkedKeys.splice(removeIndex, 1)
+
+      const index = this.checkedNodes.findIndex(v => v.name === tag)
+      this.checkedNodes.splice(index, 1)
+      console.log(this.checkedNodes)
     },
 
     // 清除选中
