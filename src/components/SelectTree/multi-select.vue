@@ -112,22 +112,24 @@ export default {
           trreValues.push(item.name)
         }
       })
+
+      if(this.checkedNodes.findIndex(v=>v.id === data.id) == -1) {
+        this.checkedNodes.push(data)
+      }
       this.selectValues = trreValues
-      this.checkedNodes.push(data)
-      this.checkTrre = trre
-      console.log(this.checkedNodes)
     },
 
     removeTag(tag) {
-      console.log(tag)
-      const checkedNode = this.checkedNodes.find(v => v.name === tag)
-      console.log(this.checkTrre)
-      const removeIndex = this.checkTrre.checkedKeys.findIndex(v => v === checkedNode.id)
-      this.checkTrre.checkedKeys.splice(removeIndex, 1)
-
+      // 移除选中的节点
       const index = this.checkedNodes.findIndex(v => v.name === tag)
       this.checkedNodes.splice(index, 1)
-      console.log(this.checkedNodes)
+      // 获取当前还选中的节点
+      let nowCheckedId = []
+      this.checkedNodes.forEach((item, index)=>{
+        nowCheckedId.push(item.id)
+      })
+      // 重新设置选中的节点
+      this.$refs.selectTree.setCheckedKeys(nowCheckedId)
     },
 
     // 清除选中
@@ -135,7 +137,7 @@ export default {
       this.valueTitle = ''
       this.valueId = '0'
       this.defaultExpandedKey = []
-      this.clearSelected()
+      this.$refs.selectTree.setCheckedKeys([])
       this.$emit('getValue', this.valueId)
     },
 
@@ -191,10 +193,10 @@ export default {
   .el-tree-node__label{
     font-weight: normal;
   }
-  .el-tree >>>.is-current .el-tree-node__label{
+  /* .el-tree >>>.is-current .el-tree-node__label{
     color: #409EFF;
     font-weight: 700;
-  }
+  } */
   .el-tree >>>.is-current .el-tree-node__children .el-tree-node__label{
     color:#606266;
     font-weight: normal;
