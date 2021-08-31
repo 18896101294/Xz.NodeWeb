@@ -118,7 +118,14 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="部门：" prop="orgNames">
-              <el-input clearable placeholder="请输入部门" />
+              <MultiSelectTree
+               :props="props"
+               :options="options"
+               :value="temp.parentId || '0'"
+               :clearable="isClearable"
+               :accordion="isAccordion"
+               @getValue="selectTreeGetValue($event)"
+               />
             </el-form-item>
           </el-col>
         </el-row>
@@ -151,12 +158,13 @@ import { getOrgs, getOrgsName } from '@/api/basics/org'
 import { loadUsersPage, saveUser, changePassword, deleteUser } from '@/api/basics/user'
 import waves from '@/directive/waves' // waves directive
 import SelectTree from '@/components/SelectTree'
+import MultiSelectTree from '@/components/SelectTree/multi-select'
 import IconsView from '@/views/icons/index'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
 export default {
   name: 'UserTable',
-  components: { SelectTree, IconsView, Pagination },
+  components: { SelectTree, MultiSelectTree, IconsView, Pagination },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -362,6 +370,7 @@ export default {
         }
         fatherData.children = this.treeData(response.data, 'id', 'parentId', 'children')
         this.options.push(fatherData)
+        console.log(this.options)
       })
     },
 
@@ -404,16 +413,6 @@ export default {
       this.multipleSelection = val
     },
 
-    //重置下拉框
-    resetFatherData() {
-      this.fatherData = {
-        id: '0',
-        name: '根节点',
-        parentId: '',
-        children: []
-      }
-    },
-
     resetTemp() {
       this.temp = {
         id: '',
@@ -427,7 +426,7 @@ export default {
     },
 
     handleCreate() {
-      // this.getOrgsName()
+      this.getOrgsName()
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
