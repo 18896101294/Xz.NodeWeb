@@ -30,7 +30,8 @@
       <el-col :span="5" style="border: 1px solid #dfe6ec">
         <div class="tree-container" :style="'overflow: auto; height:' + tableHeight + 'px'">
           <!-- 树形菜单 -->
-          <el-tree :data="list" v-loading="listLoading" default-expand-all node-key="id" :expand-on-click-node="false" :props="defaultProps" @node-click="elTreeClick"> 
+          <el-tree :data="list" v-loading="listLoading" default-expand-all node-key="id" :expand-on-click-node="false" :props="defaultProps" 
+            :highlight-current="true" @node-click="elTreeClick"> 
             <span class="custom-tree-node" slot-scope="{ node }">
               <span :name="node.label">
                   <i v-if="node.childNodes.length>0"
@@ -47,7 +48,7 @@
         <el-table
           :key="tableKey"
           v-loading="listElementLoading"
-          :height="tableHeight+1"
+          :height="tableHeight + 1"
           :data="elements"
           stripe
           border
@@ -62,9 +63,9 @@
           <el-table-column label="账号" align="center" prop="account" min-width="80px">
           </el-table-column>
 
-          <el-table-column label="部门" min-width="300px" prop="userOrgs" align="center" >
+          <el-table-column label="部门" min-width="300px" prop="orgNames" align="left" >
             <template slot-scope="{row}">
-              <el-tag effect="plain" v-for = "(data,index) in row.userOrgs" :key="index">{{ data }}</el-tag>
+              <el-tag effect="plain" v-for = "(data,index) in row.orgNames" :key="index">{{ data }}</el-tag>
             </template>
           </el-table-column>
 
@@ -89,6 +90,8 @@
           <el-table-column label="创建时间" align="center" prop="createTime" min-width="80px">
           </el-table-column>
         </el-table>
+
+        <pagination v-show="total>0" :total="total" :page.sync="orgUserQuery.page" :limit.sync="orgUserQuery.limit" @pagination="loadUsersPage" />
       </el-col>
     </el-row>
 
@@ -149,15 +152,16 @@
 </template>
 
 <script>
-import { getOrgs, getOrgsName, getChildOrgs, getOrgUsers } from '@/api/basics/org'
-import { SaveUser, changePassword, deleteUser } from '@/api/basics/user'
+import { getOrgs, getOrgsName } from '@/api/basics/org'
+import { loadUsersPage, SaveUser, changePassword, deleteUser } from '@/api/basics/user'
 import waves from '@/directive/waves' // waves directive
 import SelectTree from '@/components/SelectTree'
 import IconsView from '@/views/icons/index'
+import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
 export default {
   name: 'UserTable',
-  components: { SelectTree, IconsView},
+  components: { SelectTree, IconsView, Pagination },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -292,12 +296,16 @@ export default {
   methods: {
     // 计算高度
     getTableHeight() {
+      const baseH = 135 // 基础的一个高度
       let tableH = 280 // 默认的高度
+      if (this.$refs.filterhight != null) {
+        tableH = baseH + this.$refs.filterhight.offsetHeight + 30 // 动态的高度加上分页组件的高度
+      }
       const tableHeightDetil = window.innerHeight - tableH
       if (tableHeightDetil <= 300) {
         this.tableHeight = 300
       } else {
-        this.tableHeight = window.innerHeight - tableH + 100
+        this.tableHeight = window.innerHeight - tableH
       }
     },
     // 查询
@@ -310,7 +318,6 @@ export default {
       }
       this.list = []
       this.listLoading = true
-      this.listElementLoading = true
       getOrgs(this.moduleQuery).then(response => {
         this.responseList = response.data
         this.fatherData.children = this.treeData(response.data, 'id', 'parentId', 'children')
@@ -320,15 +327,30 @@ export default {
         this.orgUserQuery.name = ''
         this.orgUserQuery.account = ''
         this.orgUserQuery.status = null
-        getOrgUsers(this.orgUserQuery).then(response => {
-          this.elements = response.data
-        })
+        this.loadUsersPage()
         setTimeout(() => {
           this.listLoading = false
-          this.listElementLoading = false
         }, 1 * 1000)
       })
       this.getTableHeight()
+    },
+
+    // 查询用户
+    loadUsersPage() {
+      this.listElementLoading = true
+      loadUsersPage(this.orgUserQuery).then(response => {
+        this.elements = response.data.datas
+        this.total = response.data.total
+        setTimeout(() => {
+          this.listElementLoading = false
+        }, 1 * 1000)
+      })
+    },
+
+    // 条件筛选
+    handleFilter() {
+      this.orgUserQuery.pageIndex = 1
+      this.loadUsersPage()
     },
 
     // 重置筛选
@@ -372,9 +394,13 @@ export default {
     //节点点击回调
     elTreeClick(treeData, node, tree) {
       this.listElementLoading = true
-      const id = treeData.id
-      getChildOrgs(id).then(response => {
-          this.elements = response.data
+      // 查询部门下用户
+      this.orgUserQuery.orgId = treeData.id
+      this.orgUserQuery.name = ''
+      this.orgUserQuery.account = ''
+      this.orgUserQuery.status = null
+      loadUsersPage(this.orgUserQuery).then(response => {
+          this.elements = response.data.datas
           setTimeout(() => {
             this.listElementLoading = false
           }, 1 * 1000)

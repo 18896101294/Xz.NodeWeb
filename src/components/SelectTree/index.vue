@@ -11,6 +11,7 @@
         :expand-on-click-node='false'
         :node-key="props.value"
         :default-expanded-keys="[]"
+        :show-checkbox = 'false'
         @node-click="handleNodeClick">
       </el-tree>
     </el-option>
@@ -74,7 +75,7 @@ export default {
   methods: {
     // 初始化值
     initHandle(){
-      if(this.valueId!=0){
+      if(this.valueId != 0){
         this.valueTitle = this.$refs.selectTree.getNode(this.valueId).data[this.props.label]     // 初始化显示
         // console.log(this.valueTitle)
         this.$refs.selectTree.setCurrentKey(this.valueId)       // 设置默认选中
@@ -100,17 +101,17 @@ export default {
     handleNodeClick(node){
       this.valueTitle = node[this.props.label]
       this.valueId = node[this.props.value]
-      this.$emit('getValue',this.valueId)
+      this.$emit('getValue', this.valueId)
       this.defaultExpandedKey = []
     },
 
     // 清除选中
     clearHandle(){
-      this.valueTitle = ''
-      this.valueId = null
+      this.valueTitle = '根节点'
+      this.valueId = '0'
       this.defaultExpandedKey = []
       this.clearSelected()
-      this.$emit('getValue',null)
+      this.$emit('getValue', this.valueId)
     },
 
     // 清空选中样式

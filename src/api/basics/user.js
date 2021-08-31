@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-export function getRolesPage(data) {
+export function loadUsersPage(data) {
   return request({
     url: '/User/LoadUsersPage',
     method: 'post',

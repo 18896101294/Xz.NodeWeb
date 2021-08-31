@@ -18,7 +18,8 @@
       <el-col :span="5" style="border: 1px solid #dfe6ec">
         <div class="tree-container" :style="'overflow: auto; height:' + tableHeight + 'px'">
           <!-- 树形菜单 -->
-          <el-tree :data="list" v-loading="listLoading" default-expand-all node-key="id" :expand-on-click-node="false" :props="defaultProps" @node-click="elTreeClick"> 
+          <el-tree :data="list" v-loading="listLoading" default-expand-all node-key="id" :expand-on-click-node="false" :props="defaultProps" 
+          :highlight-current="true" @node-click="elTreeClick"> 
             <span class="custom-tree-node" slot-scope="{ node }">
               <span :name="node.label">
                   <i v-if="node.childNodes.length>0"
@@ -501,11 +502,15 @@ export default {
               message: response.message, type: 'success'
             })
 
+            console.log(this.responseList)
             this.list = []
-            this.responseList.push(this.temp)
+            this.responseList.push(response.data)
+            console.log(this.responseList)
             this.resetFatherData()
             this.fatherData.children = this.treeData(this.responseList, 'id', 'parentId', 'children')
+            console.log(this.fatherData)
             this.list.push(this.fatherData)
+            console.log(this.list)
 
             this.elements.push(this.temp)
           })
