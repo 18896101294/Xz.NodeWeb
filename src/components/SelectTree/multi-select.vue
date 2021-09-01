@@ -4,7 +4,7 @@
     <el-option :value="valueTitle" :label="valueTitle" class="options">
       <el-tree
         id="tree-option"
-        ref="selectTree"
+        ref="MultiSelectTree"
         :accordion="accordion"
         :data="options"
         :props="props"
@@ -23,7 +23,7 @@
 
 <script>
 export default {
-  name: "selectTree",
+  name: "MultiSelectTree",
   props:{
 
     // 配置项
@@ -37,10 +37,10 @@ export default {
     },
 
     // 选项列表数据(树形结构的对象数组)
-    options:{ type: Array },
+    options:{ type: Array, default: [] },
 
     // 初始值
-    value:{ type: String, default: null },
+    value:{ type: Array, default: [] },
 
     // 可清空选项
     clearable:{ type:Boolean, default: true },
@@ -51,7 +51,7 @@ export default {
   },
   data() {
     return {
-      valueId: null,
+      valueId: [],
       valueTitle:'',
       defaultExpandedKey:[],
       selectValues:[],
@@ -60,37 +60,39 @@ export default {
     }
   },
   mounted(){
-    if(this.value == 0){
+    this.valueId = this.value
+    if(this.value.length == 0){
       this.valueTitle =''
     }
-    this.valueId = this.value
-    if(this.options.length>0){
+    if(this.value.length>0){
       this.initHandle()
-      this.defaultExpandedKey = []
     }
-  },
-  updated() {
-    if(this.options.length>0){
-      this.initHandle()
-      this.defaultExpandedKey = []
-    }else{
-      this.initHandle()
-      this.defaultExpandedKey = []
-    }
+    this.defaultExpandedKey = []
   },
   methods: {
     // 初始化值
     initHandle(){
-      if(this.valueId != 0){
-        // this.valueTitle = this.$refs.selectTree.getNode(this.valueId).data[this.props.label]     // 初始化显示
-        // console.log(this.valueTitle)
-        // this.$refs.selectTree.setCurrentKey(this.valueId)       // 设置默认选中
-        this.defaultExpandedKey = []      // 设置默认展开
+      if(this.valueId.length > 0){
+        this.$refs.MultiSelectTree.setCheckedKeys(this.valueId)       // 设置默认选中
+        // this.defaultExpandedKey = []      // 设置默认展开
+        let trreValues = []
+        setTimeout(()=>{
+          this.$refs.MultiSelectTree.getCheckedNodes().forEach((item,index) => {
+            if(trreValues.indexOf(item.name) == -1) {
+              trreValues.push(item.name)
+            }
+            if(this.checkedNodes.findIndex(v=>v.id === item.id) == -1) {
+              this.checkedNodes.push(item)
+            }
+          })
+          this.selectValues = trreValues
+          this.$emit('getValue', {names: this.selectValues, values: this.valueId})
+        }, 500)
       }else{
         this.valueTitle = ''
-        // this.$refs.selectTree.setCurrentKey(this.valueId)       // 设置默认选中
-        this.$emit('getValue',this.valueId)
       }
+      // this.$emit('getValue', {names: this.selectValues, values: this.valueId})
+
       this.initScroll()
     },
     // 初始化滚动条
@@ -106,17 +108,18 @@ export default {
     // 复选框被选中时调用
     handleClick(data, trre) {
       this.selectValues = []
+      this.checkedNodes = []
       let trreValues = []
+      let getValueIds = []
       trre.checkedNodes.forEach((item,index) => {
         if(trreValues.indexOf(item.name) == -1) {
           trreValues.push(item.name)
+          this.checkedNodes.push(item)
+          getValueIds.push(item.id)
         }
       })
-
-      if(this.checkedNodes.findIndex(v=>v.id === data.id) == -1) {
-        this.checkedNodes.push(data)
-      }
       this.selectValues = trreValues
+      this.$emit('getValue', {names: this.selectValues , values: getValueIds})
     },
 
     removeTag(tag) {
@@ -129,16 +132,19 @@ export default {
         nowCheckedId.push(item.id)
       })
       // 重新设置选中的节点
-      this.$refs.selectTree.setCheckedKeys(nowCheckedId)
+      this.$refs.MultiSelectTree.setCheckedKeys(nowCheckedId)
+      this.$emit('getValue', {names: this.selectValues, values:nowCheckedId})
+
     },
 
     // 清除选中
     clearHandle(){
       this.valueTitle = ''
-      this.valueId = '0'
       this.defaultExpandedKey = []
-      this.$refs.selectTree.setCheckedKeys([])
-      this.$emit('getValue', this.valueId)
+      this.checkedNodes = []
+      this.selectValues = []
+      this.$refs.MultiSelectTree.setCheckedKeys([])
+      this.$emit('getValue', {names: [], values:[]})
     },
 
     // 清空选中样式

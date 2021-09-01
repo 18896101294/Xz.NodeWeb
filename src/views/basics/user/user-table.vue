@@ -96,7 +96,7 @@
     </el-row>
 
     <!-- 添加 -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="40%">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" v-if='dialogFormVisible' width="40%">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="110px" >
         <el-row>
           <el-col :span="12">
@@ -121,7 +121,7 @@
               <MultiSelectTree
                :props="props"
                :options="options"
-               :value="temp.parentId || '0'"
+               :value="temp.orgIds || []"
                :clearable="isClearable"
                :accordion="isAccordion"
                @getValue="selectTreeGetValue($event)"
@@ -211,7 +211,7 @@ export default {
         // disabled:true
       },
       options:[],
-      selectParentId: '0',
+      selectedValue: {},
       listLoading: true,
       listElementLoading: true,
       listUserLoading: true,
@@ -251,7 +251,8 @@ export default {
         bizCode: '',
         sex: 0,
         status: 0,
-        orgIds: ''
+        orgIds: [],
+        roleIds: []
       },
       dialogFormVisible: false,
       dialogUserFormVisible: false,
@@ -362,15 +363,7 @@ export default {
     getOrgsName(){
        this.options = []
        getOrgsName().then(response => {
-        let fatherData = {
-          id: '0',
-          name: '根节点',
-          parentId: '',
-          children: []
-        }
-        fatherData.children = this.treeData(response.data, 'id', 'parentId', 'children')
-        this.options.push(fatherData)
-        console.log(this.options)
+        this.options = this.treeData(response.data, 'id', 'parentId', 'children')
       })
     },
 
@@ -384,10 +377,9 @@ export default {
     },
     //获取树形下拉框选中的值
     selectTreeGetValue(value) {
-      this.selectParentId = value
-      if(value == '0') {
-        this.selectParentId = ''
-      }
+      // this.selectedValue = value.join(',')
+      this.selectedValue = value
+      console.log(this.selectedValue)
     },
 
     //节点点击回调
@@ -421,7 +413,8 @@ export default {
         bizCode: '',
         sex: 0,
         status: 0,
-        orgIds: ''
+        orgIds: [],
+        roleIds: []
       }
     },
 
@@ -439,12 +432,14 @@ export default {
     addUser() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
+          this.temp.orgIds = this.selectedValue.values
+          this.temp.orgNames = this.selectedValue.names
           saveUser(this.temp).then(response => {
             this.dialogFormVisible = false
             this.$notify({
               message: response.message, type: 'success'
             })
-            this.elements.unshift(response.data)
+            this.loadUsersPage()
           })
         }
       })
@@ -457,7 +452,7 @@ export default {
         })
         return
       }
-      // this.getOrgsName()
+      this.getOrgsName()
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -470,7 +465,9 @@ export default {
     updateUser() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          
+          this.temp.orgIds = this.selectedValue.values
+          this.temp.roleIds = []
+          this.temp.orgNames = this.selectedValue.names
           const tempData = Object.assign({}, this.temp)
           saveUser(tempData).then(response => {
             this.dialogFormVisible = false
