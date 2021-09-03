@@ -22,6 +22,7 @@
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">添加</el-button>
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleUpdate">修改</el-button>
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleDelete">删除</el-button>
+          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="warning" icon="el-icon-delete" @click="changePassword">重置密码</el-button>
         </div>
       </el-form>
     </div>
@@ -507,8 +508,35 @@ export default {
           message: '请勾选需要删除的数据', type: 'warning'
         })
       }
+    },
+
+    // 重置密码
+    changePassword() {
+      if (this.multipleSelection) {
+        this.$confirm('此操作将重置该用户密码, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          const id = this.multipleSelection.id
+          changePassword({id: id}).then(response => {
+            this.$notify({
+              message: response.message, type: 'success'
+            })
+          })
+        }).catch(() => {
+          this.$notify({
+            message: '已取消操作', type: 'info'
+          })
+        })
+      } else {
+        this.$message({
+          message: '请勾选需要操作的数据', type: 'warning'
+        })
+      }
     }
-  }
+
+  } 
 }
 </script>
 
