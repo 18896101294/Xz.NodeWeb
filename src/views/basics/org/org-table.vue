@@ -209,8 +209,8 @@ export default {
   filters: {
     statusFilter(status) {
       const statusMap = {
-        0: '启用',
-        1: '禁用'
+        0: '√',
+        1: '×'
       }
       return statusMap[status]
     },

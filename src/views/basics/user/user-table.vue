@@ -23,6 +23,7 @@
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleUpdate">修改</el-button>
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleDelete">删除</el-button>
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="warning" icon="el-icon-delete" @click="changePassword">重置密码</el-button>
+          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="warning" icon="el-icon-delete" @click="disableUser">禁用</el-button>
         </div>
       </el-form>
     </div>
@@ -156,7 +157,7 @@
 
 <script>
 import { getOrgs, getOrgsName } from '@/api/basics/org'
-import { loadUsersPage, saveUser, changePassword, deleteUser } from '@/api/basics/user'
+import { loadUsersPage, saveUser, changePassword, deleteUser, disableUser } from '@/api/basics/user'
 import waves from '@/directive/waves' // waves directive
 import SelectTree from '@/components/SelectTree'
 import MultiSelectTree from '@/components/SelectTree/multi-select'
@@ -170,8 +171,8 @@ export default {
   filters: {
     statusFilter(status) {
       const statusMap = {
-        0: '启用',
-        1: '禁用'
+        0: '√',
+        1: '×'
       }
       return statusMap[status]
     },
@@ -523,6 +524,36 @@ export default {
             this.$notify({
               message: response.message, type: 'success'
             })
+          })
+        }).catch(() => {
+          this.$notify({
+            message: '已取消操作', type: 'info'
+          })
+        })
+      } else {
+        this.$message({
+          message: '请勾选需要操作的数据', type: 'warning'
+        })
+      }
+    },
+
+    // 禁用用户
+    disableUser() {
+      if (this.multipleSelection) {
+        this.$confirm('此操作将禁用该用户, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          const id = this.multipleSelection.id
+          disableUser({ids: [id]}).then(response => {
+            this.$notify({
+              message: response.message, type: 'success'
+            })
+            let elementsTemp = this.elements.find(v => v.id === id)
+            elementsTemp.status = 1
+            const elementsIndex = this.elements.findIndex(v => v.id === id)
+            this.elements.splice(elementsIndex, 1, elementsTemp)
           })
         }).catch(() => {
           this.$notify({

@@ -31,3 +31,12 @@ export function deleteRole(data) {
     data
   })
 }
+
+export function disableRole(data) {
+  return request({
+    url: '/Role/DisableRole',
+    method: 'post',
+    data
+  })
+}
+

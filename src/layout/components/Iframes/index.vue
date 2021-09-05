@@ -41,7 +41,7 @@ export default {
   width: 100%;
   padding: 0 0;
   z-index: 100;
-  height: calc(100% - 32px);
+  height: calc(100% - 0px);
   overflow-x: visible;
   overflow-y: visible;
 }

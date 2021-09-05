@@ -19,6 +19,9 @@
         <div>
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">添加</el-button>
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleBachDelete">删除</el-button>
+          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="allocationUsers">分配用户</el-button>
+          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">分配模块</el-button>
+          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">分配资源</el-button>
         </div>
       </el-form>
     </div>
@@ -54,9 +57,10 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="操作" align="center" width="80px" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="160px" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">修改</el-button>
+          <el-button type="warning" v-if="row.status === 0" size="mini" @click="disableRole(row)">停用</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -88,22 +92,28 @@
       </el-form>
 
       <div slot="footer" class="dialog-footer">
-        <el-button @click="cancelSave()">取消</el-button>
+        <el-button @click="dialogFormVisible = false">取消</el-button>
         <el-button type="primary" @click="dialogStatus==='create'?addRole():updateRole()">确定</el-button>
       </div>
+    </el-dialog>
+
+    <!-- 分配用户 -->
+    <el-dialog title="分配用户" :visible.sync="dialogAllocationUsersFormVisible" width="70%">
+      <AllocationUsers />
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getRolesPage, addRole, updateRole, deleteRole } from '@/api/basics/role'
+import { getRolesPage, addRole, updateRole, deleteRole, disableRole } from '@/api/basics/role'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import AllocationUsers from '@/views/basics/role/components/allocation-users.vue'
 import { parseTime } from '@/utils'
 
 export default {
   name: 'RoleTable',
-  components: { Pagination },
+  components: { Pagination, AllocationUsers },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -148,6 +158,7 @@ export default {
         status: 0,
       },
       dialogFormVisible: false,
+      dialogAllocationUsersFormVisible: false,
       dialogStatus: '',
       textMap: {
         update: '修改',
@@ -232,6 +243,17 @@ export default {
       this.multipleSelection = selection
     },
 
+    // 分配用户
+    allocationUsers() {
+      if (this.multipleSelection.length > 0) {
+        this.dialogAllocationUsersFormVisible = true
+      } else {
+        this.$message({
+          message: '请勾选需要操作的数据', type: 'warning'
+        })
+      }
+    },
+
     resetTemp() {
       this.temp = {
         id: '',
@@ -291,10 +313,27 @@ export default {
       })
     },
 
-    // 取消操作
-    cancelSave() {
-      this.dialogFormVisible = false
-      this.resetTemp()
+    // 禁用角色
+    disableRole(row) {
+      this.$confirm('此操作将禁用该角色, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        disableRole({ids:[row.id]}).then(response => {
+          this.$notify({
+            message: response.message, type: 'success'
+          })
+          let temp = this.list.find(v => v.id === row.id)
+          temp.status = 1
+          const index = this.list.findIndex(v => v.id === row.id)
+          this.list.splice(index, 1, temp)
+        })
+      }).catch(() => {
+        this.$notify({
+          message: '已取消操作', type: 'info'
+        })
+      })
     },
 
     // 删除

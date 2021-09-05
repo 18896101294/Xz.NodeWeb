@@ -39,3 +39,11 @@ export function deleteUser(data) {
     data
   })
 }
+
+export function disableUser(data) {
+  return request({
+    url: '/User/DisableUser',
+    method: 'post',
+    data
+  })
+}
