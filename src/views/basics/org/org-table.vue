@@ -600,3 +600,27 @@ export default {
 }
 </script>
 
+<style>
+  .abow_dialog {
+    display: flex;
+    justify-content: center;
+    align-items: Center;
+    overflow: hidden;
+  }
+  .abow_dialog .el-dialog {
+    margin: 0 auto !important;
+    height: 90%;
+    overflow: hidden;
+  }
+  .abow_dialog .el-dialog .el-dialog__body {
+    position: absolute;
+    left: 0;
+    top: 54px;
+    bottom: 0;
+    right: 0;
+    padding: 0;
+    z-index: 1;
+    overflow: hidden;
+    overflow-y: auto;
+  }
+</style>

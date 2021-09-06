@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container" style="padding:20px 20px 0 20px">
 
     <!-- 筛选栏 -->
     <div ref="filterhight" class="filter-container">
@@ -17,15 +17,13 @@
         </el-form-item>
         <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
         <el-button v-waves class="filter-item" type="info" icon="el-icon-refresh" @click="handleReset">重置</el-button>
-        <div>
-          <el-button v-waves class="filter-item" size="small" type="primary" icon="el-icon-search" @click="getOrgs(true)">刷新</el-button>
-        </div>
+        <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="getOrgs(true)">刷新</el-button>
       </el-form>
     </div>
 
     <el-row :gutter="10">
       <el-col :span="4" style="border: 1px solid #dfe6ec">
-        <div class="tree-container" style="overflow: auto; height: 100%">
+        <div class="tree-container" style="overflow: auto; height:600px">
           <!-- 树形菜单 -->
           <el-tree :data="list" v-loading="listLoading" default-expand-all node-key="id" :expand-on-click-node="false" :props="defaultProps" 
             :highlight-current="true" @node-click="elTreeClick"> 
@@ -45,17 +43,19 @@
         <el-table
           :key="tableKey"
           v-loading="listElementLoading"
-          height="100%"
           :data="elements"
           stripe
           border
           fit
-          highlight-current-row
           lazy
+          height="570px"
           ref="multipleTable"
           style="width: 100%;"
           :header-cell-style="{'text-align':'center'}"
-          @current-change="currentChange">
+          @select="select"
+          @selection-change="selectionChange">
+
+          <el-table-column type="selection" align="center" width="55" />
 
           <el-table-column label="账号" align="center" prop="account" min-width="80px">
           </el-table-column>
@@ -99,6 +99,10 @@ import Pagination from '@/components/Pagination' // secondary package based on e
 
 export default {
   name: 'AllocationUsers',
+  props:{
+    // 选中的数据
+    roleUserDatas:{ type: Array, default: [] },
+  },
   components: { Pagination },
   directives: { waves },
   filters: {
@@ -168,6 +172,8 @@ export default {
       ],
       // 勾选
       multipleSelection: null,
+      isFisrtLoad: true,
+      orgMultipleSelection: [{orgId:"0",data:[]}],
     }
   },
   created() {
@@ -206,6 +212,26 @@ export default {
       loadUsersPage(this.orgUserQuery).then(response => {
         this.elements = response.data.datas
         this.total = response.data.total
+        if(this.isFisrtLoad) {
+          this.$nextTick(() => {
+            this.elements.forEach((item, index) => {
+              if(this.roleUserDatas.findIndex(u => u.userId === item.id) != -1) {
+                this.$refs.multipleTable.toggleRowSelection(item, true)
+              }
+            })
+          })
+        } else {
+          this.$nextTick(() => {
+            this.elements.forEach((item, index) => {
+              this.orgMultipleSelection.forEach((orgIitem, index) => {
+                if(orgIitem.data.findIndex(u => u.id === item.id) != -1) {
+                  this.$refs.multipleTable.toggleRowSelection(item, true)
+                }
+              })
+            })
+          })
+        }
+        this.isFisrtLoad = false
         setTimeout(() => {
           this.listElementLoading = false
         }, 1 * 1000)
@@ -243,21 +269,50 @@ export default {
       this.orgUserQuery.account = ''
       this.orgUserQuery.status = null
       loadUsersPage(this.orgUserQuery).then(response => {
-          this.elements = response.data.datas
-          setTimeout(() => {
-            this.listElementLoading = false
-          }, 1 * 1000)
+        this.elements = response.data.datas
+        this.$nextTick(() => {
+          this.elements.forEach((item, index) => {
+            this.orgMultipleSelection.forEach((orgIitem, index) => {
+              if(orgIitem.data.findIndex(u => u.id === item.id) != -1) {
+                this.$refs.multipleTable.toggleRowSelection(item, true)
+              }
+            })
+          })
+        })
+        setTimeout(() => {
+          this.listElementLoading = false
+        }, 1 * 1000)
       })
     },
-    
-    // 单选事件
-    currentChange(val) {
-      this.$refs.multipleTable.clearSelection()
-      this.$refs.multipleTable.toggleRowSelection(val)
-      this.multipleSelection = val
-    }
 
+    // 勾选事件
+    selectionChange(selection) {
+      this.multipleSelection = selection
+      const orgIndex = this.orgMultipleSelection.findIndex(u => u.orgId === (this.orgUserQuery.orgId == "" ? "0" : this.orgUserQuery.orgId))
+      if(orgIndex == -1) {
+        this.orgMultipleSelection.push({orgId: (this.orgUserQuery.orgId == "" ? "0" : this.orgUserQuery.orgId), data: selection})
+      } else {
+        this.orgMultipleSelection.splice(orgIndex, 1, {orgId: (this.orgUserQuery.orgId == "" ? "0" : this.orgUserQuery.orgId), data: selection})
+      }
+    },
+
+    // 勾选事件
+    select(selection) {
+      this.multipleSelection = selection
+      let orgItem = this.orgMultipleSelection.find(u => u.orgId === (this.orgUserQuery.orgId == "" ? "0" : this.orgUserQuery.orgId))
+      console.log(orgItem)
+      orgItem.data.forEach((item,orgItemIndex) => {
+        if(selection.findIndex(u=>u.id === item.id) === -1) {
+          this.orgMultipleSelection.forEach((orgIitem, orgItemIndex1) => {
+            let removeIndex = orgIitem.data.findIndex(u => u.id === item.id)
+            console.log(removeIndex)
+            if(removeIndex > -1) {
+              orgIitem.data.splice(removeIndex, 1)
+            }
+          })
+        }
+      })
+    },
   } 
 }
 </script>
-

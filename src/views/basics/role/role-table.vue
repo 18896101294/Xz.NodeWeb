@@ -37,7 +37,9 @@
       fit
       style="width: 100%;"
       :header-cell-style="{'text-align':'center'}"
+      ref="multipleTable"
       @selection-change="selectionChange"
+      @current-change="currentChange"
     >
       <el-table-column type="selection" align="center" width="55" />
 
@@ -98,14 +100,18 @@
     </el-dialog>
 
     <!-- 分配用户 -->
-    <el-dialog title="分配用户" :visible.sync="dialogAllocationUsersFormVisible" width="70%">
-      <AllocationUsers />
+    <el-dialog class="my_el-dialog__header" top="10vh" v-if="dialogAllocationUsersFormVisible" :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="dialogAllocationUsersFormVisible" width="70%">
+      <AllocationUsers :roleUserDatas="roleUserDatas" />
+      <div slot="footer" class="dialog-footer" style="padding:0px">
+        <el-button @click="dialogAllocationUsersFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="updateRole()">确定</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getRolesPage, addRole, updateRole, deleteRole, disableRole } from '@/api/basics/role'
+import { getRolesPage, getRoleBindUsers, addRole, updateRole, deleteRole, disableRole } from '@/api/basics/role'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import AllocationUsers from '@/views/basics/role/components/allocation-users.vue'
@@ -129,6 +135,7 @@ export default {
       tableKey: 0,
       list: null,
       total: 0,
+      roleUserDatas: [],
       resultType: [
         {
           label: '所有',
@@ -243,10 +250,29 @@ export default {
       this.multipleSelection = selection
     },
 
+    // 单选事件
+    currentChange(val) {
+      this.$refs.multipleTable.clearSelection()
+      this.$refs.multipleTable.toggleRowSelection(val)
+      this.multipleSelection = [val]
+    },
+
     // 分配用户
     allocationUsers() {
+      console.log(this.multipleSelection)
       if (this.multipleSelection.length > 0) {
-        this.dialogAllocationUsersFormVisible = true
+        if(this.multipleSelection.length > 1) {
+          this.$message({
+            message: '只能选中一个进行编辑', type: 'warning'
+          })
+          return
+        }
+        // 获取当前角色已经绑定的用户
+        let roleId = this.multipleSelection[0].id
+        getRoleBindUsers({id:roleId}).then(response => {
+          this.roleUserDatas = response.data
+          this.dialogAllocationUsersFormVisible = true
+        })
       } else {
         this.$message({
           message: '请勾选需要操作的数据', type: 'warning'

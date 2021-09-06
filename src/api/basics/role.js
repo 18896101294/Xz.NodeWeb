@@ -40,3 +40,12 @@ export function disableRole(data) {
   })
 }
 
+export function getRoleBindUsers(data) {
+  return request({
+    url: '/Role/GetRoleBindUsers',
+    method: 'post',
+    data
+  })
+}
+
+
