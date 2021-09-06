@@ -193,15 +193,15 @@ aside {
 //修改table表格选中样式，变得更高亮
 .el-table--striped .el-table__body tr.el-table__row--striped.current-row td, .el-table__body tr.current-row>td {
   color: #fff;
-  background-color: #1cbbb4!important;
+  background-color: #46B984!important;
 }
 
 //修改tree选中样式，变得更高亮
 .el-tree-node:focus > .el-tree-node__content {
-  background-color: #1cbbb4 !important;
+  background-color: #46B984 !important;
 }
 .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
-  background-color: #1cbbb4 !important;
+  background-color: #46B984 !important;
 }
 // from表单样式处理
 .my_el-dialog__header .el-dialog__header, .el-dialog__body {

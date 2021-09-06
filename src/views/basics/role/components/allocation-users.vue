@@ -52,8 +52,8 @@
           ref="multipleTable"
           style="width: 100%;"
           :header-cell-style="{'text-align':'center'}"
-          @select="select"
-          @selection-change="selectionChange">
+          :header-cell-class-name="cellClass"
+          @select="select">
 
           <el-table-column type="selection" align="center" width="55" />
 
@@ -172,12 +172,11 @@ export default {
       ],
       // 勾选
       multipleSelection: null,
-      isFisrtLoad: true,
-      orgMultipleSelection: [{orgId:"0",data:[]}],
     }
   },
   created() {
     this.getOrgs()
+    this.multipleSelection = this.roleUserDatas
   },
   methods: {
     // 查询
@@ -212,26 +211,14 @@ export default {
       loadUsersPage(this.orgUserQuery).then(response => {
         this.elements = response.data.datas
         this.total = response.data.total
-        if(this.isFisrtLoad) {
-          this.$nextTick(() => {
-            this.elements.forEach((item, index) => {
-              if(this.roleUserDatas.findIndex(u => u.userId === item.id) != -1) {
-                this.$refs.multipleTable.toggleRowSelection(item, true)
-              }
-            })
+        console.log(this.multipleSelection)
+        this.$nextTick(() => {
+          this.elements.forEach((item, index) => {
+            if(this.multipleSelection.findIndex(u => u.id === item.id) != -1) {
+              this.$refs.multipleTable.toggleRowSelection(item, true)
+            }
           })
-        } else {
-          this.$nextTick(() => {
-            this.elements.forEach((item, index) => {
-              this.orgMultipleSelection.forEach((orgIitem, index) => {
-                if(orgIitem.data.findIndex(u => u.id === item.id) != -1) {
-                  this.$refs.multipleTable.toggleRowSelection(item, true)
-                }
-              })
-            })
-          })
-        }
-        this.isFisrtLoad = false
+        })
         setTimeout(() => {
           this.listElementLoading = false
         }, 1 * 1000)
@@ -272,11 +259,9 @@ export default {
         this.elements = response.data.datas
         this.$nextTick(() => {
           this.elements.forEach((item, index) => {
-            this.orgMultipleSelection.forEach((orgIitem, index) => {
-              if(orgIitem.data.findIndex(u => u.id === item.id) != -1) {
-                this.$refs.multipleTable.toggleRowSelection(item, true)
-              }
-            })
+            if(this.multipleSelection.findIndex(u => u.id === item.id) != -1) {
+              this.$refs.multipleTable.toggleRowSelection(item, true)
+            }
           })
         })
         setTimeout(() => {
@@ -286,33 +271,33 @@ export default {
     },
 
     // 勾选事件
-    selectionChange(selection) {
-      this.multipleSelection = selection
-      const orgIndex = this.orgMultipleSelection.findIndex(u => u.orgId === (this.orgUserQuery.orgId == "" ? "0" : this.orgUserQuery.orgId))
-      if(orgIndex == -1) {
-        this.orgMultipleSelection.push({orgId: (this.orgUserQuery.orgId == "" ? "0" : this.orgUserQuery.orgId), data: selection})
+    select(selection, val) {
+      console.log(this.multipleSelection)
+      const valIndex = this.multipleSelection.findIndex(u => u.id === val.id)
+      if (valIndex > -1) {
+        this.multipleSelection.splice(valIndex, 1)
       } else {
-        this.orgMultipleSelection.splice(orgIndex, 1, {orgId: (this.orgUserQuery.orgId == "" ? "0" : this.orgUserQuery.orgId), data: selection})
+        this.multipleSelection.push(val)
       }
     },
-
-    // 勾选事件
-    select(selection) {
-      this.multipleSelection = selection
-      let orgItem = this.orgMultipleSelection.find(u => u.orgId === (this.orgUserQuery.orgId == "" ? "0" : this.orgUserQuery.orgId))
-      console.log(orgItem)
-      orgItem.data.forEach((item,orgItemIndex) => {
-        if(selection.findIndex(u=>u.id === item.id) === -1) {
-          this.orgMultipleSelection.forEach((orgIitem, orgItemIndex1) => {
-            let removeIndex = orgIitem.data.findIndex(u => u.id === item.id)
-            console.log(removeIndex)
-            if(removeIndex > -1) {
-              orgIitem.data.splice(removeIndex, 1)
-            }
-          })
-        }
-      })
+    cellClass(row){     
+      if (row.columnIndex === 0) {           
+      return 'disabledCheck'     
+      } 
     },
   } 
 }
 </script>
+
+<style>
+/* 去掉全选按钮 */
+.el-table .disabledCheck .cell .el-checkbox__inner{
+    display: none !important; 
+}
+
+.el-table .disabledCheck .cell::before{
+    content: '选择';
+    text-align: center;
+    line-height: 37px;
+}
+</style>
