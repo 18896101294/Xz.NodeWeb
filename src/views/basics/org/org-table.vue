@@ -125,23 +125,23 @@
       </div>
     </el-dialog>
 
-    <el-dialog class="my_el-dialog__header" :visible.sync="dialogUserFormVisible" :close-on-click-modal="false" :close-on-press-escape="false" width="80%">
+    <el-dialog id="orgTable-dialog" top="10vh" :visible.sync="dialogUserFormVisible" :close-on-click-modal="false" :close-on-press-escape="false" width="80%">
       <!-- 筛选栏 -->
       <div ref="filterhight" class="filter-container">
         <el-form :inline="true" @submit.native.prevent>
           <el-form-item label="账号：">
-            <el-input clearable v-model="orgUserQuery.account" placeholder="请输入账号" />
+            <el-input size="small" clearable v-model="orgUserQuery.account" placeholder="请输入账号" />
           </el-form-item>
           <el-form-item label="用户名：">
-            <el-input clearable v-model="orgUserQuery.name" placeholder="请输入用户名" />
+            <el-input size="small" clearable v-model="orgUserQuery.name" placeholder="请输入用户名" />
           </el-form-item>
           <el-form-item label="状态：">
-            <el-select v-model="orgUserQuery.status" clearable placeholder="请选择">
+            <el-select size="small" v-model="orgUserQuery.status" clearable placeholder="请选择">
               <el-option  v-for="item in resultType" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
           </el-form-item>
-          <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="getOrgUsers">搜索</el-button>
-          <el-button v-waves class="filter-item" type="info" icon="el-icon-refresh" @click="handleReset">重置</el-button>
+          <el-button v-waves size="small" class="filter-item" type="primary" icon="el-icon-search" @click="getOrgUsers">搜索</el-button>
+          <el-button v-waves size="small" class="filter-item" type="info" icon="el-icon-refresh" @click="handleReset">重置</el-button>
         </el-form>
       </div>
 
@@ -154,6 +154,7 @@
         fit
         lazy
         ref="multipleTableUser"
+        height="570px"
         style="width: 100%;"
         >
 
@@ -601,26 +602,14 @@ export default {
 </script>
 
 <style>
-  .abow_dialog {
-    display: flex;
-    justify-content: center;
-    align-items: Center;
-    overflow: hidden;
+  /* 注意：这里如果用class去包裹样式 会造成全局样式都改变，而影响到其他页面组件的样式。
+    这里采用每个页面单独用一个id来控制，因为id是唯一的，所以就解决了样式权重和冲突的问题
+  */
+  #orgTable-dialog .el-dialog__header {
+    padding: 0 !important;
+    padding-bottom: 0 !important;
   }
-  .abow_dialog .el-dialog {
-    margin: 0 auto !important;
-    height: 90%;
-    overflow: hidden;
-  }
-  .abow_dialog .el-dialog .el-dialog__body {
-    position: absolute;
-    left: 0;
-    top: 54px;
-    bottom: 0;
-    right: 0;
-    padding: 0;
-    z-index: 1;
-    overflow: hidden;
-    overflow-y: auto;
+  #orgTable-dialog .el-dialog__body {
+    padding: 30px 20px !important;
   }
 </style>

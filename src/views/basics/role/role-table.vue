@@ -100,7 +100,7 @@
     </el-dialog>
 
     <!-- 分配用户 -->
-    <el-dialog class="my_el-dialog__header" top="10vh" v-if="dialogAllocationUsersFormVisible" :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="dialogAllocationUsersFormVisible" width="70%">
+    <el-dialog id="roleTable-dialog" top="10vh" v-if="dialogAllocationUsersFormVisible" :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="dialogAllocationUsersFormVisible" width="70%">
       <AllocationUsers :roleUserDatas="roleUserDatas" />
       <div slot="footer" class="dialog-footer" style="padding:0px">
         <el-button @click="dialogAllocationUsersFormVisible = false">取消</el-button>
@@ -394,3 +394,10 @@ export default {
   }
 }
 </script>
+
+<style>
+  #roleTable-dialog .el-dialog__header, .el-dialog__body {
+    padding: 0 !important;
+    padding-bottom: 0 !important;
+  }
+</style>

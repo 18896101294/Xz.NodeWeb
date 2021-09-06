@@ -5,19 +5,19 @@
     <div ref="filterhight" class="filter-container">
       <el-form :inline="true" @submit.native.prevent>
         <el-form-item label="账号：">
-          <el-input clearable v-model="orgUserQuery.name" placeholder="请输入角色名" />
+          <el-input size="small" clearable v-model="orgUserQuery.name" placeholder="请输入角色名" />
         </el-form-item>
         <el-form-item label="用户名：">
-          <el-input clearable v-model="orgUserQuery.account" placeholder="请输入代码" />
+          <el-input size="small" clearable v-model="orgUserQuery.account" placeholder="请输入代码" />
         </el-form-item>
         <el-form-item label="状态：">
-          <el-select v-model="orgUserQuery.status" clearable placeholder="请选择">
+          <el-select size="small" v-model="orgUserQuery.status" clearable placeholder="请选择">
             <el-option  v-for="item in resultType" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
-        <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
-        <el-button v-waves class="filter-item" type="info" icon="el-icon-refresh" @click="handleReset">重置</el-button>
-        <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="getOrgs(true)">刷新</el-button>
+        <el-button v-waves size="small" class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
+        <el-button v-waves size="small" class="filter-item" type="info" icon="el-icon-refresh" @click="handleReset">重置</el-button>
+        <el-button v-waves size="small" class="filter-item" type="primary" icon="el-icon-search" @click="getOrgs(true)">刷新</el-button>
       </el-form>
     </div>
 
