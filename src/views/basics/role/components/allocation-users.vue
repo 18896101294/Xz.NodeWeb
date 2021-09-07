@@ -171,12 +171,14 @@ export default {
         { name: '女', value: 1 }
       ],
       // 勾选
-      multipleSelection: null,
+      multipleSelection: [],
     }
   },
   created() {
     this.getOrgs()
-    this.multipleSelection = this.roleUserDatas
+    this.roleUserDatas.forEach((item, index) => {
+      this.multipleSelection.push(item.id)
+    })
   },
   methods: {
     // 查询
@@ -199,6 +201,7 @@ export default {
         this.orgUserQuery.account = ''
         this.orgUserQuery.status = null
         this.loadUsersPage()
+        this.$emit('getRoleUserValue', this.multipleSelection)
         setTimeout(() => {
           this.listLoading = false
         }, 1 * 1000)
@@ -211,10 +214,9 @@ export default {
       loadUsersPage(this.orgUserQuery).then(response => {
         this.elements = response.data.datas
         this.total = response.data.total
-        console.log(this.multipleSelection)
         this.$nextTick(() => {
           this.elements.forEach((item, index) => {
-            if(this.multipleSelection.findIndex(u => u.id === item.id) != -1) {
+            if(this.multipleSelection.findIndex(u => u === item.id) != -1) {
               this.$refs.multipleTable.toggleRowSelection(item, true)
             }
           })
@@ -255,11 +257,13 @@ export default {
       this.orgUserQuery.name = ''
       this.orgUserQuery.account = ''
       this.orgUserQuery.status = null
+      this.orgUserQuery.page = 1
+      this.orgUserQuery.limit = 20
       loadUsersPage(this.orgUserQuery).then(response => {
         this.elements = response.data.datas
         this.$nextTick(() => {
           this.elements.forEach((item, index) => {
-            if(this.multipleSelection.findIndex(u => u.id === item.id) != -1) {
+            if(this.multipleSelection.findIndex(u => u === item.id) != -1) {
               this.$refs.multipleTable.toggleRowSelection(item, true)
             }
           })
@@ -272,14 +276,16 @@ export default {
 
     // 勾选事件
     select(selection, val) {
-      console.log(this.multipleSelection)
-      const valIndex = this.multipleSelection.findIndex(u => u.id === val.id)
+      const valIndex = this.multipleSelection.findIndex(u => u === val.id)
       if (valIndex > -1) {
         this.multipleSelection.splice(valIndex, 1)
       } else {
-        this.multipleSelection.push(val)
+        this.multipleSelection.push(val.id)
       }
+      this.$emit('getRoleUserValue', this.multipleSelection)
     },
+
+    // 去掉全选列
     cellClass(row){     
       if (row.columnIndex === 0) {           
       return 'disabledCheck'     

@@ -20,7 +20,7 @@
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">添加</el-button>
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleBachDelete">删除</el-button>
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="allocationUsers">分配用户</el-button>
-          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">分配模块</el-button>
+          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="allocationModules">分配模块</el-button>
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">分配资源</el-button>
         </div>
       </el-form>
@@ -100,26 +100,37 @@
     </el-dialog>
 
     <!-- 分配用户 -->
-    <el-dialog id="roleTable-dialog" top="10vh" v-if="dialogAllocationUsersFormVisible" :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="dialogAllocationUsersFormVisible" width="80%">
-      <AllocationUsers :roleUserDatas="roleUserDatas" />
+    <el-dialog id="roleUserTable-dialog" top="10vh" v-if="dialogAllocationUsersFormVisible" :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="dialogAllocationUsersFormVisible" width="80%">
+      <AllocationUsers :roleUserDatas="roleUserDatas" @getRoleUserValue="getRoleUserValue($event)" />
       <div slot="footer" class="dialog-footer" style="padding:0px">
         <el-button @click="dialogAllocationUsersFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="updateRole()">确定</el-button>
+        <el-button type="primary" @click="roleAllocationUsers()">确定</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 分配模块 -->
+    <el-dialog id="roleModuleTable-dialog" top="10vh" v-if="dialogAllocationModulesFormVisible" :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="dialogAllocationModulesFormVisible" width="50%">
+      <AllocationModules :roleModuleDatas="roleModuleDatas" :active="active" />
+      <div slot="footer" class="dialog-footer" style="padding:0px">
+        <el-button @click="dialogAllocationModulesFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="active=1">下一步</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getRolesPage, getRoleBindUsers, addRole, updateRole, deleteRole, disableRole } from '@/api/basics/role'
+import { getRolesPage, getRoleBindUsers, addRole, updateRole, deleteRole, disableRole, roleAllocationUsers } from '@/api/basics/role'
+import { loadForRole } from '@/api/basics/module'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import AllocationUsers from '@/views/basics/role/components/allocation-users.vue'
+import AllocationModules from '@/views/basics/role/components/allocation-modules.vue'
 import { parseTime } from '@/utils'
 
 export default {
   name: 'RoleTable',
-  components: { Pagination, AllocationUsers },
+  components: { Pagination, AllocationUsers, AllocationModules},
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -136,6 +147,8 @@ export default {
       list: null,
       total: 0,
       roleUserDatas: [],
+      roleModuleDatas: [],
+      active: 0,
       resultType: [
         {
           label: '所有',
@@ -166,6 +179,7 @@ export default {
       },
       dialogFormVisible: false,
       dialogAllocationUsersFormVisible: false,
+      dialogAllocationModulesFormVisible: false,
       dialogStatus: '',
       textMap: {
         update: '修改',
@@ -177,6 +191,8 @@ export default {
       },
       // 勾选
       multipleSelection: [],
+      // 勾选的用户
+      roleUserValues: [],
     }
   },
   created() {
@@ -257,9 +273,8 @@ export default {
       this.multipleSelection = [val]
     },
 
-    // 分配用户
+    // 分配用户对话框
     allocationUsers() {
-      console.log(this.multipleSelection)
       if (this.multipleSelection.length > 0) {
         if(this.multipleSelection.length > 1) {
           this.$message({
@@ -267,11 +282,53 @@ export default {
           })
           return
         }
-        // 获取当前角色已经绑定的用户
+        this.roleUserValues = []
+        // 获取当前角色已经绑定的模块
         let roleId = this.multipleSelection[0].id
-        getRoleBindUsers({id:roleId}).then(response => {
+        getRoleBindUsers({ id: roleId }).then(response => {
           this.roleUserDatas = response.data
           this.dialogAllocationUsersFormVisible = true
+        })
+      } else {
+        this.$message({
+          message: '请勾选需要操作的数据', type: 'warning'
+        })
+      }
+    },
+
+    // 分配用户
+    roleAllocationUsers() {
+      // 获取当前角色已经绑定的用户
+      let roleId = this.multipleSelection[0].id
+      roleAllocationUsers({ roleId: roleId, userIds: this.roleUserValues }).then(response => {
+        this.dialogAllocationUsersFormVisible = false
+        this.$notify({
+          message: response.message, type: 'success'
+        })
+        this.getRolesPage()
+      })
+    },
+
+    // 获取勾选的用户
+    getRoleUserValue(value) {
+      this.roleUserValues = value
+    },
+
+    // 分配模块对话框
+    allocationModules() {
+      if (this.multipleSelection.length > 0) {
+        if(this.multipleSelection.length > 1) {
+          this.$message({
+            message: '只能选中一个进行编辑', type: 'warning'
+          })
+          return
+        }
+        this.roleUserValues = []
+        // 获取当前角色已经绑定的用户
+        let roleId = this.multipleSelection[0].id
+        loadForRole(roleId).then(response => {
+          this.roleModuleDatas = response.data
+          this.dialogAllocationModulesFormVisible = true
         })
       } else {
         this.$message({
@@ -396,8 +453,19 @@ export default {
 </script>
 
 <style>
-  #roleTable-dialog .el-dialog__header, .el-dialog__body {
+  #roleUserTable-dialog .el-dialog__header, .el-dialog__body {
     padding: 0 !important;
     padding-bottom: 0 !important;
+  }
+
+  #roleModuleTable-dialog .el-dialog__header, .el-dialog__body {
+    padding: 0 !important;
+    padding-bottom: 0 !important;
+    font-size: 15px;
+  }
+  
+  #roleModuleTable-dialog .el-dialog__header .el-dialog__headerbtn  {
+    top: 10px;
+    right: 10px;
   }
 </style>

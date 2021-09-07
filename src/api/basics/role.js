@@ -48,4 +48,12 @@ export function getRoleBindUsers(data) {
   })
 }
 
+export function roleAllocationUsers(data) {
+  return request({
+    url: '/Role/RoleAllocationUsers',
+    method: 'post',
+    data
+  })
+}
+
 

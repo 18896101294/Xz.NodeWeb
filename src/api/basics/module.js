@@ -77,3 +77,10 @@ export function deleteElement(data) {
     data
   })
 }
+
+export function loadForRole(roleId) {
+  return request({
+    url: '/Module/LoadForRole?firstId=' + roleId,
+    method: 'get'
+  })
+}
