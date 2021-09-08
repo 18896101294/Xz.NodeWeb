@@ -84,3 +84,12 @@ export function loadForRole(roleId) {
     method: 'get'
   })
 }
+
+export function getCheckedModules(data) {
+  return request({
+    url: '/Module/GetCheckedModules',
+    method: 'post',
+    data
+  })
+}
+

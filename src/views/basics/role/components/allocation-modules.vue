@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container" style="padding:20px 20px 0 20px">
+  <div class="app-container" style="padding:20px 20px 0 20px" v-loading="listLoading" element-loading-text="加载中...">
     <el-row :gutter="10">
       <div class="tree-container" style="overflow: auto; height:600px;">
         <el-steps id="module-steps" style="padding-bottom: 15px;" :active="active" finish-status="success">
@@ -8,7 +8,7 @@
           <el-step title="分配字段"></el-step>
         </el-steps>
         <!-- 树形菜单 -->
-        <el-tree id="module-tree" :data="list" ref="tree" show-checkbox v-loading="listLoading" element-loading-text="加载中..." default-expand-all node-key="id" :expand-on-click-node="false" 
+        <el-tree v-show="active==0" id="module-tree" :data="list" ref="tree" show-checkbox default-expand-all node-key="id" :expand-on-click-node="false" 
           :props="defaultProps" :check-strictly="true" :check-on-click-node = "true"
           @node-click="elTreeClick"> 
           <span class="custom-tree-node" slot-scope="{ node }">
@@ -19,17 +19,23 @@
             </span>
           </span>
         </el-tree>
+        <div v-show="active==1">
+          <div v-for="item in checkedModules" :key="item.id" style="padding: 10px">
+            <i class="el-icon-menu" style="padding-right:5px;"/>{{item.fullName}}<el-checkbox style="padding-left:15px ">全选</el-checkbox>
+            <div>
+              <el-checkbox v-for="element in item.elements" :key="element.id" style="padding-left:15px;padding-top:15px">{{element.name}}</el-checkbox>
+            </div>
+          </div>
+        </div>
       </div>
     </el-row>
   </div>
 </template>
 
 <script>
-import { getModulesName } from '@/api/basics/module'
-import { loadUsersPage } from '@/api/basics/user'
+import { getModulesName, getCheckedModules } from '@/api/basics/module'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { string } from 'clipboard'
 
 export default {
   name: 'AllocationModules',
@@ -51,6 +57,8 @@ export default {
       listLoading: true,
       // 勾选
       multipleSelection: [],
+
+      checkedModules: [],
     }
   },
   created() {
@@ -96,9 +104,22 @@ export default {
   },
   watch: {
     active(val, oldVal){
+      if(val == 0) {
+        this.listLoading = true
+        setTimeout(() => {
+          this.listLoading = false
+        }, 1 * 1000)
+      }
       // 获取分配元素
       if(val == 1) {
-
+        this.listLoading = true
+        let treeChecked = this.$refs.tree.getCheckedKeys();
+        getCheckedModules({ ids: treeChecked }).then(response => {
+          this.checkedModules = response.data
+          setTimeout(() => {
+            this.listLoading = false
+          }, 1 * 1000)
+        })
       }
     }
   }

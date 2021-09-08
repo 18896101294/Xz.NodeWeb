@@ -113,7 +113,7 @@
     <el-dialog id="roleModuleTable-dialog" top="10vh" v-if="dialogAllocationModulesFormVisible" :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="dialogAllocationModulesFormVisible" width="50%">
       <AllocationModules :roleModuleDatas="roleModuleDatas" :active="active" />
       <div slot="footer" class="dialog-footer" style="padding:0px">
-        <el-button @click="dialogAllocationModulesFormVisible = false">取消</el-button>
+        <el-button @click="roleModuleCancel()">取消</el-button>
         <el-button type="primary" v-if="active>0" @click="backStep()">上一步</el-button>
         <el-button type="primary" @click="nextStep()">{{this.active===3?'完成':'下一步'}}</el-button>
       </div>
@@ -346,6 +346,10 @@ export default {
     // 分配模块上一步
     backStep() {
       this.active--
+    },
+    roleModuleCancel() {
+      this.dialogAllocationModulesFormVisible = false
+      this.active = 0
     },
 
     resetTemp() {
