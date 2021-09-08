@@ -30,6 +30,7 @@
     <el-table
       :key="tableKey"
       v-loading="listLoading"
+      element-loading-text="加载中..."
       :height="tableHeight"
       :data="list"
       stripe
@@ -113,7 +114,8 @@
       <AllocationModules :roleModuleDatas="roleModuleDatas" :active="active" />
       <div slot="footer" class="dialog-footer" style="padding:0px">
         <el-button @click="dialogAllocationModulesFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="active=1">下一步</el-button>
+        <el-button type="primary" v-if="active>0" @click="backStep()">上一步</el-button>
+        <el-button type="primary" @click="nextStep()">{{this.active===3?'完成':'下一步'}}</el-button>
       </div>
     </el-dialog>
   </div>
@@ -335,6 +337,15 @@ export default {
           message: '请勾选需要操作的数据', type: 'warning'
         })
       }
+    },
+
+    // 分配模块下一步
+    nextStep() {
+      this.active++
+    },
+    // 分配模块上一步
+    backStep() {
+      this.active--
     },
 
     resetTemp() {

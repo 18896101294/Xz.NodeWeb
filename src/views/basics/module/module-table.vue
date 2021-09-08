@@ -23,6 +23,7 @@
           :key="tableKey"
           row-key="cascadeId"
           v-loading="listLoading"
+          element-loading-text="加载中..."
           :height="tableHeight"
           :data="list"
           border
@@ -62,6 +63,7 @@
         <el-table
           :key="tableKey"
           v-loading="listElementLoading"
+          element-loading-text="加载中..."
           :height="tableHeight"
           :data="elements"
           stripe

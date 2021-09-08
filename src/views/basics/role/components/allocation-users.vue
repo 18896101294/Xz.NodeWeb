@@ -25,7 +25,7 @@
       <el-col :span="4" style="border: 1px solid #dfe6ec">
         <div class="tree-container" style="overflow: auto; height:600px">
           <!-- 树形菜单 -->
-          <el-tree :data="list" v-loading="listLoading" default-expand-all node-key="id" :expand-on-click-node="false" :props="defaultProps" 
+          <el-tree :data="list" v-loading="listLoading" element-loading-text="加载中..." default-expand-all node-key="id" :expand-on-click-node="false" :props="defaultProps" 
             :highlight-current="true" @node-click="elTreeClick"> 
             <span class="custom-tree-node" slot-scope="{ node }">
               <span :name="node.label">
@@ -43,6 +43,7 @@
         <el-table
           :key="tableKey"
           v-loading="listElementLoading"
+          element-loading-text="加载中..."
           :data="elements"
           stripe
           border

@@ -8,7 +8,7 @@
           <el-step title="分配字段"></el-step>
         </el-steps>
         <!-- 树形菜单 -->
-        <el-tree id="module-tree" :data="list" show-checkbox v-loading="listLoading" default-expand-all node-key="id" :expand-on-click-node="false" 
+        <el-tree id="module-tree" :data="list" ref="tree" show-checkbox v-loading="listLoading" element-loading-text="加载中..." default-expand-all node-key="id" :expand-on-click-node="false" 
           :props="defaultProps" :check-strictly="true" :check-on-click-node = "true"
           @node-click="elTreeClick"> 
           <span class="custom-tree-node" slot-scope="{ node }">
@@ -56,7 +56,15 @@ export default {
   created() {
     this.getModulesName()
   },
+  mounted() {
+    this.initTree()
+  },
   methods: {
+    // 初始化树目录
+    initTree() {
+      this.$refs.tree.setCheckedKeys(this.roleModuleDatas);
+    },
+
     // 查询
     getModulesName(isRefresh) {
       if(isRefresh) {
@@ -85,7 +93,15 @@ export default {
     elTreeClick(treeData, node, tree) {
       
     },
-  } 
+  },
+  watch: {
+    active(val, oldVal){
+      // 获取分配元素
+      if(val == 1) {
+
+      }
+    }
+  }
 }
 </script>
 

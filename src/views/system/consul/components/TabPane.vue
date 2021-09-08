@@ -1,5 +1,5 @@
 <template>
-  <el-table :data="list" v-loading="loading" border stripe fit highlight-current-row style="width: 100%">
+  <el-table :data="list" v-loading="loading" element-loading-text="加载中..." border stripe fit highlight-current-row style="width: 100%">
     <el-table-column align="center" label="服务Id" prop="serviceID" >
     </el-table-column>
 

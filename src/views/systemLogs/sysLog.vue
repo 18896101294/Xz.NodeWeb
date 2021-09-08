@@ -39,6 +39,7 @@
     <el-table
       :key="tableKey"
       v-loading="listLoading"
+      element-loading-text="加载中..."
       :height="tableHeight"
       :data="list"
       stripe
