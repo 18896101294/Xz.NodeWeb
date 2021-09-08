@@ -19,7 +19,7 @@
             </span>
           </span>
         </el-tree>
-        <div v-show="active==1">
+        <div v-show="active==1" style="height:520px;overflow:auto">
           <div v-for="item in checkedModules" :key="item.id" style="padding: 10px">
             <i class="el-icon-menu" style="padding-right:5px;"/>{{item.fullName}}<el-checkbox style="padding-left:15px ">全选</el-checkbox>
             <div>

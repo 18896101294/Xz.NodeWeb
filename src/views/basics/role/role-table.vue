@@ -101,7 +101,7 @@
     </el-dialog>
 
     <!-- 分配用户 -->
-    <el-dialog id="roleUserTable-dialog" top="10vh" v-if="dialogAllocationUsersFormVisible" :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="dialogAllocationUsersFormVisible" width="80%">
+    <el-dialog id="roleUserTable-dialog" top="10vh" v-if="dialogAllocationUsersFormVisible" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="dialogAllocationUsersFormVisible" width="80%">
       <AllocationUsers :roleUserDatas="roleUserDatas" @getRoleUserValue="getRoleUserValue($event)" />
       <div slot="footer" class="dialog-footer" style="padding:0px">
         <el-button @click="dialogAllocationUsersFormVisible = false">取消</el-button>
@@ -110,7 +110,7 @@
     </el-dialog>
 
     <!-- 分配模块 -->
-    <el-dialog id="roleModuleTable-dialog" top="10vh" v-if="dialogAllocationModulesFormVisible" :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="dialogAllocationModulesFormVisible" width="50%">
+    <el-dialog id="roleModuleTable-dialog" top="10vh" v-if="dialogAllocationModulesFormVisible" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="dialogAllocationModulesFormVisible" width="50%">
       <AllocationModules :roleModuleDatas="roleModuleDatas" :active="active" />
       <div slot="footer" class="dialog-footer" style="padding:0px">
         <el-button @click="roleModuleCancel()">取消</el-button>
