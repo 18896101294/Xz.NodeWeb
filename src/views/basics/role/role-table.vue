@@ -468,14 +468,13 @@ export default {
 </script>
 
 <style>
+
   #roleUserTable-dialog .el-dialog__header, .el-dialog__body {
-    padding: 0 !important;
-    padding-bottom: 0 !important;
+    padding: 0px 10px 0px 0px;
   }
 
   #roleModuleTable-dialog .el-dialog__header, .el-dialog__body {
-    padding: 0 !important;
-    padding-bottom: 0 !important;
+    padding: 0px 10px 0px 0px;
     font-size: 15px;
   }
   

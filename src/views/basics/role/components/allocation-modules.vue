@@ -7,7 +7,7 @@
           <el-step title="分配菜单"></el-step>
           <el-step title="分配字段"></el-step>
         </el-steps>
-        <!-- 树形菜单 -->
+        <!-- 勾选模块 -->
         <el-tree v-show="active==0" id="module-tree" :data="list" ref="tree" show-checkbox default-expand-all node-key="id" :expand-on-click-node="false" 
           :props="defaultProps" :check-strictly="true" :check-on-click-node = "true"
           @node-click="elTreeClick"> 
@@ -19,14 +19,26 @@
             </span>
           </span>
         </el-tree>
+
+        <!-- 勾选菜单 -->
         <div v-show="active==1" style="height:520px;overflow:auto">
-          <div v-for="item in checkedModules" :key="item.id" style="padding: 10px">
-            <i class="el-icon-menu" style="padding-right:5px;"/>{{item.fullName}}<el-checkbox style="padding-left:15px ">全选</el-checkbox>
+          <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+          <!-- <el-checkbox-group v-model="currentCheckedMenu"> -->
+          <div v-for="item in checkedModules" :id="item.id" :key="item.id" style="padding: 10px">
+            <i class="el-icon-menu" style="padding-right:5px;">{{item.fullName}}</i>
+            <el-checkbox-group v-model="currentCheckedMenu" @change="handleCheckedCitiesChange">
             <div>
-              <el-checkbox v-for="element in item.elements" :key="element.id" style="padding-left:15px;padding-top:15px">{{element.name}}</el-checkbox>
+              <el-checkbox v-for="element in item.elements" :label="element.id" :id="element.id" :key="element.id" 
+                style="padding-left:15px;padding-top:15px"
+                @change="(value) => handleCheckChange(value, element)">{{element.name}}</el-checkbox>
             </div>
+            </el-checkbox-group>
           </div>
+          <!-- </el-checkbox-group> -->
         </div>
+
+        <!-- 勾选字段 -->
+        <div v-show="active==2">这里是勾选字段</div>
       </div>
     </el-row>
   </div>
@@ -59,6 +71,11 @@ export default {
       multipleSelection: [],
 
       checkedModules: [],
+      checkedMenu: [],
+      // 当前选中的菜单
+      currentCheckedMenu: [],
+      isIndeterminate: true,
+      checkAll: false,
     }
   },
   created() {
@@ -97,10 +114,34 @@ export default {
       })
     },
 
-    //节点点击回调
+    // 节点点击回调
     elTreeClick(treeData, node, tree) {
       
     },
+    // 单个元素勾选
+    handleCheckChange(val, element) {
+      const index = this.currentCheckedMenu.findIndex(u => u == element.id)
+      if(val) {
+        if(index == -1) {
+          this.currentCheckedMenu.push(element.id)
+        }
+      } else {
+        if(index > -1) {
+          this.currentCheckedMenu.splice(index, 1)
+        }
+      }
+    },
+    // 单模块菜单全选
+    handleCheckAllChange(val) {
+      this.currentCheckedMenu = val ? this.checkedMenu : [];
+      this.isIndeterminate = false;
+    },
+
+    handleCheckedCitiesChange(val) {
+      let checkedCount = val.length;
+      this.checkAll = checkedCount === this.checkedMenu.length;
+      this.isIndeterminate = checkedCount > 0 && checkedCount < this.checkedMenu.length;
+    }
   },
   watch: {
     active(val, oldVal){
@@ -116,10 +157,24 @@ export default {
         let treeChecked = this.$refs.tree.getCheckedKeys();
         getCheckedModules({ ids: treeChecked }).then(response => {
           this.checkedModules = response.data
+          let elementDatas = []
+          response.data.forEach((module, index) => {
+            module.elements.forEach((element, index) => {
+              elementDatas.push(element.id)
+            })
+          });
+          this.checkedMenu = elementDatas
           setTimeout(() => {
             this.listLoading = false
           }, 1 * 1000)
         })
+      }
+      //
+      if(val == 2) {
+        this.listLoading = true
+        setTimeout(() => {
+          this.listLoading = false
+        }, 1 * 1000)
       }
     }
   }
@@ -134,7 +189,4 @@ export default {
     font-size: 14px;
     line-height: 30px;
   }
-  /* #module-tree .el-checkbox__inner {
-    border: 1px solid #6a6d72;
-  } */
 </style>

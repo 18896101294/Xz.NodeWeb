@@ -45,23 +45,30 @@
       element-loading-text="加载中..."
       :height="tableHeight"
       :data="list"
+      :span-method="spanMethod"
       stripe
       border
       fit
       highlight-current-row
       style="width: 100%;"
+      ref="multipleTable"
       @sort-change="sortChange"
       @selection-change="selectionChange"
+      @current-change="currentChange"
     >
       <el-table-column type="selection" align="center" width="55" />
+
+      <el-table-column label="分类" prop="category" min-width="100px" align="center">
+        <template slot-scope="{row}">
+          <el-tag effect="plain" type="success">{{ row.category }}</el-tag>
+        </template>
+      </el-table-column>
 
       <el-table-column label="顺序号" prop="displayNo" sortable="custom" min-width="80px" align="center" />
 
       <el-table-column label="显示值" prop="text" align="center" min-width="100px" />
 
       <el-table-column label="值" prop="value" align="center" min-width="100px" />
-
-      <el-table-column label="分类" prop="category" min-width="100px" align="center" />
 
       <el-table-column label="备注" prop="remark" align="center" min-width="100px" />
 
@@ -300,6 +307,41 @@ export default {
       })
       this.getTableHeight()
     },
+
+    classGroup(category){
+      return this.list.filter(o => o.category == category).length;
+    },
+    classNameLen(category){
+      const tmp = this.list.map(o => o.category)
+      const index = tmp.indexOf(category);
+      let len = 0;
+      for (let i = 0;i < index;i++){
+        len += this.classGroup(tmp[i]);
+      }
+      return len;
+    },
+    spanMethod(data) {
+      const {row,column,rowIndex,columnIndex} = data;
+      if (columnIndex == 1) {  //合并展示区
+        const len = this.classGroup(row.category);
+        const lenName = this.classNameLen(row.category);
+        if (rowIndex === lenName) {
+          return {
+            rowspan:len,
+            colspan:1
+          }
+        } else return {
+          rowspan: 0,
+          colspan: 0
+        };
+      } else {
+       return {
+          rowspan: 1,
+          colspan: 1
+        };
+      }
+    },
+
     // 获取所有分类
     getAllCategory() {
       getAllCategory().then(response => {
@@ -353,6 +395,14 @@ export default {
     selectionChange(selection) {
       this.multipleSelection = selection
     },
+
+        // 单选事件
+    currentChange(val) {
+      this.$refs.multipleTable.clearSelection()
+      this.$refs.multipleTable.toggleRowSelection(val)
+      this.multipleSelection = [val]
+    },
+
     // 高级
     handleShow() {
       this.filterStatus = this.filterStatus ? 0 : 1
