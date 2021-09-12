@@ -100,7 +100,7 @@
       </el-col>
     </el-row>
     <!-- 添加模块 -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="40%">
+    <el-dialog :title="textMap[dialogStatus]" v-if="dialogFormVisible" :visible.sync="dialogFormVisible" width="40%">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="110px" >
         <el-row>
           <el-col :span="12">
@@ -167,7 +167,7 @@
       </div>
     </el-dialog>
     <!-- 添加元素 -->
-    <el-dialog :title="textMapElement[dialogElementStatus]" :visible.sync="dialogFormVisibleElement" width="40%">
+    <el-dialog :title="textMapElement[dialogElementStatus]" v-if="dialogFormVisibleElement" :visible.sync="dialogFormVisibleElement" width="40%">
       <el-form ref="dataForm" :rules="rulesElement" :model="tempElement" label-position="right" label-width="110px" >
         <el-row>
           <el-col :span="12">
