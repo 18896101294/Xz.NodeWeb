@@ -56,4 +56,22 @@ export function roleAllocationUsers(data) {
   })
 }
 
+export function roleAllocationModules(data) {
+  return request({
+    url: '/Role/RoleAllocationModules',
+    method: 'post',
+    data
+  })
+}
+
+export function roleAllocationMenus(data) {
+  return request({
+    url: '/Role/RoleAllocationMenus',
+    method: 'post',
+    data
+  })
+}
+
+
+
 

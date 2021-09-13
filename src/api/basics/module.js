@@ -85,9 +85,32 @@ export function loadForRole(roleId) {
   })
 }
 
+export function loadMenusForRole(roleId) {
+  return request({
+    url: '/Module/LoadMenusForRole?firstId=' + roleId,
+    method: 'get'
+  })
+}
+
+export function loadPropertiesForRole(data) {
+  return request({
+    url: '/Module/LoadPropertiesForRole',
+    method: 'post',
+    data
+  })
+}
+
 export function getCheckedModules(data) {
   return request({
     url: '/Module/GetCheckedModules',
+    method: 'post',
+    data
+  })
+}
+
+export function getCheckedProperties(data) {
+  return request({
+    url: '/Module/GetCheckedProperties',
     method: 'post',
     data
   })

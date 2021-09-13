@@ -382,7 +382,6 @@ export default {
     selectTreeGetValue(value) {
       // this.selectedValue = value.join(',')
       this.selectedValue = value
-      console.log(this.selectedValue)
     },
 
     //节点点击回调

@@ -111,7 +111,7 @@
 
     <!-- 分配模块 -->
     <el-dialog id="roleModuleTable-dialog" top="10vh" v-if="dialogAllocationModulesFormVisible" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="dialogAllocationModulesFormVisible" width="50%">
-      <AllocationModules :roleModuleDatas="roleModuleDatas" :active="active" />
+      <AllocationModules :roleModuleDatas="roleModuleDatas" :roleMenuDatas="roleMenuDatas" :rolePropDatas="rolePropDatas" :active="active" @getValue="getModuleInfoValue($event)"/>
       <div slot="footer" class="dialog-footer" style="padding:0px">
         <el-button @click="roleModuleCancel()">取消</el-button>
         <el-button type="primary" v-if="active>0" @click="backStep()">上一步</el-button>
@@ -122,8 +122,8 @@
 </template>
 
 <script>
-import { getRolesPage, getRoleBindUsers, addRole, updateRole, deleteRole, disableRole, roleAllocationUsers } from '@/api/basics/role'
-import { loadForRole } from '@/api/basics/module'
+import { getRolesPage, getRoleBindUsers, addRole, updateRole, deleteRole, disableRole, roleAllocationUsers, roleAllocationModules, roleAllocationMenus } from '@/api/basics/role'
+import { loadForRole, loadMenusForRole, loadPropertiesForRole } from '@/api/basics/module'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import AllocationUsers from '@/views/basics/role/components/allocation-users.vue'
@@ -150,6 +150,8 @@ export default {
       total: 0,
       roleUserDatas: [],
       roleModuleDatas: [],
+      roleMenuDatas: [],
+      rolePropDatas: [],
       active: 0,
       resultType: [
         {
@@ -195,6 +197,12 @@ export default {
       multipleSelection: [],
       // 勾选的用户
       roleUserValues: [],
+      // 勾选的模块
+      moduleChecked: [],
+      // 勾选的菜单
+      menuChecked: [],
+      // 勾选的字段
+      propChecked: []
     }
   },
   created() {
@@ -341,11 +349,49 @@ export default {
 
     // 分配模块下一步
     nextStep() {
-      this.active++
+      let roleId = this.multipleSelection[0].id
+      const count = this.active+1
+      if(count == 1) {
+        // 保存分配模块
+        roleAllocationModules({ roleId: roleId, moduleIds: this.moduleChecked}).then(response => {
+          this.$notify({
+            message: response.message, type: 'success'
+          })
+          // 加载角色已绑定的菜单数据
+          loadMenusForRole(roleId).then(response => {
+            this.roleMenuDatas = response.data
+            this.active++
+          })
+        })
+      }
+      if(count == 2) {
+        // 保存分配菜单
+        roleAllocationMenus({ roleId: roleId, menuIds: this.menuChecked}).then(response => {
+          this.$notify({
+            message: response.message, type: 'success'
+          })
+          // 加载角色已绑定的字段数据
+          loadPropertiesForRole({ roleId: roleId, moduleIds: this.moduleChecked }).then(response => {
+            this.rolePropDatas = response.data
+            this.active++
+          })
+        })
+      }
+
     },
     // 分配模块上一步
     backStep() {
       this.active--
+    },
+    // 获取模块分配勾选的值
+    getModuleInfoValue(value) {
+      console.log(value)
+      if(this.active == 0) {
+        this.moduleChecked = value.moduleChecked
+      }
+      if(this.active == 1) {
+        this.menuChecked = value.menuChecked
+      }
     },
     roleModuleCancel() {
       this.dialogAllocationModulesFormVisible = false
