@@ -85,10 +85,11 @@ export function loadForRole(roleId) {
   })
 }
 
-export function loadMenusForRole(roleId) {
+export function loadMenusForRole(data) {
   return request({
-    url: '/Module/LoadMenusForRole?firstId=' + roleId,
-    method: 'get'
+    url: '/Module/LoadMenusForRole',
+    method: 'post',
+    data
   })
 }
 

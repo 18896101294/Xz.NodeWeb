@@ -111,7 +111,7 @@ export default {
     // 初始化树目录
     initTree() {
       this.$refs.tree.setCheckedKeys(this.roleModuleDatas);
-      this.$emit('getValue', { moduleChecked: this.$refs.tree.getCheckedKeys() })
+      this.$emit('getValue', { moduleChecked: this.roleModuleDatas })
     },
 
     // 查询
@@ -218,9 +218,18 @@ export default {
             })
           });
           this.checkedMenu = elementDatas
+          this.roleMenuDatas.forEach((item, index) => {
+            this.currentCheckedMenu.push(item)
+          })
           setTimeout(() => {
             this.listLoading = false
+            let checkedCount = this.currentCheckedMenu.length
+            if(checkedCount == this.checkedMenu.length) {
+              this.checkAll = true
+              this.isIndeterminate = false
+            }
           }, 1 * 1000)
+          
         })
       }
       // 获取分配字段

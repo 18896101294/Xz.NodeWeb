@@ -9,9 +9,9 @@
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">添加模块</el-button>
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleUpdate">修改模块</el-button>
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleDelete">删除模块</el-button>
-          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreateElement">添加元素</el-button>
-          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleUpdateElement">修改元素</el-button>
-          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleDeleteElement">删除元素</el-button>
+          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreateElement">添加菜单</el-button>
+          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleUpdateElement">修改菜单</el-button>
+          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleDeleteElement">删除菜单</el-button>
         </div>
       </el-form>
     </div>
@@ -166,7 +166,7 @@
         <el-button type="primary" @click="dialogStatus==='create'?createModule():updateModule()">确定</el-button>
       </div>
     </el-dialog>
-    <!-- 添加元素 -->
+    <!-- 添加菜单 -->
     <el-dialog :title="textMapElement[dialogElementStatus]" v-if="dialogFormVisibleElement" :visible.sync="dialogFormVisibleElement" width="40%">
       <el-form ref="dataForm" :rules="rulesElement" :model="tempElement" label-position="right" label-width="110px" >
         <el-row>
@@ -320,8 +320,8 @@ export default {
         create: '添加模块'
       },
       textMapElement: {
-        update: '修改元素',
-        create: '添加元素'
+        update: '修改菜单',
+        create: '添加菜单'
       },
       rules: {
         code: [{ required: true, message: '标识必填', trigger: 'change' }],
@@ -418,6 +418,7 @@ export default {
     //获取树形下拉框选中的值
     selectTreeGetValue(value) {
       this.selectParentId = value
+      console.log(this.selectParentId)
       if(value == '0') {
         this.selectParentId = ''
       }
@@ -528,14 +529,14 @@ export default {
       })
     },
 
-    // 添加元素
+    // 添加菜单
     createModuleElement() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           this.tempElement.moduleId = this.selectModuleId
           if(this.tempElement.moduleId == '') {
             this.$message({
-              message: '元素所属模块不能为根节点', type: 'warning'
+              message: '菜单所属模块不能为根节点', type: 'warning'
             })
           } else {
             addElement(this.tempElement).then(response => {
@@ -603,7 +604,7 @@ export default {
       this.tempElement = isClick? Object.assign({}, row): Object.assign({}, this.multipleSelectionElement) 
     },
 
-    // 修改元素
+    // 修改菜单
     updateModuleElement() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
@@ -650,7 +651,7 @@ export default {
       }
     },
 
-    // 删除元素
+    // 删除菜单
     handleDeleteElement() {
       if (this.multipleSelectionElement) {
         this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
@@ -703,5 +704,20 @@ export default {
     z-index: 1;
     overflow: hidden;
     overflow-y: auto;
+  }
+
+  
+  #table-dialog .el-dialog__header, .el-dialog__body {
+    padding: 0px 10px 0px 0px;
+  }
+
+  #table-dialog .el-dialog__header, .el-dialog__body {
+    padding: 0px 10px 0px 0px;
+    font-size: 15px;
+  }
+  
+  #table-dialog .el-dialog__header .el-dialog__headerbtn  {
+    top: 10px;
+    right: 10px;
   }
 </style>

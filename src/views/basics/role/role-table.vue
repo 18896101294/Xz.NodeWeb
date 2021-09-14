@@ -353,12 +353,12 @@ export default {
       const count = this.active+1
       if(count == 1) {
         // 保存分配模块
-        roleAllocationModules({ roleId: roleId, moduleIds: this.moduleChecked}).then(response => {
+        roleAllocationModules({ roleId: roleId, moduleIds: this.moduleChecked }).then(response => {
           this.$notify({
             message: response.message, type: 'success'
           })
           // 加载角色已绑定的菜单数据
-          loadMenusForRole(roleId).then(response => {
+          loadMenusForRole({ roleId: roleId, moduleIds: this.moduleChecked }).then(response => {
             this.roleMenuDatas = response.data
             this.active++
           })

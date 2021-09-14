@@ -80,6 +80,7 @@ export default {
         // console.log(this.valueTitle)
         this.$refs.selectTree.setCurrentKey(this.valueId)       // 设置默认选中
         this.defaultExpandedKey = []      // 设置默认展开
+        this.$emit('getValue',this.valueId)
       }else{
         this.valueTitle = '根节点'
         this.$refs.selectTree.setCurrentKey(this.valueId)       // 设置默认选中
