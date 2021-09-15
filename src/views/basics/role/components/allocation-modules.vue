@@ -221,6 +221,7 @@ export default {
           this.roleMenuDatas.forEach((item, index) => {
             this.currentCheckedMenu.push(item)
           })
+          this.$emit('getValue', { menuChecked: this.currentCheckedMenu })
           setTimeout(() => {
             this.listLoading = false
             let checkedCount = this.currentCheckedMenu.length
@@ -245,8 +246,17 @@ export default {
             })
           });
           this.checkedProperties = elementDatas
+          this.rolePropDatas.forEach((item, index) => {
+            this.currentCheckedKey.push(item.keyId)
+          })
+          this.$emit('getValue', { propChecked: this.currentCheckedKey })
           setTimeout(() => {
             this.listLoading = false
+            let checkedCount = this.currentCheckedKey.length
+            if(checkedCount == this.checkedProperties.length) {
+              this.checkAllProperties = true
+              this.isIndeterminateProperties = false
+            }
           }, 1 * 1000)
         })
       }

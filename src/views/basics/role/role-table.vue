@@ -21,7 +21,7 @@
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleBachDelete">删除</el-button>
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="allocationUsers">分配用户</el-button>
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="allocationModules">分配模块</el-button>
-          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">分配资源</el-button>
+          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="allocationResource">分配资源</el-button>
         </div>
       </el-form>
     </div>
@@ -115,14 +115,14 @@
       <div slot="footer" class="dialog-footer" style="padding:0px">
         <el-button @click="roleModuleCancel()">取消</el-button>
         <el-button type="primary" v-if="active>0" @click="backStep()">上一步</el-button>
-        <el-button type="primary" @click="nextStep()">{{this.active===3?'完成':'下一步'}}</el-button>
+        <el-button type="primary" @click="nextStep()">{{this.active===2?'完成':'下一步'}}</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getRolesPage, getRoleBindUsers, addRole, updateRole, deleteRole, disableRole, roleAllocationUsers, roleAllocationModules, roleAllocationMenus } from '@/api/basics/role'
+import { getRolesPage, getRoleBindUsers, addRole, updateRole, deleteRole, disableRole, roleAllocationUsers, roleAllocationModules, roleAllocationMenus, roleAllocationDatas } from '@/api/basics/role'
 import { loadForRole, loadMenusForRole, loadPropertiesForRole } from '@/api/basics/module'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -350,7 +350,7 @@ export default {
     // 分配模块下一步
     nextStep() {
       let roleId = this.multipleSelection[0].id
-      const count = this.active+1
+      const count = this.active + 1
       if(count == 1) {
         // 保存分配模块
         roleAllocationModules({ roleId: roleId, moduleIds: this.moduleChecked }).then(response => {
@@ -377,7 +377,15 @@ export default {
           })
         })
       }
-
+      if(count == 3) {
+        // 保存分配的字段
+        roleAllocationDatas({ roleId: roleId, Properties: this.propChecked }).then(response => {
+          this.$notify({
+            message: response.message, type: 'success'
+          })
+          this.roleModuleCancel()
+        })
+      }
     },
     // 分配模块上一步
     backStep() {
@@ -392,10 +400,18 @@ export default {
       if(this.active == 1) {
         this.menuChecked = value.menuChecked
       }
+      if(this.active == 2) {
+        this.propChecked = value.propChecked
+      }
     },
     roleModuleCancel() {
       this.dialogAllocationModulesFormVisible = false
       this.active = 0
+    },
+
+    // 分配资源
+    allocationResource() {
+      this.$message('努力开发中...');
     },
 
     resetTemp() {

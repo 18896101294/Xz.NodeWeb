@@ -72,6 +72,15 @@ export function roleAllocationMenus(data) {
   })
 }
 
+export function roleAllocationDatas(data) {
+  return request({
+    url: '/Role/RoleAllocationDatas',
+    method: 'post',
+    data
+  })
+}
+
+
 
 
 
