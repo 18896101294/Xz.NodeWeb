@@ -89,6 +89,7 @@ import router from "@/router";
 import { resetRouter, filterAsyncRouter, constantRoutes } from "@/router/index";
 import axios from 'axios/index'
 import vueCanvasNest from 'vue-canvas-nest'
+import { encrypt, decrypt } from "@/utils/cryptoJS-helper"
 
 export default {
   name: 'Login',
@@ -169,6 +170,10 @@ export default {
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
+          // 加密
+          this.loginForm.password = encrypt(this.loginForm.password)
+          // 解密
+          //let originalPwd = decrypt(pwd, this.encryptKey)
           this.loading = true
           this.$store.dispatch('user/login', this.loginForm)
             .then(() => {
