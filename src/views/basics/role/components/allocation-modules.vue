@@ -10,7 +10,7 @@
         <!-- 勾选模块 -->
         <el-tree v-show="active==0" id="module-tree" :data="list" ref="tree" show-checkbox default-expand-all node-key="id" :expand-on-click-node="false" 
           :props="defaultProps" :check-strictly="true" :check-on-click-node = "true"
-          @node-click="elTreeClick"> 
+          @node-click="elTreeClick" @check="elTreeCheck"> 
           <span class="custom-tree-node" slot-scope="{ node }">
             <span :name="node.label">
                 <i v-if="node.childNodes.length>0"
@@ -142,6 +142,12 @@ export default {
     elTreeClick(treeData, node, tree) {
       this.$emit('getValue', { moduleChecked: this.$refs.tree.getCheckedKeys() })
     },
+    
+    // 节点复选框选中
+    elTreeCheck(data, tree) {
+      this.$emit('getValue', { moduleChecked: this.$refs.tree.getCheckedKeys() })
+    },
+
     // 单个菜单勾选
     handleCheckChange(val, element) {
       const index = this.currentCheckedMenu.findIndex(u => u == element.id)
