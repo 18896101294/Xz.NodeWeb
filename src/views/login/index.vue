@@ -48,6 +48,25 @@
         </el-form-item>
       </el-tooltip>
 
+      <el-form-item prop="code">
+        <div style="display:flex">
+          <span class="svg-container">
+            <svg-icon icon-class="icon" />
+          </span>
+          <el-input
+            ref="code"
+            placeholder="验证码"
+            name="code"
+            v-model="loginForm.code"
+            type="text"
+            tabindex="3"
+            autocomplete="on"
+          >
+          </el-input>
+          <img style="higth:auto;padding: 10px 10px 10px 10px;" :src="imgData" @click="getCaptcha">
+        </div>
+      </el-form-item>
+
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">
         {{ $t('login.logIn') }}
       </el-button>
@@ -84,7 +103,7 @@
 import { validUsername } from '@/utils/validate'
 import LangSelect from '@/components/LangSelect'
 import SocialSign from './components/SocialSignin'
-import { getUserModulesTree } from '@/api/login';
+import { getUserModulesTree, getCaptcha } from '@/api/login';
 import router from "@/router";
 import { resetRouter, filterAsyncRouter, constantRoutes } from "@/router/index";
 import axios from 'axios/index'
@@ -110,21 +129,32 @@ export default {
         callback()
       }
     }
+    const validateCode = (rule, value, callback) => {
+      if (value.toLowerCase() != this.code.toLowerCase()) {
+        callback(new Error('验证码错误'))
+      } else {
+        callback()
+      }
+    }
     return {
       loginForm: {
         username: '',
-        password: ''
+        password: '',
+        code: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        password: [{ required: true, trigger: 'blur', validator: validatePassword }],
+        code: [{ required: true, trigger: 'blur', validator: validateCode }]
       },
       passwordType: 'password',
       capsTooltip: false,
       loading: false,
       showDialog: false,
       redirect: undefined,
-      otherQuery: {}
+      otherQuery: {},
+      imgData: '',
+      code: ''
     }
   },
   watch: {
@@ -148,6 +178,7 @@ export default {
     } else if (this.loginForm.password === '') {
       this.$refs.password.focus()
     }
+    this.getCaptcha()
   },
   destroyed() {
     // window.removeEventListener('storage', this.afterQRScan)
@@ -177,6 +208,8 @@ export default {
           this.loading = true
           this.$store.dispatch('user/login', this.loginForm)
             .then(() => {
+              window.localStorage.removeItem('setRouters')
+              window.localStorage.removeItem('router')
               this.GetNavigationBar()
               setTimeout(() => {
                 this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
@@ -200,6 +233,15 @@ export default {
         return acc
       }, {})
     },
+
+    // 获取验证码
+    getCaptcha() {
+      getCaptcha().then((res) => {
+        this.imgData = 'data:image/png;base64,' + res.data.imgData
+        this.code = res.data.code
+      })
+    },
+
     // 获取路由树
     GetNavigationBar() {
       getUserModulesTree().then((res) => {

@@ -93,7 +93,10 @@ export default {
     async logout() {
       resetRouter()
       await this.$store.dispatch('user/logout')
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      window.localStorage.removeItem('setRouters')
+      window.localStorage.removeItem('router')
+      this.$router.push(`/login`)
+      // this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     }
   }
 }

@@ -16,6 +16,13 @@ export function getInfo(token) {
   })
 }
 
+export function getCaptcha() {
+  return request({
+    url: '/Login/GetCaptcha',
+    method: 'get',
+  })
+}
+
 export function logout() {
   return request({
     url: '/Login/logout',
