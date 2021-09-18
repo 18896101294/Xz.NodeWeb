@@ -36,3 +36,10 @@ export function getUserModulesTree() {
     method: 'get',
   })
 }
+
+export function getFunProperties() {
+  return request({
+    url: '/UserSession/GetFunProperties',
+    method: 'get',
+  })
+}

@@ -211,6 +211,7 @@ export default {
               window.localStorage.removeItem('setRouters')
               window.localStorage.removeItem('router')
               this.GetNavigationBar()
+              this.$store.dispatch('user/getFunProperties', null) // 获取用户拥有的数据字段
               setTimeout(() => {
                 this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
                 this.loading = false

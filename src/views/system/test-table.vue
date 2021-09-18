@@ -67,9 +67,9 @@
     >
       <el-table-column type="selection" align="center" width="55" />
 
-      <el-table-column label="ID" prop="id" align="center" width="300px" />
+      <el-table-column v-if="moduleIdKey+'_Id' === '14f05bfb-5f9c-47fc-be8e-eb3aa49ec2c7_1'" label="ID" prop="id" align="center" width="300px" />
 
-      <el-table-column label="名称" prop="name" sortable="custom" align="center" min-width="100px" />
+      <el-table-column v-if="moduleIdKey+'_Name' === '14f05bfb-5f9c-47fc-be8e-eb3aa49ec2c7_Name'" label="名称" prop="name" sortable="custom" align="center" min-width="100px" />
 
       <el-table-column label="密钥" prop="appSecret" align="center" min-width="100px" />
 
@@ -151,6 +151,8 @@ export default {
   },
   data() {
     return {
+      moduleIdKey: '', 
+      AllProp: [],
       tableKey: 0,
       list: null,
       total: 0,
@@ -231,6 +233,7 @@ export default {
   },
   created() {
     this.getList()
+    this.checkProps()
   },
   updated() {
     this.getTableHeight()
@@ -269,6 +272,29 @@ export default {
         this.tableHeight = window.innerHeight - tableH
       }
     },
+    // 检查字段权限
+    checkProps() {
+      let routerDatas = JSON.parse(window.localStorage.router || '')
+      this.AllProp = JSON.parse(window.localStorage.userProps || '')
+      console.log(this.AllProp)
+      if(routerDatas.length > 0) {
+        this.getPathModel(routerDatas)
+        console.log(this.moduleIdKey)
+      }
+    },
+
+    getPathModel(data) {
+      data.forEach((item,index) => {
+        if(item.item.url == this.$route.path) {
+           this.moduleIdKey = item.item.id
+           return
+        }
+        if(item.children.length > 0) {
+          this.getPathModel(item.children)
+        }
+      })
+    },
+
     // 查询
     getList() {
       this.listLoading = true

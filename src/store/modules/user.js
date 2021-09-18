@@ -1,4 +1,4 @@
-import { login, logout, getInfo } from '@/api/login'
+import { login, logout, getInfo, getFunProperties } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 
@@ -45,6 +45,16 @@ const actions = {
       }).catch(error => {
         reject(error)
       })
+    })
+  },
+
+  // 获取模块字段权限
+  getFunProperties() {
+    getFunProperties().then((res) => {
+      console.log(res)
+      console.log(JSON.stringify(res.data))
+      var storage=window.localStorage
+      storage["userProps"]=JSON.stringify(res.data)
     })
   },
 
