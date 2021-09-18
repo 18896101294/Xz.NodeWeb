@@ -67,21 +67,21 @@
     >
       <el-table-column type="selection" align="center" width="55" />
 
-      <el-table-column v-if="moduleIdKey+'_Id' === '14f05bfb-5f9c-47fc-be8e-eb3aa49ec2c7_1'" label="ID" prop="id" align="center" width="300px" />
+      <el-table-column v-if="AllProp.findIndex(o=> o == moduleIdKey+'_Id') != -1" label="ID" prop="id" align="center" width="300px" />
 
-      <el-table-column v-if="moduleIdKey+'_Name' === '14f05bfb-5f9c-47fc-be8e-eb3aa49ec2c7_Name'" label="名称" prop="name" sortable="custom" align="center" min-width="100px" />
+      <el-table-column v-if="AllProp.findIndex(o=> o == moduleIdKey+'_Name') != -1" label="名称" prop="name" sortable="custom" align="center" min-width="100px" />
 
-      <el-table-column label="密钥" prop="appSecret" align="center" min-width="100px" />
+      <el-table-column v-if="AllProp.findIndex(o=> o == moduleIdKey+'_AppSecret') != -1" label="密钥" prop="appSecret" align="center" min-width="100px" />
 
-      <el-table-column label="图标" min-width="80px" prop="icon" align="center" />
+      <el-table-column v-if="AllProp.findIndex(o=> o == moduleIdKey+'_Icon') != -1" label="图标" min-width="80px" prop="icon" align="center" />
 
-      <el-table-column label="创建时间" width="150px" align="center">
+      <el-table-column v-if="AllProp.findIndex(o=> o == moduleIdKey+'_CreateTime') != -1" label="创建时间" width="150px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.createTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="是否启用" class-name="status-col" align="center" width="100">
+      <el-table-column v-if="AllProp.findIndex(o=> o == moduleIdKey+'_Disable') != -1" label="是否启用" class-name="status-col" align="center" width="100">
         <template slot-scope="{row}">
           {{ row.disable | statusFilter }}
         </template>
@@ -276,10 +276,8 @@ export default {
     checkProps() {
       let routerDatas = JSON.parse(window.localStorage.router || '')
       this.AllProp = JSON.parse(window.localStorage.userProps || '')
-      console.log(this.AllProp)
       if(routerDatas.length > 0) {
         this.getPathModel(routerDatas)
-        console.log(this.moduleIdKey)
       }
     },
 
