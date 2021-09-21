@@ -50,6 +50,7 @@ export default {
     UserTable: '用户管理',
     BasicsManager: '基础配置',
     SystemManager: '系统管理',
+    NoticeTable: '通知管理',
     Logs: 'Logs',
     HttpReports: 'HttpReports',
     SystemLog: '系统日志',

@@ -3,22 +3,38 @@
     <!-- 筛选栏 -->
     <div ref="filterhight" class="filter-container">
       <el-form :inline="true" @submit.native.prevent>
-        <el-form-item label="值：">
-          <el-input clearable v-model="filterConditions['value'].value" placeholder="请输入名称" />
+        <el-form-item label="标题：">
+          <el-input clearable v-model="filterConditions['title'].value" placeholder="请输入标题" />
         </el-form-item>
-        <el-form-item label="显示值：">
-          <el-input clearable v-model="filterConditions['text'].value" placeholder="请输入显示值" />
-        </el-form-item>
-        <el-form-item label="分类：">
-          <el-select v-model="filterConditions['category'].value" clearable placeholder="请选择">
-            <el-option  v-for="item in allCategory" :key="item.value" :label="item.label" :value="item.value"></el-option>
+        <el-form-item label="通知分类：">
+          <el-select v-model="filterConditions['type'].value" placeholder="请选择">
+            <el-option :value="null" label="全部" />
+            <el-option
+              v-for="item in typeList"
+              :key="item.value"
+              :label="item.name"
+              :value="item.value"
+            />
           </el-select>
         </el-form-item>
-        <el-form-item v-if="filterStatus == 0" label="顺序号：">
-          <el-input clearable v-model="filterConditions['displayNo'].value" min="0" type="number" placeholder="请输入顺序号" />
+        <el-form-item label="执行方式：">
+          <el-select v-model="filterConditions['execType'].value" placeholder="请选择">
+            <el-option :value="null" label="全部" />
+            <el-option
+              v-for="item in execTypeList"
+              :key="item.value"
+              :label="item.name"
+              :value="item.value"
+            />
+          </el-select>
         </el-form-item>
-        <el-form-item v-if="filterStatus == 0" label="是否隐藏：">
-          <el-select v-model="filterConditions['isHide'].value" placeholder="请选择是否隐藏">
+        <el-form-item v-if="filterStatus == 0" label="通知范围：">
+          <el-select v-model="filterConditions['rangeType'].value" clearable placeholder="请选择">
+            <el-option  v-for="item in rangeTypeList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item v-if="filterStatus == 0" label="是否执行：">
+          <el-select v-model="filterConditions['isExec'].value" placeholder="请选择">
             <el-option :value="null" label="全部" />
             <el-option
               v-for="item in statusList"
@@ -38,13 +54,14 @@
       </el-form>
     </div>
 
-    <!-- 表格 :span-method="objectSpanMethod"-->
+    <!-- 表格 -->
     <el-table
       :key="tableKey"
       v-loading="listLoading"
       element-loading-text="加载中..."
       :height="tableHeight"
       :data="list"
+      :span-method="spanMethod"
       stripe
       border
       fit
@@ -57,23 +74,45 @@
     >
       <el-table-column type="selection" align="center" width="55" />
 
-      <el-table-column label="分类" prop="category" min-width="100px" align="center">
+      <el-table-column label="标题" prop="titile" min-width="100px" align="center" />
+
+      <el-table-column label="内容" prop="content" sortable="custom" min-width="200px" align="center" />
+
+      <el-table-column label="分类" class-name="status-col" align="center" width="80px">
         <template slot-scope="{row}">
-          <el-tag effect="plain" type="success">{{ row.category }}</el-tag>
+          {{ row.type | typeFilter }}
         </template>
       </el-table-column>
 
-      <el-table-column label="顺序号" prop="displayNo" sortable="custom" min-width="80px" align="center" />
-
-      <el-table-column label="显示值" prop="text" align="center" min-width="100px" />
-
-      <el-table-column label="值" prop="value" align="center" min-width="100px" />
-
-      <el-table-column label="备注" prop="remark" align="center" min-width="100px" />
-
-      <el-table-column label="是否隐藏" class-name="status-col" align="center" width="80px">
+      <el-table-column label="范围" class-name="status-col" align="center" width="80px">
         <template slot-scope="{row}">
-          {{ row.isHide | statusFilter }}
+          {{ row.rangeType | rangeTypeFilter }}
+        </template>
+      </el-table-column>
+
+      <el-table-column label="执行方式" class-name="status-col" align="center" width="80px">
+        <template slot-scope="{row}">
+          {{ row.execType | execTypeFilter }}
+        </template>
+      </el-table-column>
+
+      <el-table-column label="执行时间" prop="execTime" align="center" min-width="100px" />
+
+      <el-table-column label="html格式" class-name="status-col" align="center" width="100px">
+        <template slot-scope="{row}">
+          {{ row.isHtml | statusFilter }}
+        </template>
+      </el-table-column>
+
+      <el-table-column label="已执行" class-name="status-col" align="center" width="100px">
+        <template slot-scope="{row}">
+          {{ row.isExec | statusFilter }}
+        </template>
+      </el-table-column>
+
+      <el-table-column label="状态" class-name="status-col" align="center" width="80px">
+        <template slot-scope="{row}">
+          {{ row.status | statusFilter }}
         </template>
       </el-table-column>
 
@@ -140,21 +179,36 @@
 </template>
 
 <script>
-import { getPageData, createArticle, updateArticle, deleteArticle, getAllCategory } from '@/api/system/configuration'
+import { getPageData, deleteArticle, reExecute, add, update } from '@/api/system/notice'
+import { getSysConfigurations } from '@/api/system/configuration'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import ConditionOper from '@/utils/condition'
 import { parseTime } from '@/utils'
 
 export default {
-  name: 'ConfigurationTable',
+  name: 'NoticeTable',
   components: { Pagination },
   directives: { waves },
   filters: {
     statusFilter(status) {
       const statusMap = {
-        false: '×',
-        true: '√'
+        true: '√',
+        false: '×'
+      }
+      return statusMap[status]
+    },
+    typeFilter(status) {
+      const statusMap = {
+        1: '系统通知',
+        2: '更新通知'
+      }
+      return statusMap[status]
+    },
+    execTypeFilter(status) {
+      const statusMap = {
+        1: '立马执行',
+        2: '稍后执行'
       }
       return statusMap[status]
     }
@@ -163,17 +217,25 @@ export default {
     return {
       tableKey: 0,
       list: null,
-      spanArr:[],
       total: 0,
-      allCategory: [],
+      typeList: [
+        { name: '系统通知', value: 1 },
+        { name: '更新通知', value: 2 }
+      ],
+      execTypeList: [
+        { name: '立马执行', value: 1 },
+        { name: '稍后执行', value: 2 }
+      ],
+      rangeTypeList: [],
+
       listLoading: true,
       listQuery: {
         pageIndex: 1,
         pageSize: 20,
         sorts: [
           {
-            columnName: 'Category',
-            direction: ConditionOper.SortEnum.ASC
+            columnName: 'CreateTime',
+            direction: ConditionOper.SortEnum.DESC
           }
         ],
         conditions: []
@@ -210,32 +272,32 @@ export default {
       filterStatus: 1,
       // 筛选条件
       filterConditions: {
-        'value': {
-          columnName: 'Value',
+        'title': {
+          columnName: 'Title',
           value: '',
           dataType: ConditionOper.DataTypeEnum.String,
           operator: ConditionOper.ConditionOperEnum.Equal
         },
-        'text': {
-          columnName: 'Text',
+        'type': {
+          columnName: 'Type',
           value: '',
-          dataType: ConditionOper.DataTypeEnum.String,
+          dataType: ConditionOper.DataTypeEnum.Int,
           operator: ConditionOper.ConditionOperEnum.Equal
         },
-        'category': {
-          columnName: 'Category',
+        'execType': {
+          columnName: 'ExecType',
           value: '',
-          dataType: ConditionOper.DataTypeEnum.String,
+          dataType: ConditionOper.DataTypeEnum.Int,
           operator: ConditionOper.ConditionOperEnum.Equal
         },
-        'displayNo': {
-          columnName: 'DisplayNo',
+        'rangeType': {
+          columnName: 'RangeType',
           value: null,
           dataType: ConditionOper.DataTypeEnum.Int,
           operator: ConditionOper.ConditionOperEnum.Equal
         },
-        'isHide': {
-          columnName: 'IsHide',
+        'isExec': {
+          columnName: 'IsExec',
           value: null,
           dataType: ConditionOper.DataTypeEnum.Boolean,
           operator: ConditionOper.ConditionOperEnum.Equal
@@ -245,7 +307,7 @@ export default {
   },
   created() {
     this.getList()
-    this.getAllCategory()
+    this.getSysConfigurations()
   },
   updated() {
     this.getTableHeight()
@@ -341,15 +403,26 @@ export default {
         };
       }
     },
-    // 获取所有分类
-    getAllCategory() {
-      getAllCategory().then(response => {
+
+    // 获取分类
+    getSysConfigurations() {
+      getSysConfigurations({ category: 'NoticeRangeType' }).then(response => {
         response.data.forEach((item, index) => {
-           this.allCategory.push({value: item, label: item})
+           this.rangeTypeList.push({value: item.value, label: item.text})
         })
-        console.log(this.allCategory)
+        console.log(this.rangeTypeList)
       })
     },
+
+    rangeTypeFilter(status) {
+      const data = this.rangeTypeList.find(o=>o.value === status)
+      if(data) {
+        return data.text
+      } else {
+        return ''
+      }
+    },
+
     // 条件筛选
     handleFilter() {
       this.listQuery.pageIndex = 1

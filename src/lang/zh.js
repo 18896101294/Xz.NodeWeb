@@ -51,6 +51,7 @@ export default {
     BasicsManager: '基础配置',
     OrgTable: '部门管理',
     SystemManager: '系统管理',
+    NoticeTable: '通知管理',
     Logs: '消息日志',
     HttpReports: 'HttpReports',
     SystemLog: '系统日志',

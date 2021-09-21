@@ -49,6 +49,7 @@ export default {
     ModuleTable: 'Module Table',
     OrgTable: 'Org Manager',
     SystemManager: 'System Manager',
+    NoticeTable: 'Notice Table',
     Logs: 'Logs',
     HttpReports: 'HttpReports',
     SystemLog: 'SystemLog',

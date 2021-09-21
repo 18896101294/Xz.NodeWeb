@@ -39,3 +39,12 @@ export function deleteArticle(data) {
     data
   })
 }
+
+export function getSysConfigurations(query) {
+  return request({
+    url: '/SystemConfiguration/GetSysConfigurations',
+    method: 'get',
+    params: query
+  })
+}
+

@@ -48,6 +48,7 @@ export default {
     OrgTable: 'Org Table',
     BasicsManager: 'Basics Manager',
     SystemManager: 'System Manager',
+    NoticeTable: 'Notice Table',
     OrgTable: 'Org Manager',
     RoleTable: 'Role Manager',
     UserTable: 'User Manager',
