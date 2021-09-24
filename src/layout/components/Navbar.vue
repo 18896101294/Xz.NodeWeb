@@ -205,7 +205,7 @@ export default {
     // 在线状态推送
     onlineStatusEvent() {
       this.appHub.hub.on("GetHubTime", function(message) {
-        console.log(message);
+        // console.log(message);
       });
     }
 

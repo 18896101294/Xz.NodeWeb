@@ -80,6 +80,12 @@ export function roleAllocationDatas(data) {
   })
 }
 
+export function loadRoleAll() {
+  return request({
+    url: '/Role/LoadAll',
+    method: 'get'
+  })
+}
 
 
 

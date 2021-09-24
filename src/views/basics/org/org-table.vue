@@ -126,7 +126,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog id="orgTable-dialog" top="10vh" v-if="dialogUserFormVisible" :visible.sync="dialogUserFormVisible" :close-on-click-modal="false" :close-on-press-escape="false" width="80%">
+    <el-dialog top="10vh" v-if="dialogUserFormVisible" :visible.sync="dialogUserFormVisible" :close-on-click-modal="false" :close-on-press-escape="false" width="80%">
       <!-- 筛选栏 -->
       <div ref="filterhight" class="filter-container">
         <el-form :inline="true" @submit.native.prevent>
@@ -604,14 +604,13 @@ export default {
 </script>
 
 <style>
-  /* 注意：这里如果用class去包裹样式 会造成全局样式都改变，而影响到其他页面组件的样式。
-    这里采用每个页面单独用一个id来控制，因为id是唯一的，所以就解决了样式权重和冲突的问题
-  */
-  #orgTable-dialog .el-dialog__header {
-    padding: 0 !important;
-    padding-bottom: 0 !important;
+
+  .el-dialog__header, .el-dialog__body {
+    padding: 20px 10px 0px 10px;
   }
-  #orgTable-dialog .el-dialog__body {
-    padding: 30px 20px !important;
+  
+  .el-dialog__header .el-dialog__headerbtn  {
+    top: 10px;
+    right: 10px;
   }
 </style>

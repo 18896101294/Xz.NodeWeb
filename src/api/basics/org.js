@@ -52,3 +52,10 @@ export function deleteOrg(data) {
     data
   })
 }
+
+export function loadOrgAll() {
+  return request({
+    url: '/Org/LoadAll',
+    method: 'get'
+  })
+}

@@ -571,3 +571,14 @@ export default {
 }
 </script>
 
+<style>
+
+  .el-dialog__header, .el-dialog__body {
+    padding: 20px 10px 0px 10px;
+  }
+  
+  .el-dialog__header .el-dialog__headerbtn  {
+    top: 10px;
+    right: 10px;
+  }
+</style>

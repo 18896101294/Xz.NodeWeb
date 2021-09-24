@@ -7,7 +7,7 @@
           <el-input clearable v-model="filterConditions['title'].value" placeholder="请输入标题" />
         </el-form-item>
         <el-form-item label="通知分类：">
-          <el-select v-model="filterConditions['type'].value" placeholder="请选择">
+          <el-select clearable v-model="filterConditions['type'].value" placeholder="请选择">
             <el-option :value="null" label="全部" />
             <el-option
               v-for="item in typeList"
@@ -18,7 +18,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="执行方式：">
-          <el-select v-model="filterConditions['execType'].value" placeholder="请选择">
+          <el-select clearable v-model="filterConditions['execType'].value" placeholder="请选择">
             <el-option :value="null" label="全部" />
             <el-option
               v-for="item in execTypeList"
@@ -29,12 +29,12 @@
           </el-select>
         </el-form-item>
         <el-form-item v-if="filterStatus == 0" label="通知范围：">
-          <el-select v-model="filterConditions['rangeType'].value" clearable placeholder="请选择">
+          <el-select clearable v-model="filterConditions['rangeType'].value" placeholder="请选择">
             <el-option  v-for="item in rangeTypeList" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item v-if="filterStatus == 0" label="是否执行：">
-          <el-select v-model="filterConditions['isExec'].value" placeholder="请选择">
+          <el-select clearable v-model="filterConditions['isExec'].value" placeholder="请选择">
             <el-option :value="null" label="全部" />
             <el-option
               v-for="item in statusList"
@@ -61,56 +61,63 @@
       element-loading-text="加载中..."
       :height="tableHeight"
       :data="list"
-      :span-method="spanMethod"
       stripe
       border
       fit
       highlight-current-row
       style="width: 100%;"
       ref="multipleTable"
-      @sort-change="sortChange"
+      :header-cell-style="{'text-align':'center'}"
       @selection-change="selectionChange"
       @current-change="currentChange"
     >
-      <el-table-column type="selection" align="center" width="55" />
+      <el-table-column type="selection" width="55" />
 
-      <el-table-column label="标题" prop="titile" min-width="100px" align="center" />
+      <el-table-column label="通知标题" prop="titile" class-name="status-col" width="100px">
+        <template slot-scope="{row}">
+          {{ row.titile }}
+        </template>
+      </el-table-column>
 
-      <el-table-column label="内容" prop="content" sortable="custom" min-width="200px" align="center" />
+      <el-table-column label="通知内容" prop="content" sortable="custom" min-width="200px" align="left" />
 
-      <el-table-column label="分类" class-name="status-col" align="center" width="80px">
+      <el-table-column label="通知分类" class-name="status-col" width="80px">
         <template slot-scope="{row}">
           {{ row.type | typeFilter }}
         </template>
       </el-table-column>
 
-      <el-table-column label="范围" class-name="status-col" align="center" width="80px">
-        <template slot-scope="{row}">
-          {{ row.rangeType | rangeTypeFilter }}
+      <el-table-column label="通知范围" class-name="status-col" width="130px">
+        <template slot-scope="{row}" v-if="rangeTypeList.length>0">
+          {{ rangeTypeList[row.rangeType].label }}
         </template>
       </el-table-column>
 
-      <el-table-column label="执行方式" class-name="status-col" align="center" width="80px">
+      <el-table-column label="执行方式" class-name="status-col" width="80px">
         <template slot-scope="{row}">
           {{ row.execType | execTypeFilter }}
         </template>
       </el-table-column>
 
-      <el-table-column label="执行时间" prop="execTime" align="center" min-width="100px" />
-
-      <el-table-column label="html格式" class-name="status-col" align="center" width="100px">
+      <el-table-column label="执行时间" prop="execTime" class-name="status-col" width="180px">
         <template slot-scope="{row}">
-          {{ row.isHtml | statusFilter }}
+          {{ row.execTime }}
         </template>
       </el-table-column>
 
-      <el-table-column label="已执行" class-name="status-col" align="center" width="100px">
+      <el-table-column label="html格式" class-name="status-col" width="100px">
         <template slot-scope="{row}">
-          {{ row.isExec | statusFilter }}
+          {{ row.isHtml | trueFilter }}
         </template>
       </el-table-column>
 
-      <el-table-column label="状态" class-name="status-col" align="center" width="80px">
+      <el-table-column label="已执行" class-name="status-col" width="100px">
+        <template slot-scope="{row}">
+          {{ row.isExec | trueFilter }}
+        </template>
+      </el-table-column>
+
+      <el-table-column label="状态" class-name="status-col" width="80px">
         <template slot-scope="{row}">
           {{ row.status | statusFilter }}
         </template>
@@ -131,39 +138,93 @@
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="110px" >
         <el-row>
           <el-col :span="12">
-            <el-form-item label="显示值：" prop="text">
-              <el-input v-model="temp.text" clearable placeholder="请输入显示值" />
+            <el-form-item label="通知标题：" prop="titile">
+              <el-input v-model="temp.titile" clearable placeholder="请输入标题" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="值：" prop="value">
-              <el-input v-model="temp.value" clearable placeholder="请输入值" />
+            <el-form-item label="通知类型：" prop="type">
+              <el-select v-model="temp.type" clearable class="filter-item" placeholder="请选择">
+                <el-option v-for="item in typeList" :key="item.name" :label="item.name" :value="item.value" />
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="分类：" prop="category">
-              <el-input v-model="temp.category" clearable placeholder="请输入分类" />
+            <el-form-item label="通知范围：" prop="rangeType">
+               <el-select v-model="temp.rangeType" clearable class="filter-item" placeholder="请选择">
+                <el-option v-for="item in rangeTypeList" :key="item.value" :label="item.label" :value="item.value" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" v-if="temp.rangeType === 1">
+            <el-form-item label="通知部门：" prop="rangeType">
+              <el-select v-model="temp.RangeIds" clearable multiple lass="filter-item" placeholder="请选择">
+                <el-option
+                  v-for="item in orgList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" v-if="temp.rangeType === 2">
+            <el-form-item label="通知角色：" prop="rangeType">
+              <el-select v-model="temp.RangeIds" clearable multiple lass="filter-item" placeholder="请选择">
+                <el-option
+                  v-for="item in roleList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" v-if="temp.rangeType === 3">
+            <el-form-item label="通知用户：" prop="rangeType">
+              <el-select v-model="temp.RangeIds" clearable multiple lass="filter-item" placeholder="请选择">
+                <el-option
+                  v-for="item in orgList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="Html：" prop="isHtml">
+              <el-switch v-model="temp.isHtml" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="排序：" prop="displayNo">
-              <el-input-number v-model="temp.displayNo" :min="1" label="请输入顺序号"></el-input-number>
+            <el-form-item label="状态：" prop="status">
+              <el-switch v-model="temp.status" active-color="#ff4949" inactive-color="#13ce66"></el-switch>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="执行方式：" prop="execType">
+              <el-select v-model="temp.execType" clearable class="filter-item" placeholder="请选择">
+                <el-option v-for="item in execTypeList" :key="item.name" :label="item.name" :value="item.value" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col v-if="temp.execType === 2" :span="12">
+            <el-form-item label="执行时间：" prop="execTime">
+              <el-date-picker v-model="temp.execTime" clearable type="datetime" placeholder="请输入开始日期" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="是否隐藏：" prop="isHide">
-              <el-switch v-model="temp.isHide" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="备注：" prop="remark">
-              <el-input v-model="temp.remark" type="textarea" placeholder="请输入备注" />
+            <el-form-item label="内容：" prop="content">
+              <el-input v-model="temp.content" clearable type="textarea" placeholder="请输入内容" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -180,6 +241,8 @@
 
 <script>
 import { getPageData, deleteArticle, reExecute, add, update } from '@/api/system/notice'
+import { loadOrgAll } from '@/api/basics/org'
+import { loadRoleAll } from '@/api/basics/role'
 import { getSysConfigurations } from '@/api/system/configuration'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -191,10 +254,17 @@ export default {
   components: { Pagination },
   directives: { waves },
   filters: {
-    statusFilter(status) {
+    trueFilter(status) {
       const statusMap = {
         true: '√',
         false: '×'
+      }
+      return statusMap[status]
+    },
+    statusFilter(status) {
+      const statusMap = {
+        0: '启用',
+        1: '禁用'
       }
       return statusMap[status]
     },
@@ -228,6 +298,9 @@ export default {
       ],
       rangeTypeList: [],
 
+      orgList: [],
+      roleList: [],
+
       listLoading: true,
       listQuery: {
         pageIndex: 1,
@@ -240,16 +313,17 @@ export default {
         ],
         conditions: []
       },
-      importanceOptions: [1, 2, 3],
-      showReviewer: false,
       temp: {
-        id: '',
-        value: '',
-        text: '',
-        category: '',
-        displayNo: 0,
-        remark: '',
-        isHide: false
+        id: undefined,
+        titile: '',
+        content: '',
+        type: 0,
+        execType: 0,
+        execTime: new Date(),
+        rangeType: 0,
+        rangeIds: '',
+        isHtml: false,
+        status: 0,
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -258,13 +332,24 @@ export default {
         create: '添加'
       },
       rules: {
-        category: [{ required: true, message: '分类必填', trigger: 'change' }],
-        text: [{ required: true, message: '显示值必填', trigger: 'change' }],
-        value: [{ required: true, message: '值必填', trigger: 'change' }]
+        titile: [{ required: true, message: '标题必填', trigger: 'change' }],
+        content: [{ required: true, message: '内容必填', trigger: 'change' }],
+        type: [{ required: true, message: '分类必填', trigger: 'change' }],
+        execType: [{ required: true, message: '执行类型必填', trigger: 'change' }],
+        rangeType: [{ required: true, message: '通知范围必填', trigger: 'change' }],
+        rangeIds: [{ required: true, message: '通知人必填', trigger: 'change' }],
       },
       statusList: [
         { name: '是', value: true },
         { name: '否', value: false }
+      ],
+      typeList: [
+        { name: '系统通知', value: 1 },
+        { name: '更新通知', value: 2 },
+      ],
+      execTypeList: [
+        { name: '立马执行', value: 1 },
+        { name: '稍后执行', value: 2 },
       ],
       // 勾选
       multipleSelection: [],
@@ -280,13 +365,13 @@ export default {
         },
         'type': {
           columnName: 'Type',
-          value: '',
+          value: null,
           dataType: ConditionOper.DataTypeEnum.Int,
           operator: ConditionOper.ConditionOperEnum.Equal
         },
         'execType': {
           columnName: 'ExecType',
-          value: '',
+          value: null,
           dataType: ConditionOper.DataTypeEnum.Int,
           operator: ConditionOper.ConditionOperEnum.Equal
         },
@@ -306,8 +391,10 @@ export default {
     }
   },
   created() {
-    this.getList()
     this.getSysConfigurations()
+    this.loadRoleAll()
+    this.loadOrgAll()
+    this.getList()
   },
   updated() {
     this.getTableHeight()
@@ -370,57 +457,28 @@ export default {
       this.getTableHeight()
     },
 
-    classGroup(category){
-      return this.list.filter(o => o.category == category).length;
-    },
-    classNameLen(category){
-      const tmp = this.list.map(o => o.category)
-      const index = tmp.indexOf(category);
-      let len = 0;
-      for (let i = 0;i < index;i++){
-        len += this.classGroup(tmp[i]);
-      }
-      return len;
-    },
-    spanMethod(data) {
-      const {row,column,rowIndex,columnIndex} = data;
-      if (columnIndex == 1) {  //合并展示区
-        const len = this.classGroup(row.category);
-        const lenName = this.classNameLen(row.category);
-        if (rowIndex === lenName) {
-          return {
-            rowspan:len,
-            colspan:1
-          }
-        } else return {
-          rowspan: 0,
-          colspan: 0
-        };
-      } else {
-       return {
-          rowspan: 1,
-          colspan: 1
-        };
-      }
-    },
-
     // 获取分类
     getSysConfigurations() {
       getSysConfigurations({ category: 'NoticeRangeType' }).then(response => {
         response.data.forEach((item, index) => {
-           this.rangeTypeList.push({value: item.value, label: item.text})
+           this.rangeTypeList.push({value: parseInt(item.value), label: item.text})
         })
         console.log(this.rangeTypeList)
       })
     },
 
-    rangeTypeFilter(status) {
-      const data = this.rangeTypeList.find(o=>o.value === status)
-      if(data) {
-        return data.text
-      } else {
-        return ''
-      }
+    // 获取所有部门
+    loadOrgAll() {
+      loadOrgAll().then(response => {
+        this.orgList = response.data
+      })
+    },
+
+    // 获取所有角色
+    loadRoleAll() {
+      loadRoleAll().then(response => {
+        this.roleList = response.data
+      })
     },
 
     // 条件筛选
@@ -431,31 +489,31 @@ export default {
     // 重置筛选
     handleReset() {
       this.filterConditions= {
-        'value': {
+        'title': {
           columnName: 'Value',
           value: '',
           dataType: ConditionOper.DataTypeEnum.String,
           operator: ConditionOper.ConditionOperEnum.Equal
         },
-        'text': {
+        'type': {
           columnName: 'Text',
-          value: '',
-          dataType: ConditionOper.DataTypeEnum.String,
+          value: null,
+          dataType: ConditionOper.DataTypeEnum.Int,
           operator: ConditionOper.ConditionOperEnum.Equal
         },
-        'category': {
+        'execType': {
           columnName: 'Category',
-          value: '',
-          dataType: ConditionOper.DataTypeEnum.String,
+          value: null,
+          dataType: ConditionOper.DataTypeEnum.Int,
           operator: ConditionOper.ConditionOperEnum.Equal
         },
-        'displayNo': {
+        'rangeType': {
           columnName: 'DisplayNo',
           value: null,
           dataType: ConditionOper.DataTypeEnum.Int,
           operator: ConditionOper.ConditionOperEnum.Equal
         },
-        'isHide': {
+        'isExec': {
           columnName: 'IsHide',
           value: null,
           dataType: ConditionOper.DataTypeEnum.Boolean,
@@ -479,40 +537,18 @@ export default {
     handleShow() {
       this.filterStatus = this.filterStatus ? 0 : 1
     },
-    // 排序
-    sortChange(data) {
-      const { prop, order } = data
-      if (prop === 'displayNo') {
-        this.sortByID(prop, order)
-      }
-    },
-    sortByID(prop, order) {
-      if (order === 'ascending') {
-        for (const o in this.listQuery.sorts) {
-          if (this.listQuery.sorts[o].columnName.toUpperCase() == prop.toUpperCase()) {
-            this.listQuery.sorts[o].direction = ConditionOper.SortEnum.ASC
-            break
-          }
-        }
-      } else {
-        for (const o in this.listQuery.sorts) {
-          if (this.listQuery.sorts[o].columnName.toUpperCase() == prop.toUpperCase()) {
-            this.listQuery.sorts[o].direction = ConditionOper.SortEnum.DESC
-            break
-          }
-        }
-      }
-      this.handleFilter()
-    },
     resetTemp() {
       this.temp = {
         id: undefined,
-        value: '',
-        text: '',
-        category: '',
-        displayNo: 1,
-        remark: '',
-        isHide: false
+        titile: '',
+        content: '',
+        type: null,
+        execType: null,
+        execTime: new Date(),
+        rangeType: null,
+        rangeIds: '',
+        isHtml: false,
+        status: 0
       }
     },
     handleCreate() {
@@ -528,7 +564,7 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          createArticle(this.temp).then(response => {
+          add(this.temp).then(response => {
             this.dialogFormVisible = false
             this.$notify({
               message: response.message, type: 'success'
@@ -553,7 +589,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
-          updateArticle(tempData).then(response => {
+          update(tempData).then(response => {
             const index = this.list.findIndex(v => v.id === this.temp.id)
             this.list.splice(index, 1, this.temp)
             this.dialogFormVisible = false
@@ -618,3 +654,15 @@ export default {
   }
 }
 </script>
+
+<style>
+
+  .el-dialog__header, .el-dialog__body {
+    padding: 20px 10px 0px 10px;
+  }
+  
+  .el-dialog__header .el-dialog__headerbtn  {
+    top: 10px;
+    right: 10px;
+  }
+</style>
