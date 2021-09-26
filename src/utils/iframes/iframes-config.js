@@ -17,7 +17,7 @@
    'admin_interface': {
      // 具体生成的 ifrmae 的 name
      name: '接口文档',
-     src: 'http://xznode.club:52788/swagger/index.html'
+     src: 'https://xznode.club/swagger/index.html'
    },
    'httpReports': {
     name: '接口报表',

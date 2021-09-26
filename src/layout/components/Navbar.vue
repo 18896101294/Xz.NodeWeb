@@ -137,7 +137,7 @@ export default {
         console.log('hub-init')
         this.appHub =  {
           name: 'hub',
-          signalRUrl: 'http://localhost:52600',
+          signalRUrl: 'https://xznode.club',//'https://xznode.club''http://1.116.5.70:52600'
           hub: null,
           setCode: 'adminApi',
           source: Object.assign({
