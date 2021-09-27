@@ -47,3 +47,10 @@ export function disableUser(data) {
     data
   })
 }
+
+export function loadUserAll() {
+  return request({
+    url: '/User/LoadAll',
+    method: 'get'
+  })
+}

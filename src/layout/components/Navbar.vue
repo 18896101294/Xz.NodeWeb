@@ -86,7 +86,8 @@ export default {
     ...mapGetters([
       'sidebar',
       'avatar',
-      'device'
+      'device',
+      'account',
     ])
   },
 
@@ -137,7 +138,7 @@ export default {
         console.log('hub-init')
         this.appHub =  {
           name: 'hub',
-          signalRUrl: 'https://xznode.club',//'https://xznode.club''http://1.116.5.70:52600'
+          signalRUrl: 'https://admin52788.xznode.club:52600',//http://localhost:52600 https://admin52788.xznode.club:52600
           hub: null,
           setCode: 'adminApi',
           source: Object.assign({
@@ -200,6 +201,7 @@ export default {
 
     resetEvent() {
       this.onlineStatusEvent();
+      this.noticeEvent();
     },
     
     // 在线状态推送
@@ -207,6 +209,14 @@ export default {
       this.appHub.hub.on("GetHubTime", function(message) {
         // console.log(message);
       });
+    },
+
+    // 系统通知推送
+    noticeEvent() {
+      console.log(this.account)
+      this.appHub.hub.on("SendUserNotice_" + this.account, function(message) {
+        console.log(message)
+      })
     }
 
   }

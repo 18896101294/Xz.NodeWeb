@@ -153,14 +153,14 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="通知范围：" prop="rangeType">
-               <el-select v-model="temp.rangeType" clearable class="filter-item" placeholder="请选择">
+               <el-select v-model="temp.rangeType" @change="rangeTypeChange" clearable class="filter-item" placeholder="请选择">
                 <el-option v-for="item in rangeTypeList" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12" v-if="temp.rangeType === 1">
             <el-form-item label="通知部门：" prop="rangeType">
-              <el-select v-model="temp.RangeIds" clearable multiple lass="filter-item" placeholder="请选择">
+              <el-select v-model="temp.rangeIds" clearable multiple lass="filter-item" placeholder="请选择">
                 <el-option
                   v-for="item in orgList"
                   :key="item.id"
@@ -172,7 +172,7 @@
           </el-col>
           <el-col :span="12" v-if="temp.rangeType === 2">
             <el-form-item label="通知角色：" prop="rangeType">
-              <el-select v-model="temp.RangeIds" clearable multiple lass="filter-item" placeholder="请选择">
+              <el-select v-model="temp.rangeIds" clearable multiple lass="filter-item" placeholder="请选择">
                 <el-option
                   v-for="item in roleList"
                   :key="item.id"
@@ -184,13 +184,18 @@
           </el-col>
           <el-col :span="12" v-if="temp.rangeType === 3">
             <el-form-item label="通知用户：" prop="rangeType">
-              <el-select v-model="temp.RangeIds" clearable multiple lass="filter-item" placeholder="请选择">
-                <el-option
-                  v-for="item in orgList"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
+              <el-select v-model="temp.rangeIds" clearable multiple lass="filter-item" placeholder="请选择">
+                <el-option-group
+                  v-for="group in userList"
+                  :key="group.lable"
+                  :label="group.lable">
+                  <el-option
+                    v-for="item in group.options"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id">
+                  </el-option>
+                </el-option-group>
               </el-select>
             </el-form-item>
           </el-col>
@@ -203,7 +208,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="状态：" prop="status">
-              <el-switch v-model="temp.status" active-color="#ff4949" inactive-color="#13ce66"></el-switch>
+              <el-switch v-model="temp.status" active-color="#ff4949" inactive-color="#13ce66" active-value="1" inactive-value="0"></el-switch>
             </el-form-item>
           </el-col>
         </el-row>
@@ -243,6 +248,7 @@
 import { getPageData, deleteArticle, reExecute, add, update } from '@/api/system/notice'
 import { loadOrgAll } from '@/api/basics/org'
 import { loadRoleAll } from '@/api/basics/role'
+import { loadUserAll } from '@/api/basics/user'
 import { getSysConfigurations } from '@/api/system/configuration'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -300,6 +306,7 @@ export default {
 
       orgList: [],
       roleList: [],
+      userList: [],
 
       listLoading: true,
       listQuery: {
@@ -321,7 +328,7 @@ export default {
         execType: 0,
         execTime: new Date(),
         rangeType: 0,
-        rangeIds: '',
+        rangeIds: [],
         isHtml: false,
         status: 0,
       },
@@ -394,6 +401,7 @@ export default {
     this.getSysConfigurations()
     this.loadRoleAll()
     this.loadOrgAll()
+    this.loadUserAll()
     this.getList()
   },
   updated() {
@@ -463,7 +471,6 @@ export default {
         response.data.forEach((item, index) => {
            this.rangeTypeList.push({value: parseInt(item.value), label: item.text})
         })
-        console.log(this.rangeTypeList)
       })
     },
 
@@ -478,6 +485,13 @@ export default {
     loadRoleAll() {
       loadRoleAll().then(response => {
         this.roleList = response.data
+      })
+    },
+
+    // 获取所有角色
+    loadUserAll() {
+      loadUserAll().then(response => {
+        this.userList = response.data
       })
     },
 
@@ -537,6 +551,7 @@ export default {
     handleShow() {
       this.filterStatus = this.filterStatus ? 0 : 1
     },
+
     resetTemp() {
       this.temp = {
         id: undefined,
@@ -546,11 +561,17 @@ export default {
         execType: null,
         execTime: new Date(),
         rangeType: null,
-        rangeIds: '',
+        rangeIds: [],
         isHtml: false,
         status: 0
       }
     },
+
+    // 通知范围选择
+    rangeTypeChange(val) {
+      this.temp.rangeIds = []
+    },
+
     handleCreate() {
       this.resetTemp()
       this.dialogStatus = 'create'
@@ -569,7 +590,7 @@ export default {
             this.$notify({
               message: response.message, type: 'success'
             })
-            this.list.unshift(response.data)
+            this.getList()
           })
         }
       })
@@ -577,6 +598,9 @@ export default {
 
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
+      if(this.temp.rangeIds) {
+        this.temp.rangeIds = this.temp.rangeIds.split(',')
+      }
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -611,7 +635,7 @@ export default {
         }).then(() => {
           const deleteIds = []
           deleteIds.push(row.id)
-          deleteArticle(deleteIds).then(response => {
+          deleteArticle({ ids: deleteIds }).then(response => {
             this.$notify({
               message: response.message, type: 'success'
             })
@@ -634,7 +658,7 @@ export default {
           type: 'warning'
         }).then(() => {
           const deleteIds = this.multipleSelection.map(item => item.id)
-          deleteArticle(deleteIds).then(response => {
+          deleteArticle({ ids: deleteIds }).then(response => {
             this.$notify({
               message: response.message, type: 'success'
             })
