@@ -213,9 +213,14 @@ export default {
 
     // 系统通知推送
     noticeEvent() {
-      console.log(this.account)
-      this.appHub.hub.on("SendUserNotice_" + this.account, function(message) {
-        console.log(message)
+      this.appHub.hub.on("SendUserNotice_" + this.account, (message)=> {
+        this.$notify({
+          title: message.Title,
+          message: message.Content,
+          type: 'warning',
+          dangerouslyUseHTMLString: message.IsHtml,
+          duration: 0
+        });
       })
     }
 

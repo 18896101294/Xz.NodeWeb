@@ -49,6 +49,7 @@
         <el-button v-waves class="filter-item" type="primary" :icon="filterStatus===0?'el-icon-zoom-out':'el-icon-zoom-in'" @click="handleShow">高级</el-button>
         <div>
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">添加</el-button>
+          <el-button size="small" class="filter-item" style="margin-left: 10px;" type="warning" icon="el-icon-refresh-right" @click="reExecData">重新执行</el-button>
           <el-button size="small" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleBachDelete">删除</el-button>
         </div>
       </el-form>
@@ -73,13 +74,18 @@
     >
       <el-table-column type="selection" width="55" />
 
-      <el-table-column label="通知标题" prop="titile" class-name="status-col" width="100px">
+      <el-table-column label="通知标题" prop="titile" class-name="status-col" width="120px">
         <template slot-scope="{row}">
           {{ row.titile }}
         </template>
       </el-table-column>
 
-      <el-table-column label="通知内容" prop="content" sortable="custom" min-width="200px" align="left" />
+      <!-- <el-table-column label="通知内容" prop="content" sortable="custom" min-width="200px" align="left" /> -->
+      <el-table-column label="通知内容" prop="content" sortable="custom" min-width="200px" align="left" >
+        <template slot-scope="{row}">
+          <span v-html="row.content"></span>
+        </template>
+      </el-table-column>
 
       <el-table-column label="通知分类" class-name="status-col" width="80px">
         <template slot-scope="{row}">
@@ -133,8 +139,8 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.pageIndex" :limit.sync="listQuery.pageSize" @pagination="getList" />
 
-    <!-- 添加菜单 -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="40%">
+    <!-- 添加 -->
+    <el-dialog :title="textMap[dialogStatus]" v-if="dialogFormVisible" :visible.sync="dialogFormVisible" width="40%">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="110px" >
         <el-row>
           <el-col :span="12">
@@ -208,7 +214,10 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="状态：" prop="status">
-              <el-switch v-model="temp.status" active-color="#ff4949" inactive-color="#13ce66" active-value="1" inactive-value="0"></el-switch>
+              <el-select v-model="temp.status" clearable class="filter-item" placeholder="请选择">
+                <el-option v-for="item in statusTypeList" :key="item.name" :label="item.name" :value="item.value" />
+              </el-select>
+              <!-- <el-switch v-model="temp.status" active-color="#ff4949" inactive-color="#13ce66" active-value="1" inactive-value="0"></el-switch> -->
             </el-form-item>
           </el-col>
         </el-row>
@@ -241,6 +250,30 @@
       </div>
     </el-dialog>
 
+    <!-- 重新执行 -->
+    <el-dialog title="重新执行" v-if="execDialogFormVisible" :visible.sync="execDialogFormVisible" width="30%">
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="150px" >
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="执行数据：">
+              <span>{{multipleSelection.map(item => item.titile)}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="执行时间：">
+              <el-date-picker v-model="reExecTime" clearable type="datetime" placeholder="请输入日期" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="execDialogFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="reExecute()">确定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -302,6 +335,10 @@ export default {
         { name: '立马执行', value: 1 },
         { name: '稍后执行', value: 2 }
       ],
+      statusTypeList: [
+        { name: '启用', value: 0 },
+        { name: '禁用', value: 1 }
+      ],
       rangeTypeList: [],
 
       orgList: [],
@@ -332,7 +369,9 @@ export default {
         isHtml: false,
         status: 0,
       },
+      reExecTime: new Date(),
       dialogFormVisible: false,
+      execDialogFormVisible: false,
       dialogStatus: '',
       textMap: {
         update: '修改',
@@ -620,9 +659,49 @@ export default {
             this.$notify({
               message: response.message, type: 'success'
             })
+            this.getList()
           })
         }
       })
+    },
+
+    // 点击重新执行
+    reExecData() {
+      if (this.multipleSelection.length) {
+        this.execDialogFormVisible = true
+        this.reExecTime = new Date()
+      } else {
+        this.$message({
+          message: '请勾选需要操作的数据', type: 'warning'
+        })
+      }
+    },
+
+    // 重新执行
+    reExecute() {
+      if (this.multipleSelection.length) {
+        this.$confirm('此操作将重新执行该通知, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          const ids = this.multipleSelection.map(item => item.id)
+          reExecute({ ids: ids, execTime: this.reExecTime }).then(response => {
+            this.$notify({
+              message: response.message, type: 'success'
+            })
+            this.execDialogFormVisible = false
+          })
+        }).catch(() => {
+          this.$notify({
+            message: '已取消操作', type: 'info'
+          })
+        })
+      } else {
+        this.$message({
+          message: '请勾选需要操作的数据', type: 'warning'
+        })
+      }
     },
 
     // 删除

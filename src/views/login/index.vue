@@ -67,9 +67,15 @@
         </div>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">
+      <div style="display:flex;margin-bottom: 22px;color: #8799a3;font-size: small;">
+        当前服务器启用了IdentityServer4认证
+        <el-link icon="el-icon-mouse" style="color: #1890ff;margin-left: 5px">点击登录</el-link>
+      </div>
+
+      <el-button :disabled="isIdentityServer4" :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">
         {{ $t('login.logIn') }}
       </el-button>
+      
       <div style="position:relative">
         <!-- <div class="tips">
           <span>{{ $t('login.username') }} : admin</span>
@@ -142,6 +148,8 @@ export default {
         password: '',
         code: ''
       },
+      isEncryption: false,
+      isIdentityServer4: false,
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }],
@@ -201,12 +209,20 @@ export default {
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
-          // 加密
-          this.loginForm.password = encrypt(this.loginForm.password)
-          // 解密
-          //let originalPwd = decrypt(pwd, this.encryptKey)
+          let newPassword = this.loginForm.password
+          if(!this.isEncryption) {
+            // 加密
+            newPassword = encrypt(this.loginForm.password)
+            // 解密
+            //let originalPwd = decrypt(pwd, this.encryptKey)
+          }
+          let loginData = {
+            username: this.loginForm.username,
+            password: newPassword,
+            code: this.loginForm.code
+          }
           this.loading = true
-          this.$store.dispatch('user/login', this.loginForm)
+          this.$store.dispatch('user/login', loginData)
             .then(() => {
               window.localStorage.removeItem('setRouters')
               window.localStorage.removeItem('router')
@@ -219,6 +235,9 @@ export default {
             })
             .catch(() => {
               this.loading = false
+              this.loginForm.password = ''
+              this.loginForm.code = ''
+              this.getCaptcha()
             })
         } else {
           console.log('error submit!!')
