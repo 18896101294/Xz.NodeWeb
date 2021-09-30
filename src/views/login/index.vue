@@ -67,12 +67,12 @@
         </div>
       </el-form-item>
 
-      <div style="display:flex;margin-bottom: 22px;color: #8799a3;font-size: small;">
-        当前服务器启用了IdentityServer4认证
-        <el-link icon="el-icon-mouse" style="color: #1890ff;margin-left: 5px">点击登录</el-link>
+      <div v-if="isIdentityServer4" style="display:flex;margin-bottom: 22px;color: #8799a3;font-size: small;align-items: center;">
+        <span>当前服务器启用了IdentityServer4认证</span>
+        <el-link style="color: #1890ff;margin-left: 5px">>>这里登录<i class="el-icon-mouse el-icon--right"></i></el-link>
       </div>
 
-      <el-button :disabled="isIdentityServer4" :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">
+      <el-button :disabled="isIdentityServer4" :loading="loading" type="primary" style="width:100%;margin-bottom:30px;background-color: #1890ff;" @click.native.prevent="handleLogin">
         {{ $t('login.logIn') }}
       </el-button>
       
