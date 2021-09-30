@@ -148,6 +148,11 @@ export const constantRoutes = [
         meta: { title: 'profile', icon: 'user', noCache: true }
       }
     ]
+  },
+  {
+    path: '/IdentityServerCallBack',
+    component: () => import('@/views/login/IdentityServer4/IdentityServerCallBack'),
+    hidden: true
   }
 ]
 

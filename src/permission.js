@@ -9,7 +9,7 @@ import {  resetRouter, filterAsyncRouter, constantRoutes } from "@/router/index"
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
-const whiteList = ['/login', '/auth-redirect'] // no redirect whitelist
+const whiteList = ['/login', '/auth-redirect', '/IdentityServerCallBack'] // no redirect whitelist
 
 let accessRoutesData = null
 

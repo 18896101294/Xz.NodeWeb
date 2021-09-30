@@ -69,10 +69,10 @@
 
       <div v-if="isIdentityServer4" style="display:flex;margin-bottom: 22px;color: #8799a3;font-size: small;align-items: center;">
         <span>当前服务器启用了IdentityServer4认证</span>
-        <el-link style="color: #1890ff;margin-left: 5px">>>这里登录<i class="el-icon-mouse el-icon--right"></i></el-link>
+        <el-link style="color: #1890ff;margin-left: 5px" @click="identityServerClick">>>这里登录<i class="el-icon-mouse el-icon--right"></i></el-link>
       </div>
 
-      <el-button :disabled="isIdentityServer4" :loading="loading" type="primary" style="width:100%;margin-bottom:30px;background-color: #1890ff;" @click.native.prevent="handleLogin">
+      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;background-color: #1890ff;" @click.native.prevent="handleLogin">
         {{ $t('login.logIn') }}
       </el-button>
       
@@ -115,6 +115,18 @@ import { resetRouter, filterAsyncRouter, constantRoutes } from "@/router/index";
 import axios from 'axios/index'
 import vueCanvasNest from 'vue-canvas-nest'
 import { encrypt, decrypt } from "@/utils/cryptoJS-helper"
+import Oidc from "oidc-client";
+
+var config = {
+  authority: "http://xznode.club:12796",
+  client_id: "XzNode.AdminWeb",
+  redirect_uri: "http://192.168.1.109/#/IdentityServerCallBack?",
+  // silent_redirect_uri:"http://xznode.club/#/IdentityServerRefreshToken",
+  response_type: "token",
+  scope: "xznodeapi",
+  post_logout_redirect_uri: "http://xznode.club"
+};
+var mgr = new Oidc.UserManager(config);
 
 export default {
   name: 'Login',
@@ -149,7 +161,7 @@ export default {
         code: ''
       },
       isEncryption: false,
-      isIdentityServer4: false,
+      isIdentityServer4: true,
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }],
@@ -260,6 +272,11 @@ export default {
         this.imgData = 'data:image/png;base64,' + res.data.imgData
         this.code = res.data.code
       })
+    },
+
+    // identityServer4 登录
+    identityServerClick() {
+      mgr.signinRedirect();
     },
 
     // 获取路由树
