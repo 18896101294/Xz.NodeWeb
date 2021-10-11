@@ -118,16 +118,15 @@ import { encrypt, decrypt } from "@/utils/cryptoJS-helper"
 import Oidc from "oidc-client";
 
 var config = {
-  authority: "http://xznode.club:12796",
+  authority: "https://id4.xznode.club:12796",//"https://id4.xznode.club:12796",http://localhost:12796
   client_id: "XzNode.AdminWeb",
-  redirect_uri: "http://192.168.1.109/#/IdentityServerCallBack?",
+  redirect_uri: "https://xznode.club/#/IdentityServerCallBack?",
   // silent_redirect_uri:"http://xznode.club/#/IdentityServerRefreshToken",
   response_type: "token",
   scope: "xznodeapi",
-  post_logout_redirect_uri: "http://xznode.club"
+  post_logout_redirect_uri: "https://xznode.club"
 };
 var mgr = new Oidc.UserManager(config);
-
 export default {
   name: 'Login',
   components: { LangSelect, SocialSign, vueCanvasNest },
