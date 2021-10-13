@@ -23,6 +23,13 @@ export function getCaptcha() {
   })
 }
 
+export function id4LoginWay() {
+  return request({
+    url: '/Applications/EnabledId4LoginWay',
+    method: 'get',
+  })
+}
+
 export function logout() {
   return request({
     url: '/Login/logout',

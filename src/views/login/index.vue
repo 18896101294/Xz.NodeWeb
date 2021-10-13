@@ -72,10 +72,16 @@
         <el-link style="color: #1890ff;margin-left: 5px" @click="identityServerClick">>>这里登录<i class="el-icon-mouse el-icon--right"></i></el-link>
       </div>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;background-color: #1890ff;" @click.native.prevent="handleLogin">
+      <!-- <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;background-color: #1890ff;" @click.native.prevent="handleLogin">
+        {{ $t('login.logIn') }}
+      </el-button> -->
+
+      <el-button id="TencentCaptcha" data-appid="2043018754" data-cbfn="callbackName" data-biz-state="data-biz-state"
+        :loading="loading" type="primary" style="width:100%;margin-bottom:30px;background-color: #1890ff;">
         {{ $t('login.logIn') }}
       </el-button>
-      
+      <remote-js></remote-js>
+
       <div style="position:relative">
         <!-- <div class="tips">
           <span>{{ $t('login.username') }} : admin</span>
@@ -109,7 +115,7 @@
 import { validUsername } from '@/utils/validate'
 import LangSelect from '@/components/LangSelect'
 import SocialSign from './components/SocialSignin'
-import { getUserModulesTree, getCaptcha } from '@/api/login';
+import { getUserModulesTree, getCaptcha, id4LoginWay } from '@/api/login';
 import router from "@/router";
 import { resetRouter, filterAsyncRouter, constantRoutes } from "@/router/index";
 import axios from 'axios/index'
@@ -120,7 +126,8 @@ import Oidc from "oidc-client";
 var config = {
   authority: "https://id4.xznode.club:12796",//"https://id4.xznode.club:12796",http://localhost:12796
   client_id: "XzNode.AdminWeb",
-  redirect_uri: "https://xznode.club/#/IdentityServerCallBack?",
+  // redirect_uri: "https://xznode.club/#/IdentityServerCallBack?",
+  redirect_uri: "http://192.168.1.111/#/IdentityServerCallBack?",
   // silent_redirect_uri:"http://xznode.club/#/IdentityServerRefreshToken",
   response_type: "token",
   scope: "xznodeapi",
@@ -129,7 +136,21 @@ var config = {
 var mgr = new Oidc.UserManager(config);
 export default {
   name: 'Login',
-  components: { LangSelect, SocialSign, vueCanvasNest },
+  components: { LangSelect, SocialSign, vueCanvasNest,
+    // 这里是引用外部js
+    'remote-js': {
+      render(createElement) {
+        return createElement(
+          'script',{
+            attrs: {
+              type: 'text/javascript',
+              src: 'https://ssl.captcha.qq.com/TCaptcha.js',
+            },
+          }
+        )
+      }
+    }
+  },
   data() {
     const validateUsername = (rule, value, callback) => {
       // if (!validUsername(value)) {
@@ -157,7 +178,10 @@ export default {
       loginForm: {
         username: '',
         password: '',
-        code: ''
+        code: '',
+        // 防水墙相关字段
+        randstr: '',
+        ticket: '',
       },
       isEncryption: false,
       isIdentityServer4: true,
@@ -192,12 +216,28 @@ export default {
     // window.addEventListener('storage', this.afterQRScan)
   },
   mounted() {
+    this.id4LoginWay()
+    this.getCaptcha()
+    // 接入腾讯防水墙，绑定Window回调事件
+    let that = this
+    window.callbackName = function (res) {
+      console.log('callback:', res)
+      if (res.ret === 1) {// 验证失败
+        console.log('captcha error!!')
+        return
+      }
+      if (res.ret === 0) {//验证成功
+        that.loginForm.randstr  = res.randstr
+        that.loginForm.ticket  = res.ticket
+        that.handleLogin()
+      }
+    }
+    
     if (this.loginForm.username === '') {
       this.$refs.username.focus()
     } else if (this.loginForm.password === '') {
       this.$refs.password.focus()
     }
-    this.getCaptcha()
   },
   destroyed() {
     // window.removeEventListener('storage', this.afterQRScan)
@@ -230,7 +270,9 @@ export default {
           let loginData = {
             username: this.loginForm.username,
             password: newPassword,
-            code: this.loginForm.code
+            code: this.loginForm.code,
+            randstr: this.loginForm.randstr,
+            ticket: this.loginForm.ticket
           }
           this.loading = true
           this.$store.dispatch('user/login', loginData)
@@ -273,6 +315,13 @@ export default {
       })
     },
 
+    // 获取当前系统是否启用Id4登录方式
+    id4LoginWay() {
+      id4LoginWay().then((res) => {
+        this.isIdentityServer4 = res.data
+      })
+    },
+  
     // identityServer4 登录
     identityServerClick() {
       mgr.signinRedirect();

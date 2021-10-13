@@ -505,15 +505,15 @@ export default {
               message: response.message, type: 'success'
             })
 
-            console.log(this.responseList)
+            // console.log(this.responseList)
             this.list = []
             this.responseList.push(response.data)
-            console.log(this.responseList)
+            // console.log(this.responseList)
             this.resetFatherData()
             this.fatherData.children = this.treeData(this.responseList, 'id', 'parentId', 'children')
-            console.log(this.fatherData)
+            // console.log(this.fatherData)
             this.list.push(this.fatherData)
-            console.log(this.list)
+            // console.log(this.list)
 
             this.elements.push(this.temp)
           })

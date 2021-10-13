@@ -10,7 +10,8 @@ import { getToken, setToken, removeToken } from '@/utils/auth'
 var config = {
   authority: "https://id4.xznode.club:12796",//"https://id4.xznode.club:12796",http://localhost:12796
   client_id: "XzNode.AdminWeb",
-  redirect_uri: "https://xznode.club/#/IdentityServerCallBack?",
+  // redirect_uri: "https://xznode.club/#/IdentityServerCallBack?",
+  redirect_uri: "http://192.168.1.111/#/IdentityServerCallBack?",
   // silent_redirect_uri:"http://xznode.club/#/IdentityServerRefreshToken",
   response_type: "token",
   scope: "xznodeapi",
@@ -73,34 +74,37 @@ export default {
   mounted() {
     new Oidc.UserManager({ response_mode: "query" }).signinRedirectCallback().then(function () { }).catch(function (e) { });
     var that = this;
-    mgr.getUser().then((user) => {
-      // console.log(user);
-      that.accessToken=user.access_token;
-      // console.log(that.accessToken);
-      that.refreshToken=user.refresh_token;
-      // util.cookies.set('accessToken', user.access_token)
-      // util.cookies.set('refreshToken', user.refresh_token)
-      if(that.accessToken) {
-        // that.$store.state.user.token = that.accessToken // 直接设置state 来设置vuex
-        that.$store.commit('user/SET_TOKEN', that.accessToken) // 这是第二种设置vuex的方式
-        // console.log(that.$store)
-        setToken(that.accessToken)
-        // return
-        setTimeout(() => {
-          window.localStorage.removeItem('setRouters')
-          window.localStorage.removeItem('router')
-          that.GetNavigationBar()
-          that.$store.dispatch('user/getFunProperties', null) // 获取用户拥有的数据字段
+    // 这里因为创建mgr的时候是异步的操作，所以这里需要等待一点时间，不然会出现获取不到user信息的情况
+    setTimeout(() => {
+      mgr.getUser().then((user) => {
+        // console.log(user);
+        that.accessToken=user.access_token;
+        // console.log(that.accessToken);
+        that.refreshToken=user.refresh_token;
+        // util.cookies.set('accessToken', user.access_token)
+        // util.cookies.set('refreshToken', user.refresh_token)
+        if(that.accessToken) {
+          // that.$store.state.user.token = that.accessToken // 直接设置state 来设置vuex
+          that.$store.commit('user/SET_TOKEN', that.accessToken) // 这是第二种设置vuex的方式
+          // console.log(that.$store)
+          setToken(that.accessToken)
+          // return
           setTimeout(() => {
-            that.$router.push({ path: that.redirect || '/', query: that.otherQuery })
+            window.localStorage.removeItem('setRouters')
+            window.localStorage.removeItem('router')
+            that.GetNavigationBar()
+            that.$store.dispatch('user/getFunProperties', null) // 获取用户拥有的数据字段
+            setTimeout(() => {
+              that.$router.push({ path: that.redirect || '/', query: that.otherQuery })
+            }, 1000);
           }, 1000);
-        }, 1000);
-      } else {
-        console.log('error submit!!')
-        alert('登录失败！')
-        return false
-      }
-    });
+        } else {
+          console.log('error submit!!')
+          alert('登录失败！')
+          return false
+        }
+      });
+    }, 1000);
   },
   methods: {
     // 获取路由树

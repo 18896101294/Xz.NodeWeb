@@ -55,8 +55,8 @@ const actions = {
   // 获取模块字段权限
   getFunProperties() {
     getFunProperties().then((res) => {
-      console.log(res)
-      console.log(JSON.stringify(res.data))
+      // console.log(res)
+      // console.log(JSON.stringify(res.data))
       var storage=window.localStorage
       storage["userProps"]=JSON.stringify(res.data)
     })

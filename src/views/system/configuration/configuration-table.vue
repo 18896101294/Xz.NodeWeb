@@ -347,7 +347,7 @@ export default {
         response.data.forEach((item, index) => {
            this.allCategory.push({value: item, label: item})
         })
-        console.log(this.allCategory)
+        // console.log(this.allCategory)
       })
     },
     // 条件筛选

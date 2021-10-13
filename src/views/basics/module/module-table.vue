@@ -418,7 +418,7 @@ export default {
     //获取树形下拉框选中的值
     selectTreeGetValue(value) {
       this.selectParentId = value
-      console.log(this.selectParentId)
+      // console.log(this.selectParentId)
       if(value == '0') {
         this.selectParentId = ''
       }
