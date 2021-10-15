@@ -88,7 +88,7 @@
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.pageIndex" :limit.sync="listQuery.pageSize" @pagination="getList" />
 
     <!-- 添加菜单 -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="40%">
+    <el-dialog v-el-drag-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="40%">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="110px" >
         <el-row>
           <el-col :span="12">
@@ -145,11 +145,12 @@ import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import ConditionOper from '@/utils/condition'
 import { parseTime } from '@/utils'
+import elDragDialog from '@/directive/el-drag-dialog' // base on element-ui
 
 export default {
   name: 'ConfigurationTable',
   components: { Pagination },
-  directives: { waves },
+  directives: { waves, elDragDialog },
   filters: {
     statusFilter(status) {
       const statusMap = {
@@ -545,3 +546,15 @@ export default {
   }
 }
 </script>
+
+<style>
+
+  .el-dialog__header, .el-dialog__body {
+    padding: 20px 10px 0px 10px;
+  }
+  
+  .el-dialog__header .el-dialog__headerbtn  {
+    top: 10px;
+    right: 10px;
+  }
+</style>

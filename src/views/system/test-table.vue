@@ -97,7 +97,7 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.pageIndex" :limit.sync="listQuery.pageSize" @pagination="getList" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog v-el-drag-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
         <el-form-item label="名称" prop="name">
           <el-input v-model="temp.name" placeholder="请输入名称" />
@@ -135,11 +135,12 @@ import Pagination from '@/components/Pagination' // secondary package based on e
 import ConditionOper from '@/utils/condition'
 import { getToken } from '@/utils/auth'
 import requestBase from '@/api/request-base'
+import elDragDialog from '@/directive/el-drag-dialog' // base on element-ui
 
 export default {
   name: 'TestTable',
   components: { Pagination },
-  directives: { waves },
+  directives: { waves, elDragDialog },
   filters: {
     statusFilter(status) {
       const statusMap = {

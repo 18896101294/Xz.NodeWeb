@@ -99,7 +99,7 @@
     </el-row>
 
     <!-- 添加 -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" v-if='dialogFormVisible' width="40%">
+    <el-dialog v-el-drag-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" v-if='dialogFormVisible' width="40%">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="110px" >
         <el-row>
           <el-col :span="12">
@@ -164,11 +164,12 @@ import SelectTree from '@/components/SelectTree'
 import MultiSelectTree from '@/components/SelectTree/multi-select'
 import IconsView from '@/views/icons/index'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import elDragDialog from '@/directive/el-drag-dialog' // base on element-ui
 
 export default {
   name: 'UserTable',
   components: { SelectTree, MultiSelectTree, IconsView, Pagination },
-  directives: { waves },
+  directives: { waves, elDragDialog },
   filters: {
     statusFilter(status) {
       const statusMap = {

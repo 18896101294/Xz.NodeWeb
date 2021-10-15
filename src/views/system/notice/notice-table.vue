@@ -140,7 +140,7 @@
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.pageIndex" :limit.sync="listQuery.pageSize" @pagination="getList" />
 
     <!-- 添加 -->
-    <el-dialog :title="textMap[dialogStatus]" v-if="dialogFormVisible" :visible.sync="dialogFormVisible" width="40%">
+    <el-dialog v-el-drag-dialog :title="textMap[dialogStatus]" v-if="dialogFormVisible" :visible.sync="dialogFormVisible" width="40%">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="110px" >
         <el-row>
           <el-col :span="12">
@@ -251,7 +251,7 @@
     </el-dialog>
 
     <!-- 重新执行 -->
-    <el-dialog title="重新执行" v-if="execDialogFormVisible" :visible.sync="execDialogFormVisible" width="30%">
+    <el-dialog v-el-drag-dialog title="重新执行" v-if="execDialogFormVisible" :visible.sync="execDialogFormVisible" width="30%">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="150px" >
         <el-row>
           <el-col :span="24">
@@ -287,11 +287,12 @@ import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import ConditionOper from '@/utils/condition'
 import { parseTime } from '@/utils'
+import elDragDialog from '@/directive/el-drag-dialog' // base on element-ui
 
 export default {
   name: 'NoticeTable',
   components: { Pagination },
-  directives: { waves },
+  directives: { waves, elDragDialog },
   filters: {
     trueFilter(status) {
       const statusMap = {

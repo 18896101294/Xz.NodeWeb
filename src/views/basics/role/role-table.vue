@@ -71,7 +71,7 @@
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.pageIndex" :limit.sync="listQuery.pageSize" @pagination="getRolesPage" />
 
     <!-- 添加 -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="40%">
+    <el-dialog v-el-drag-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="40%">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="110px" >
         <el-row>
           <el-col :span="12">
@@ -101,7 +101,7 @@
     </el-dialog>
 
     <!-- 分配用户 -->
-    <el-dialog id="roleUserTable-dialog" top="10vh" v-if="dialogAllocationUsersFormVisible" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="dialogAllocationUsersFormVisible" width="80%">
+    <el-dialog v-el-drag-dialog id="roleUserTable-dialog" top="10vh" v-if="dialogAllocationUsersFormVisible" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="dialogAllocationUsersFormVisible" width="80%">
       <AllocationUsers :roleUserDatas="roleUserDatas" @getRoleUserValue="getRoleUserValue($event)" />
       <div slot="footer" class="dialog-footer" style="padding:0px">
         <el-button @click="dialogAllocationUsersFormVisible = false">取消</el-button>
@@ -110,7 +110,7 @@
     </el-dialog>
 
     <!-- 分配模块 -->
-    <el-dialog id="roleModuleTable-dialog" top="10vh" v-if="dialogAllocationModulesFormVisible" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="dialogAllocationModulesFormVisible" width="50%">
+    <el-dialog v-el-drag-dialog id="roleModuleTable-dialog" top="10vh" v-if="dialogAllocationModulesFormVisible" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false" :visible.sync="dialogAllocationModulesFormVisible" width="50%">
       <AllocationModules :roleModuleDatas="roleModuleDatas" :roleMenuDatas="roleMenuDatas" :rolePropDatas="rolePropDatas" :active="active" @getValue="getModuleInfoValue($event)"/>
       <div slot="footer" class="dialog-footer" style="padding:0px">
         <el-button @click="roleModuleCancel()">取消</el-button>
@@ -129,11 +129,12 @@ import Pagination from '@/components/Pagination' // secondary package based on e
 import AllocationUsers from '@/views/basics/role/components/allocation-users.vue'
 import AllocationModules from '@/views/basics/role/components/allocation-modules.vue'
 import { parseTime } from '@/utils'
+import elDragDialog from '@/directive/el-drag-dialog' // base on element-ui
 
 export default {
   name: 'RoleTable',
   components: { Pagination, AllocationUsers, AllocationModules},
-  directives: { waves },
+  directives: { waves, elDragDialog },
   filters: {
     statusFilter(status) {
       const statusMap = {

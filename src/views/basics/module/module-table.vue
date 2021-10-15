@@ -100,7 +100,7 @@
       </el-col>
     </el-row>
     <!-- 添加模块 -->
-    <el-dialog :title="textMap[dialogStatus]" v-if="dialogFormVisible" :visible.sync="dialogFormVisible" width="40%">
+    <el-dialog v-el-drag-dialog :title="textMap[dialogStatus]" v-if="dialogFormVisible" :visible.sync="dialogFormVisible" width="40%">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="110px" >
         <el-row>
           <el-col :span="12">
@@ -167,7 +167,7 @@
       </div>
     </el-dialog>
     <!-- 添加菜单 -->
-    <el-dialog :title="textMapElement[dialogElementStatus]" v-if="dialogFormVisibleElement" :visible.sync="dialogFormVisibleElement" width="40%">
+    <el-dialog v-el-drag-dialog :title="textMapElement[dialogElementStatus]" v-if="dialogFormVisibleElement" :visible.sync="dialogFormVisibleElement" width="40%">
       <el-form ref="dataForm" :rules="rulesElement" :model="tempElement" label-position="right" label-width="110px" >
         <el-row>
           <el-col :span="12">
@@ -249,11 +249,12 @@ import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import SelectTree from '@/components/SelectTree'
 import IconsView from '@/views/icons/index'
+import elDragDialog from '@/directive/el-drag-dialog' // base on element-ui
 
 export default {
   name: 'ModuleTable',
   components: { Pagination, SelectTree, IconsView},
-  directives: { waves },
+  directives: { waves, elDragDialog },
   data() {
     return {
       tableKey: 0,

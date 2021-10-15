@@ -73,7 +73,7 @@
     </el-row>
 
     <!-- 添加 -->
-    <el-dialog :title="textMap[dialogStatus]" v-if="dialogFormVisible" :visible.sync="dialogFormVisible" width="40%">
+    <el-dialog v-el-drag-dialog :title="textMap[dialogStatus]" v-if="dialogFormVisible" :visible.sync="dialogFormVisible" width="40%">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="110px" >
         <el-row>
           <el-col :span="12">
@@ -126,7 +126,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog top="10vh" v-if="dialogUserFormVisible" :visible.sync="dialogUserFormVisible" :close-on-click-modal="false" :close-on-press-escape="false" width="80%">
+    <el-dialog v-el-drag-dialog top="10vh" v-if="dialogUserFormVisible" :visible.sync="dialogUserFormVisible" :close-on-click-modal="false" :close-on-press-escape="false" width="80%">
       <!-- 筛选栏 -->
       <div ref="filterhight" class="filter-container">
         <el-form :inline="true" @submit.native.prevent>
@@ -204,11 +204,12 @@ import { getOrgs, getOrgsName, getChildOrgs, getOrgUsers, addOrg, updateOrg, del
 import waves from '@/directive/waves' // waves directive
 import SelectTree from '@/components/SelectTree'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import elDragDialog from '@/directive/el-drag-dialog' // base on element-ui
 
 export default {
   name: 'OrgTable',
   components: { SelectTree, Pagination },
-  directives: { waves },
+  directives: { waves, elDragDialog },
   filters: {
     statusFilter(status) {
       const statusMap = {

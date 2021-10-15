@@ -34,7 +34,7 @@
 </template>
 
 <script>
-// import errGif from '@/assets/500_images/500_1.png'
+import errGif from '@/assets/500_images/500_1.png'
 import vueCanvasNest from 'vue-canvas-nest'
 import qiniuUrl from '@/api/qiniu.js'
 
@@ -43,7 +43,7 @@ export default {
   components: { vueCanvasNest },
   data() {
     return {
-      errGif: qiniuUrl + 'system/500_1.png' + '?' + +new Date(),
+      errGif: errGif + '?' + +new Date(),
       ewizardClap: 'https://wpimg.wallstcn.com/007ef517-bafd-4066-aae4-6883632d9646',
       dialogVisible: false
     }
