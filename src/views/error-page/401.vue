@@ -36,15 +36,16 @@
 </template>
 
 <script>
-import errGif from '@/assets/401_images/401.gif'
+// import errGif from '@/assets/401_images/401.gif'
 import vueCanvasNest from 'vue-canvas-nest'
+import qiniuUrl from '@/api/qiniu.js'
 
 export default {
   name: 'page401',
   components: { vueCanvasNest },
   data() {
     return {
-      errGif: errGif + '?' + +new Date(),
+      errGif: qiniuUrl+'system/401.gif' + '?' + +new Date(),
       ewizardClap: 'https://wpimg.wallstcn.com/007ef517-bafd-4066-aae4-6883632d9646',
       dialogVisible: false
     }

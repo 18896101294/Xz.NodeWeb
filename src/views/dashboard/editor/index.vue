@@ -21,14 +21,15 @@
 import { mapGetters } from 'vuex'
 import PanThumb from '@/components/PanThumb'
 import GithubCorner from '@/components/GithubCorner'
+import qiniuUrl from '@/api/qiniu.js'
 
 export default {
   name: 'DashboardEditor',
   components: { PanThumb, GithubCorner },
   data() {
     return {
-      // emptyGif: 'https://wpimg.wallstcn.com/0e03b7da-db9e-4819-ba10-9016ddfdaed3'
-      emptyGif: require ('@/assets/images/西湖十景-曲院风荷.png')
+      emptyGif: qiniuUrl + 'system/首页.png'
+      // emptyGif: require ('@/assets/images/西湖十景-曲院风荷.png')
     }
   },
   computed: {

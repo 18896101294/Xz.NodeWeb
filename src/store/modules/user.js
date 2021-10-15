@@ -1,6 +1,7 @@
 import { login, logout, getInfo, getFunProperties } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
+import qiniuUrl from '@/api/qiniu.js'
 
 const state = {
   token: getToken(),
@@ -78,7 +79,7 @@ const actions = {
         commit('SET_ROLES', data.roles)
         commit('SET_NAME', data.name)
         commit('SET_ACCOUNT', data.account)
-        commit('SET_AVATAR', data.avatar)
+        commit('SET_AVATAR', qiniuUrl + data.avatar)
         commit('SET_INTRODUCTION', 'I am a ' + data.name)
         resolve(data)
       }).catch(error => {

@@ -3,10 +3,10 @@
     <!-- <vue-canvas-nest :config="{ color: '255,0,255', opacity: 1, zIndex: -1, count: 150, }" ></vue-canvas-nest> -->
     <div class="wscn-http404">
       <div class="pic-404">
-        <img class="pic-404__parent" src="@/assets/404_images/404.png" alt="404">
-        <img class="pic-404__child left" src="@/assets/404_images/404_cloud.png" alt="404">
-        <img class="pic-404__child mid" src="@/assets/404_images/404_cloud.png" alt="404">
-        <img class="pic-404__child right" src="@/assets/404_images/404_cloud.png" alt="404">
+        <img class="pic-404__parent" :src="qiniuUrl+'system/404.png'" alt="404">
+        <img class="pic-404__child left" :src="qiniuUrl+'system/404_cloud.png'" alt="404">
+        <img class="pic-404__child mid" :src="qiniuUrl+'system/404_cloud.png'" alt="404">
+        <img class="pic-404__child right" :src="qiniuUrl+'system/404_cloud.png'" alt="404">
       </div>
       <div class="bullshit">
         <div class="bullshit__oops">OOPS!</div>
@@ -23,6 +23,7 @@
 
 <script>
 import vueCanvasNest from 'vue-canvas-nest'
+import qiniuUrl from '@/api/qiniu.js'
 
 export default {
   name: 'Page404',
@@ -31,7 +32,12 @@ export default {
     message() {
       return '站长说你不能进入这个页面。。。'
     }
-  }
+  },
+  data() {
+    return {
+      qiniuUrl: qiniuUrl,
+    }
+  },
 }
 </script>
 

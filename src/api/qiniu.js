@@ -6,3 +6,7 @@ export function getToken() {
     method: 'get'
   })
 }
+
+// 七牛云域名
+const qiniuUrl = 'https://qiniu.xznode.club/'
+export default qiniuUrl
