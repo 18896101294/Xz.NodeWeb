@@ -6,6 +6,9 @@
 
     <div class="right-menu">
       <template v-if="device!=='mobile'">
+        
+        <iframe scrolling="no" src="https://tianqiapi.com/api.php?style=tm&skin=pitaya" frameborder="0" width="250px" height="33px" allowtransparency="true"></iframe>
+
         <search id="header-search" class="right-menu-item" />
 
         <error-log class="errLog-container right-menu-item hover-effect" />
