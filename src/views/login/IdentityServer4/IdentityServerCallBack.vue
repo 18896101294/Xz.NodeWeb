@@ -94,17 +94,20 @@ export default {
             window.localStorage.removeItem('router')
             that.GetNavigationBar()
             that.$store.dispatch('user/getFunProperties', null) // 获取用户拥有的数据字段
+
+            // console.log(that.otherQuery)这里是id4返回的参数，可以带入到url中去
             setTimeout(() => {
-              that.$router.push({ path: that.redirect || '/', query: that.otherQuery })
-            }, 1000);
-          }, 1000);
+              // that.$router.push({ path: that.redirect || '/', query: that.otherQuery })
+              that.$router.push({ path: that.redirect || '/' })
+            }, 500);
+          }, 500);
         } else {
           console.log('error submit!!')
           alert('登录失败！')
           return false
         }
       });
-    }, 1000);
+    }, 500);
   },
   methods: {
     // 获取路由树

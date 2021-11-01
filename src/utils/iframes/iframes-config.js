@@ -21,7 +21,8 @@
    },
    'httpReports': {
     name: '接口报表',
-    src: 'http://xznode.club:12797/'
+    // src: 'http://xznode.club:12797/',
+    src: 'https://httpreports.xznode.club:12797/'
   }
  }
  
