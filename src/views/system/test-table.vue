@@ -48,16 +48,29 @@
           <el-button v-waves size="small" class="filter-item" type="danger" icon="el-icon-download" @click="getMyErrorTest">模拟异常</el-button>
         </div>
         <span style="float: right;">
-          <el-dropdown trigger="click">
+          <el-dropdown trigger="click" :hide-on-click="false">
             <span class="el-dropdown-link">
-              选择列<i class="el-icon-arrow-down el-icon--right"></i>
+              展示列<i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>黄金糕</el-dropdown-item>
-              <el-dropdown-item>狮子头</el-dropdown-item>
-              <el-dropdown-item>螺蛳粉</el-dropdown-item>
-              <el-dropdown-item>双皮奶</el-dropdown-item>
-              <el-dropdown-item>蚵仔煎</el-dropdown-item>
+              <el-dropdown-item>
+                <el-checkbox @change="proChange" true-label="Id_1" false-label="Id_0" v-if="AllProp.findIndex(o=> o == moduleIdKey+'_Id') != -1" :checked="AllProp.findIndex(o=> o == moduleIdKey+'_Id') != -1">ID</el-checkbox>
+              </el-dropdown-item>
+              <el-dropdown-item>
+                <el-checkbox @change="proChange" true-label="Name_1" false-label="Name_0" v-if="AllProp.findIndex(o=> o == moduleIdKey+'_Name') != -1" :checked="AllProp.findIndex(o=> o == moduleIdKey+'_Name') != -1">名称</el-checkbox>
+              </el-dropdown-item>
+              <el-dropdown-item>
+                <el-checkbox @change="proChange" true-label="AppSecret_1" false-label="AppSecret_0" v-if="AllProp.findIndex(o=> o == moduleIdKey+'_AppSecret') != -1" :checked="AllProp.findIndex(o=> o == moduleIdKey+'_AppSecret') != -1">密钥</el-checkbox>
+              </el-dropdown-item>
+              <el-dropdown-item>
+                <el-checkbox @change="proChange" true-label="Icon_1" false-label="Icon_0" v-if="AllProp.findIndex(o=> o == moduleIdKey+'_Icon') != -1" :checked="AllProp.findIndex(o=> o == moduleIdKey+'_Icon') != -1">图标</el-checkbox>
+              </el-dropdown-item>
+              <el-dropdown-item>
+                <el-checkbox @change="proChange" true-label="CreateTime_1" false-label="CreateTime_0" v-if="AllProp.findIndex(o=> o == moduleIdKey+'_CreateTime') != -1" :checked="AllProp.findIndex(o=> o == moduleIdKey+'_CreateTime') != -1">创建时间</el-checkbox>
+              </el-dropdown-item>
+              <el-dropdown-item>
+                <el-checkbox @change="proChange" true-label="Disable_1" false-label="Disable_0" v-if="AllProp.findIndex(o=> o == moduleIdKey+'_Disable') != -1" :checked="AllProp.findIndex(o=> o == moduleIdKey+'_Disable') != -1">是否启用</el-checkbox>
+              </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
       </span>
@@ -81,21 +94,21 @@
     >
       <el-table-column type="selection" align="center" width="55" />
 
-      <el-table-column v-if="AllProp.findIndex(o=> o == moduleIdKey+'_Id') != -1" label="ID" prop="id" align="center" width="300px" />
+      <el-table-column v-if="AllCheckProp.findIndex(o=> o == moduleIdKey+'_Id') != -1" label="ID" prop="id" align="center" width="300px" />
 
-      <el-table-column v-if="AllProp.findIndex(o=> o == moduleIdKey+'_Name') != -1" label="名称" prop="name" sortable="custom" align="center" min-width="100px" />
+      <el-table-column v-if="AllCheckProp.findIndex(o=> o == moduleIdKey+'_Name') != -1" label="名称" prop="name" sortable="custom" align="center" min-width="100px" />
 
-      <el-table-column v-if="AllProp.findIndex(o=> o == moduleIdKey+'_AppSecret') != -1" label="密钥" prop="appSecret" align="center" min-width="100px" />
+      <el-table-column v-if="AllCheckProp.findIndex(o=> o == moduleIdKey+'_AppSecret') != -1" label="密钥" prop="appSecret" align="center" min-width="100px" />
 
-      <el-table-column v-if="AllProp.findIndex(o=> o == moduleIdKey+'_Icon') != -1" label="图标" min-width="80px" prop="icon" align="center" />
+      <el-table-column v-if="AllCheckProp.findIndex(o=> o == moduleIdKey+'_Icon') != -1" label="图标" min-width="80px" prop="icon" align="center" />
 
-      <el-table-column v-if="AllProp.findIndex(o=> o == moduleIdKey+'_CreateTime') != -1" label="创建时间" width="150px" align="center">
+      <el-table-column v-if="AllCheckProp.findIndex(o=> o == moduleIdKey+'_CreateTime') != -1" label="创建时间" width="150px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.createTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column v-if="AllProp.findIndex(o=> o == moduleIdKey+'_Disable') != -1" label="是否启用" class-name="status-col" align="center" width="100">
+      <el-table-column v-if="AllCheckProp.findIndex(o=> o == moduleIdKey+'_Disable') != -1" label="是否启用" class-name="status-col" align="center" width="100">
         <template slot-scope="{row}">
           {{ row.disable | statusFilter }}
         </template>
@@ -168,6 +181,7 @@ export default {
     return {
       moduleIdKey: '', 
       AllProp: [],
+      AllCheckProp: [],
       tableKey: 0,
       list: null,
       total: 0,
@@ -291,9 +305,24 @@ export default {
     checkProps() {
       let routerDatas = JSON.parse(window.localStorage.router || '')
       this.AllProp = JSON.parse(window.localStorage.userProps || '')
+      this.AllCheckProp = JSON.parse(window.localStorage.userProps || '')
       if(routerDatas.length > 0) {
         this.getPathModel(routerDatas)
       }
+    },
+    // 设置列隐藏或显示
+    proChange(val) {
+      let itemCheckList = val.split('_')
+      let isChecked = itemCheckList[1]
+      let key = itemCheckList[0]
+      let keyValue = this.moduleIdKey + '_' + key
+      if (isChecked === '1') {
+        this.AllCheckProp.push(keyValue)
+      } else {
+        let index = this.AllCheckProp.findIndex(o=> o == keyValue)
+        this.AllCheckProp.splice(index, 1)
+      }
+      this.tableKey++
     },
 
     getPathModel(data) {
@@ -608,6 +637,7 @@ export default {
   .el-dropdown-link {
     cursor: pointer;
     color: #409EFF;
+    /* border: 1px solid #409EFF; */
   }
   .el-icon-arrow-down {
     font-size: 12px;

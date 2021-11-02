@@ -2,9 +2,14 @@
   <div ref="rightPanel" :class="{show:show}" class="rightPanel-container">
     <div class="rightPanel-background" />
     <div class="rightPanel">
-      <div class="handle-button" :style="{'top':buttonTop+'px','background-color':theme}" @click="show=!show">
+      <VueDragResize :isActive="false" :w="dragResizeData.width" :h="dragResizeData.height" :y="dragResizeData.top" :x="dragResizeData.left" axis="y" :isResizable="false" :parentH="944" v-on:resizing="resize" v-on:dragging="resize">
+        <div class="handle-button" :style="{'background-color':theme}" @click="show=!show">
+          <i :class="show?'el-icon-close':'el-icon-setting'" />
+        </div>
+      </VueDragResize>
+      <!-- <div class="handle-button" :style="{'top':buttonTop+'px','background-color':theme}" @click="show=!show">
         <i :class="show?'el-icon-close':'el-icon-setting'" />
-      </div>
+      </div> -->
       <div class="rightPanel-items">
         <slot />
       </div>
@@ -14,9 +19,11 @@
 
 <script>
 import { addClass, removeClass } from '@/utils'
+import VueDragResize from "vue-drag-resize"
 
 export default {
   name: 'RightPanel',
+  components: { VueDragResize },
   props: {
     clickNotClose: {
       default: false,
@@ -29,7 +36,13 @@ export default {
   },
   data() {
     return {
-      show: false
+      show: false,
+      dragResizeData: {
+        width: 48,
+        height: 48,
+        top: 250,
+        left: -48
+      }
     }
   },
   computed: {
@@ -71,6 +84,21 @@ export default {
       const elx = this.$refs.rightPanel
       const body = document.querySelector('body')
       body.insertBefore(elx, body.firstChild)
+    },
+    // 组件拖动
+    resize(newRect) {
+      if(newRect.top > 932) {
+        this.dragResizeData.top = 932
+        return
+      }
+      if(newRect.top < 83) {
+        this.dragResizeData.top = 83
+        return
+      }
+      this.dragResizeData.width = newRect.width
+      this.dragResizeData.height = newRect.height
+      this.dragResizeData.top = newRect.top
+      this.dragResizeData.left = newRect.left
     }
   }
 }
@@ -128,7 +156,7 @@ export default {
   width: 48px;
   height: 48px;
   position: absolute;
-  left: -48px;
+  // left: -48px;
   text-align: center;
   font-size: 24px;
   border-radius: 6px 0 0 6px !important;
