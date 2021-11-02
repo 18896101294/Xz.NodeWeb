@@ -47,6 +47,20 @@
           </el-upload>
           <el-button v-waves size="small" class="filter-item" type="danger" icon="el-icon-download" @click="getMyErrorTest">模拟异常</el-button>
         </div>
+        <span style="float: right;">
+          <el-dropdown trigger="click">
+            <span class="el-dropdown-link">
+              选择列<i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item>黄金糕</el-dropdown-item>
+              <el-dropdown-item>狮子头</el-dropdown-item>
+              <el-dropdown-item>螺蛳粉</el-dropdown-item>
+              <el-dropdown-item>双皮奶</el-dropdown-item>
+              <el-dropdown-item>蚵仔煎</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+      </span>
       </el-form>
     </div>
 
@@ -261,7 +275,7 @@ export default {
   methods: {
     // 计算高度
     getTableHeight() {
-      const baseH = 135 // 基础的一个高度
+      const baseH = 140 // 基础的一个高度
       let tableH = 280 // 默认的高度
       if (this.$refs.filterhight != null) {
         tableH = baseH + this.$refs.filterhight.offsetHeight + 30 // 动态的高度加上分页组件的高度
@@ -590,5 +604,18 @@ export default {
   .el-dialog__header .el-dialog__headerbtn  {
     top: 10px;
     right: 10px;
+  }
+  .el-dropdown-link {
+    cursor: pointer;
+    color: #409EFF;
+  }
+  .el-icon-arrow-down {
+    font-size: 12px;
+  }
+  .demonstration {
+    display: block;
+    color: #8492a6;
+    font-size: 14px;
+    margin-bottom: 20px;
   }
 </style>
