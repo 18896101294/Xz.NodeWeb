@@ -2,6 +2,7 @@
   <div ref="rightPanel" :class="{show:show}" class="rightPanel-container">
     <div class="rightPanel-background" />
     <div class="rightPanel">
+      <!-- 实现设置按钮图标可拖动 -->
       <VueDragResize :isActive="false" :w="dragResizeData.width" :h="dragResizeData.height" :y="dragResizeData.top" :x="dragResizeData.left" axis="y" :isResizable="false" :parentH="944" v-on:resizing="resize" v-on:dragging="resize">
         <div class="handle-button" :style="{'background-color':theme}" @click="show=!show">
           <i :class="show?'el-icon-close':'el-icon-setting'" />

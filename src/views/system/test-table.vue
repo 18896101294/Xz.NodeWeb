@@ -47,10 +47,10 @@
           </el-upload>
           <el-button v-waves size="small" class="filter-item" type="danger" icon="el-icon-download" @click="getMyErrorTest">模拟异常</el-button>
         </div>
-        <span style="float: right;">
+        <span style="float: right;margin-bottom: 2px;">
           <el-dropdown trigger="click" :hide-on-click="false">
             <span class="el-dropdown-link">
-              展示列<i class="el-icon-arrow-down el-icon--right"></i>
+              <el-tag key="展示列" type="" size="medium" effect="plain">展示列<i class="el-icon-arrow-down el-icon--right"></i></el-tag>
             </span>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item>
